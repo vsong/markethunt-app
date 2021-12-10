@@ -1,0 +1,31 @@
+:root {
+    --highlight-color: #4f52aa;
+    --a-in-highlight: #dcf1ff;
+}
+
+th {
+    background-color:#cbcbcb;
+}
+
+#toolbar {
+    width: 100%;
+    padding: 7px 0px;
+    margin: 0px 0px 10px 0px;
+}
+
+a:link, a:visited {
+    color: #06C;
+}
+
+.highlight {
+    background-color: var(--highlight-color);
+    color: white;
+}
+
+.highlight a:link {
+    color: var(--a-in-highlight);
+}
+
+.highlight a:visited {
+    color: var(--a-in-highlight);
+}

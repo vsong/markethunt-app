@@ -1,0 +1,5 @@
+<?php
+$DB_USER = 'appdbuser';
+$DB_PASSWORD = 'password';
+$DB_HOST = '127.0.0.1';
+$DB_DATABASE = 'markethunt';

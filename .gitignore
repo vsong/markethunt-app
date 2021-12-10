@@ -1,0 +1,5 @@
+/config/config.php
+/twig_cache/
+/vendor/
+/composer.lock
+/public/phpmyadmin
