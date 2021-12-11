@@ -87,10 +87,10 @@ function getAllItemVolumes($period = measurementPeriod::DAY): array
 function getTopMovers(string $from, string $to, int $volume_limit, bool $get_winners = true, int $limit = 50): array {
     if ($get_winners) {
         $order = 'DESC';
-        $cutoff = '>= 10';
+        $cutoff = '>= 1';
     } else {
         $order = 'ASC';
-        $cutoff = '<= -10';
+        $cutoff = '<= -1';
     }
 
     $query = "SELECT * FROM (
