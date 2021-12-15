@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" 
                 integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" crossorigin="anonymous">
         <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/grids-responsive-min.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="/assets/main.css" />
         <title>{% block title %}{% endblock %}</title>
         {% endblock %}
@@ -19,6 +20,7 @@
             <a href="/top.php?period=qtr">qtr</a>
             <a href="/top.php?period=year">year</a>
             <a href="/top.php?period=custom&from=2021-12-06&to=2099-01-01&volume_limit=1000000">gwh-2021</a>
+            | <a href="/watchlist.php">Watchlist</a>
         </div>
         {% block body %}
         {% endblock %}

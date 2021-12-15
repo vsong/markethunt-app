@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head %}
+{{ parent() }}
+<script src="https://unpkg.com/vue@next"></script>
+<style>#chartContainer {display: none}</style> <!-- hide chart until first click -->
+{% endblock %}
+
+{% block body %}
+<div style="text-align: center">
+    <h1>{{ title }}</h1>
+</div>
+<div class="pure-g">
+    <div style="text-align: center;padding: 10px;" class="pure-u-1 pure-u-xl-1-2" >
+        
+    </div>
+</div>
+
+<div class="pure-g">
+    <div id="watchlist-container" class="pure-u-1 pure-u-xl-1-2">
+        <form action="javascript:;" onsubmit="addFormToWatchlist()" class="pure-form" id="addForm" style="text-align: center;padding: 10px;">
+            <select name="item_id" onchange="updateMarkInput()" id="itemSelector" style="max-width: 35%;">
+                {% for item in data %}
+                    <option value="{{ item.item_id }}">
+                        {{- item.name }} {{ '(' ~ item.latest_price|number_format ~ 'g)' -}}
+                    </option>
+                {% endfor %}
+            </select>
+            <input type="number" min="1" placeholder="Mark price" style="max-width: 15%;" id="itemMark">
+            <input type="text" placeholder="Comment (optional)" style="max-width: 25%;" id="itemComment">
+            <input type="submit" class="pure-button pure-button-primary" style="" value="Add to watchlist">
+        </form>
+        <table class="pure-table pure-table-striped small-td-text" style="width:100%; background-color: white;">
+            <tr>
+                <th>Name</th>
+                <th>Comment</th>
+                <th class="number">Mark</th>
+                <th class="number">Current Price</th>
+                <th class="number">Chg%</th>
+                <!-- <th>json</th> -->
+                <th></th>
+            </tr>
+        {% verbatim %}
+            <tr v-for="(item, idx) in watchlistSortedName" :key="item.item_id">
+                <td>
+                    <a @click="renderChart(item.item_id, appData.itemData[item.item_id].name)">
+                        {{ appData.itemData[item.item_id].name }}
+                    </a>
+                </td>
+                <td><i>{{ item.comment }}</i></td>
+                <td class="number">{{ item.mark.toLocaleString("en-US") }}</td>
+                <td class="number" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                    {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
+                </td>
+                <td class="number" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                    {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
+                </td>
+                <!-- <td>{{ item }}</td> -->
+                <td style="text-align: right;"><button @click="removeWatchItem(idx)" class="pure-button pure-button-primary" style="font-size:0.8em">Delete</button></td>
+            </tr>
+        {% endverbatim %}
+        </table>
+    </div>
+    <div class="pure-u-1 pure-u-xl-1-2">
+        <div class="backgroundText" id="chartInstructions">
+            <p>Use search box below or click on an item in your watchlist to show the chart.<br>
+                To add to your watchlist, click on a datapoint on the chart or manually enter data using the form.</p>
+        </div>
+        {% include('chartContainer.html') %}
+    </div>
+</div>
+
+<script>
+/* main script block */
+// chart handling
+function handleChartSubmit() {
+    unhideChart();
+    var itemId = document.getElementById('chartSelector').value;
+    renderChartWithItemId(itemId, appData.itemData[itemId].name);
+}
+
+function unhideChart() {
+    document.getElementById('chartContainer').style.display = "block"; // unhide chart
+    document.getElementById('chartInstructions').style.display = "none";
+}
+
+function onClickDatapoint(e) {
+    var datestring = e.dataPoint.x.toISOString().substring(0,10);
+    var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${e.dataPoint.y}\nDate: ${datestring}\n\nEdit Comment:`,
+        `Price on ${datestring}`);
+
+        if (comment === null) {
+        return
+    }
+    addToWatchlist(document.getElementById('chartSelector').value, e.dataPoint.y, comment)
+}
+
+// form handling
+const addForm = document.getElementById('addForm');
+addForm['itemSelector'].value = '';
+
+// Generic add to watchlist
+function addToWatchlist(itemId, mark, comment) {
+    appData.watchlistItems.push({'item_id': itemId,
+        'mark': parseInt(mark),
+        'comment': comment
+    });
+    localStorage.watchlistv1 = JSON.stringify(appData.watchlistItems);
+}
+
+// Add form data to watchlist
+function addFormToWatchlist() {
+    addToWatchlist(addForm['itemSelector'].value, 
+        addForm['itemMark'].value, 
+        addForm['itemComment'].value);
+
+    addForm['itemSelector'].value = '';
+    addForm['itemMark'].value = '';
+    addForm['itemComment'].value = '';
+}
+
+function updateMarkInput() {
+    addForm['itemMark'].value = appData.itemData[addForm['itemSelector'].value].latest_price;
+}
+</script>
+
+<script>
+/* vue script block */
+const { reactive } = Vue;
+
+// get saved watchlist
+if (localStorage.watchlistv1 === undefined) {
+    // fill with one item to show user how it works instead of just blank table
+    var watchlistRaw = [{'item_id':114, 'mark':10000, 'comment':'Default comment'}]; 
+} else {
+    var watchlistRaw = JSON.parse(localStorage.watchlistv1);
+}
+
+const appData = reactive({
+    itemData: {{ data | json_encode | raw }},
+    watchlistItems: watchlistRaw
+});
+
+const app = Vue.createApp({
+    data() {
+        return {
+            appData
+        }
+    },
+    computed: {
+        watchlistSortedName() {
+            let wl = this.appData.watchlistItems;
+            wl.sort(function(a,b) {
+                a_name = appData.itemData[a.item_id].name;
+                b_name = appData.itemData[b.item_id].name;
+                if (a_name > b_name) {
+                    return 1;
+                } else if (b_name > a_name) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+            return wl;
+        },
+    },
+    methods: {
+        formatPercent(num) {
+            if (num > 0) {
+                return '+' + num.toFixed(0) + '%';
+            } else if (num < 0) {
+                return num.toFixed(0) + '%';
+            } else {
+                return '-';
+            }
+        },
+        getColorClass(num) {
+            if (num > 0) {
+                return {'gains-text' : true};
+            } else if (num < 0) {
+                return {'loss-text' : true};
+            } else {
+                return {};
+            }
+        },
+        removeWatchItem(idx) {
+            appData.watchlistItems.splice(idx, 1);
+            localStorage.watchlistv1 = JSON.stringify(appData.watchlistItems);
+        },
+        renderChart(itemId, headerText) {
+            unhideChart();
+            document.getElementById('chartSelector').value = itemId;
+            renderChartWithItemId(itemId, headerText);
+        }
+    }
+});
+
+app.mount("#watchlist-container");
+</script>
+{% endblock %}

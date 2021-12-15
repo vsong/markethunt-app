@@ -4,24 +4,21 @@
 
 {% block head %}
 {{ parent() }}
-<script type="text/javascript" src="/assets/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="/assets/canvasjs.stock.min.js"></script>
 {% endblock %}
 
+{% block chart_header %}{{ current_item_name }}{% endblock %}
+
 {% block body %}
-<div style="text-align:center; width:800px; margin:auto">
-    <h1>{{ current_item_name }}</h1>
-    <div id="chartContainer" style="width:800px;height:600px;background-color:#aaa; margin:auto;"></div>
-    <form action="/mvp.php" method="GET" class="pure-form" style="margin: 10;">
-        <select name="item_id" onchange="this.form.submit()">
-            {% for item in item_metadata %}
-                <option value="{{ item.item_id }}" {% if item.item_id == current_item_id %} selected="selected"{% endif %}>
-                    {{ item.name }}
-                </option>
-            {% endfor %}
-        </select>
-        <input type="submit" class="pure-button pure-button-primary">
-    </form>
-</div>
-{% include "chart.html" %}
+{% include('chartContainer.html') %}
+<script>
+    function onClickDatapoint () {
+        // do nothing
+    }
+
+    renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
+
+    function handleChartSubmit() {
+        window.location.href = "/mvp.php?item_id=" + document.getElementById('chartSelector').value;
+    }
+</script>
 {% endblock %}

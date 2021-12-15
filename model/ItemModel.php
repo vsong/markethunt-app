@@ -29,6 +29,29 @@ function getItemName($item_id): string
     return ($result === false) ? "" : $result['name'];
 }
 
+function getAllItemNamesAndLatestPrice(): array
+{
+    $results = [];
+
+    $statement = Db::getConnection()
+        ->query("SELECT m.item_id, m.name, p.price
+        FROM item_meta m LEFT JOIN
+            (SELECT   item_id,
+            price,
+            date,
+            rank() over( partition BY item_id ORDER BY date DESC ) daterank
+            FROM     daily_price) p USING (item_id)
+        WHERE daterank = 1 OR daterank IS NULL
+        ORDER BY m.name ASC");
+
+    foreach ($statement as $row) {
+        // array_push($results, array("item_id" => $row['item_id'], "name" => $row['name'], "latest_price" => $row['price']));
+        $results[$row['item_id']] = array("item_id" => $row['item_id'], "name" => $row['name'], "latest_price" => $row['price'] ?? 0);
+    }
+
+    return $results;
+}
+
 function getItemChartData($item_id): array
 {
     $results = [];

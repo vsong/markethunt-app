@@ -1,45 +1,34 @@
-<script type="text/javascript">
-    // chart vars
-    var eventBandColor = "#eeeeee";
+// chart vars
+var eventBandColor = "#eeeeee";
 
-    // prepare data
-    var data = {{ jsdata|raw }};
-    var current_item_id = {{ current_item_id }};
-    var timezone = "T00:00:00"
-    var daily_prices = [],
-        daily_trade_volume = [];
-    for (var i = 0; i < data.length; i++) {
-        daily_prices.push({
-            x: new Date(data[i].date + timezone),
-            y: Number(data[i].price)
-        });
-        daily_trade_volume.push({
-            x: new Date(data[i].date + timezone),
-            y: Number(data[i].volume)
-        });
-    }
+// prepare data
+var timezone = "T00:00:00"
+var daily_prices = [];
+var daily_trade_volume = [];
 
-    // get saved date range
-    if (localStorage.chartDateRanges === undefined) {
-        var chartDateRanges = {};
-    } else {
-        var chartDateRanges = JSON.parse(localStorage.chartDateRanges);
-        
-        try {
-            var currentDateMinimum = chartDateRanges[current_item_id]['min'];
-        } catch (e) {
-            var currentDateMinimum = 1;
-        }
+// get saved date range
+if (localStorage.chartDateRanges === undefined) {
+    var chartDateRanges = {};
+} else {
+    var chartDateRanges = JSON.parse(localStorage.chartDateRanges);
+}
+
+function renderChartWithItemId(itemId, chartHeaderText) {
+    try {
+        var currentDateMinimum = chartDateRanges[itemId]['min'];
+    } catch (e) {
+        var currentDateMinimum = 1;
     }
 
     var stockChart = new CanvasJS.StockChart("chartContainer", {
         theme: "light2",
         exportEnabled: false,
         rangeChanged: function(e){
-            chartDateRanges[current_item_id] = {'min': e.minimum};
+            chartDateRanges[itemId] = {'min': e.minimum};
             localStorage.chartDateRanges = JSON.stringify(chartDateRanges);
         },
         charts: [{
+            itemId: itemId,
             toolTip: {
                 shared: true
             },
@@ -102,10 +91,17 @@
                         label: "Halloween 2021",
                         labelFontColor: "#000000"
                     },
+                    {
+                        startValue: new Date('2021-12-07'),
+                        endValue: new Date('2022-01-05'),
+                        color: eventBandColor,
+                        label: "GWH 2021",
+                        labelFontColor: "#000000"
+                    },
                 ]
             },
             axisY: {
-                suffix: "g"
+                suffix: "g",
             },
             legend: {
                 verticalAlign: "top"
@@ -115,10 +111,11 @@
                 name: "Daily marketplace price",
                 yValueFormatString: "#,###",
                 type: "line",
+                click: onClickDatapoint,
                 dataPoints: daily_prices
             }]
         }, {
-            height: 130,
+            height: 120,
             toolTip: {
                 shared: true
             },
@@ -149,45 +146,62 @@
         }
     });
 
-    //calculateMovingAverage(stockChart);
-    stockChart.render();
+    document.getElementById('chartHeader').innerHTML = chartHeaderText;
 
-    function addSymbols(e) {
-        var suffixes = ["", "K", "M", "B"];
-        var order = Math.max(Math.floor(Math.log(e.value) / Math.log(1000)), 0);
-        if (order > suffixes.length - 1)
-            order = suffixes.length - 1;
-        var suffix = suffixes[order];
-        return CanvasJS.formatNumber(e.value / Math.pow(1000, order)) + suffix;
-    }
-
-    function calculateMovingAverage(chart) {
-        var numOfDays = 7;
-        // return if there are insufficient dataPoints
-        if (chart.options.charts[0].data[0].dataPoints.length <= numOfDays) {
-            return;
-        } else {
-            // Add a new line series for  Moving Averages
-            chart.options.charts[0].data.push({
-                visible: true,
-                showInLegend: true,
-                type: "line",
-                markerSize: 0,
-                name: "7 day trailing average",
-                yValueFormatString: "#,###",
-                dataPoints: []
+    $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function(retval) {
+        daily_prices = []; daily_trade_volume = [];
+        console.dir(retval);
+        for (var i = 0; i < retval.data.length; i++) {
+            stockChart.options.charts[0].data[0].dataPoints.push({
+                x: new Date(retval.data[i].date + timezone),
+                y: Number(retval.data[i].price)
             });
-            var total;
-            for (var i = numOfDays; i < chart.options.charts[0].data[0].dataPoints.length; i++) {
-                total = 0;
-                for (var j = (i - numOfDays); j < i; j++) {
-                    total += chart.options.charts[0].data[0].dataPoints[j].y;
-                }
-                chart.options.charts[0].data[1].dataPoints.push({
-                    x: chart.options.charts[0].data[0].dataPoints[i].x,
-                    y: total / numOfDays
-                });
+            stockChart.options.charts[1].data[0].dataPoints.push({
+                x: new Date(retval.data[i].date + timezone),
+                y: Number(retval.data[i].volume)
+            });
+        }
+        stockChart.render();
+    });
+}
+
+//calculateMovingAverage(stockChart);
+
+function addSymbols(e) {
+    var suffixes = ["", "K", "M", "B"];
+    var order = Math.max(Math.floor(Math.log(e.value) / Math.log(1000)), 0);
+    if (order > suffixes.length - 1)
+        order = suffixes.length - 1;
+    var suffix = suffixes[order];
+    return CanvasJS.formatNumber(e.value / Math.pow(1000, order)) + suffix;
+}
+
+function calculateMovingAverage(chart) {
+    var numOfDays = 7;
+    // return if there are insufficient dataPoints
+    if (chart.options.charts[0].data[0].dataPoints.length <= numOfDays) {
+        return;
+    } else {
+        // Add a new line series for  Moving Averages
+        chart.options.charts[0].data.push({
+            visible: true,
+            showInLegend: true,
+            type: "line",
+            markerSize: 0,
+            name: "7 day trailing average",
+            yValueFormatString: "#,###",
+            dataPoints: []
+        });
+        var total;
+        for (var i = numOfDays; i < chart.options.charts[0].data[0].dataPoints.length; i++) {
+            total = 0;
+            for (var j = (i - numOfDays); j < i; j++) {
+                total += chart.options.charts[0].data[0].dataPoints[j].y;
             }
+            chart.options.charts[0].data[1].dataPoints.push({
+                x: chart.options.charts[0].data[0].dataPoints[i].x,
+                y: total / numOfDays
+            });
         }
     }
-</script>
+}
