@@ -28,11 +28,11 @@
                     </option>
                 {% endfor %}
             </select>
-            <input type="number" min="1" placeholder="Mark price" style="max-width: 15%;" id="itemMark">
+            <input type="number" min="1" max="9999999999" placeholder="Mark price" style="max-width: 15%;" id="itemMark">
             <input type="text" placeholder="Comment (optional)" style="max-width: 25%;" id="itemComment">
             <input type="submit" class="pure-button pure-button-primary" style="" value="Add to watchlist">
         </form>
-        <table class="pure-table pure-table-striped small-td-text" style="width:100%; background-color: white;">
+        <table id="vue-container" class="pure-table pure-table-striped small-td-text" style="width:100%; background-color: white;">
             <tr>
                 <th>Name</th>
                 <th>Comment</th>
@@ -58,7 +58,11 @@
                     {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
                 </td>
                 <!-- <td>{{ item }}</td> -->
-                <td style="text-align: right;"><button @click="removeWatchItem(idx)" class="pure-button pure-button-primary" style="font-size:0.8em">Delete</button></td>
+                <td style="text-align: right;">
+                    <button @click="removeWatchItem(idx)" class="pure-button pure-button-primary" style="font-size:0.8em">
+                        Delete
+                    </button>
+                </td>
             </tr>
         {% endverbatim %}
         </table>
@@ -75,6 +79,8 @@
 <script>
 /* main script block */
 // chart handling
+document.getElementById('chartSelector').value = '';
+
 function handleChartSubmit() {
     unhideChart();
     var itemId = document.getElementById('chartSelector').value;
@@ -112,6 +118,10 @@ function addToWatchlist(itemId, mark, comment) {
 
 // Add form data to watchlist
 function addFormToWatchlist() {
+    if (addForm['itemSelector'].value.trim() === '') {
+        return;
+    }
+
     addToWatchlist(addForm['itemSelector'].value, 
         addForm['itemMark'].value, 
         addForm['itemComment'].value);
@@ -136,6 +146,7 @@ if (localStorage.watchlistv1 === undefined) {
     var watchlistRaw = [{'item_id':114, 'mark':10000, 'comment':'Default comment'}]; 
 } else {
     var watchlistRaw = JSON.parse(localStorage.watchlistv1);
+    watchlistRaw = watchlistRaw.filter(item => item.item_id && item.mark);
 }
 
 const appData = reactive({
@@ -197,6 +208,6 @@ const app = Vue.createApp({
     }
 });
 
-app.mount("#watchlist-container");
+app.mount("#vue-container");
 </script>
 {% endblock %}
