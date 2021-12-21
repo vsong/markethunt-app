@@ -32,7 +32,7 @@
             <input type="text" placeholder="Comment (optional)" style="max-width: 25%;" id="itemComment">
             <input type="submit" class="pure-button pure-button-primary" style="" value="Add to watchlist">
         </form>
-        <table id="vue-container" class="pure-table pure-table-striped small-td-text" style="width:100%; background-color: white;">
+        <table v-cloak id="vue-container" class="pure-table pure-table-striped small-td-text" style="width:100%; background-color: white;">
             <tr>
                 <th>Name</th>
                 <th>Comment</th>
@@ -203,7 +203,15 @@ const app = Vue.createApp({
         renderChart(itemId, headerText) {
             unhideChart();
             document.getElementById('chartSelector').value = itemId;
-            renderChartWithItemId(itemId, headerText);
+            filteredEntries = appData.watchlistItems.filter(entry => entry.item_id == itemId)
+                .map(function(entry){return {
+                    'value': entry.mark, 
+                    'label': entry.comment, 
+                    'color': 'red', 
+                    'lineDashType': 'dash',
+                    'labelFontColor': 'red'
+                }})
+            renderChartWithItemId(itemId, headerText, filteredEntries);
         }
     }
 });

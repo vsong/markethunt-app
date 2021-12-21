@@ -101,3 +101,7 @@ a:link, a:visited {
     color: grey;
     width: 100%
 }
+
+[v-cloak] {
+    display: none;
+}

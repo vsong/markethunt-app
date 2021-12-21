@@ -13,7 +13,7 @@ if (localStorage.chartDateRanges === undefined) {
     var chartDateRanges = JSON.parse(localStorage.chartDateRanges);
 }
 
-function renderChartWithItemId(itemId, chartHeaderText) {
+function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
     try {
         var currentDateMinimum = chartDateRanges[itemId]['min'];
     } catch (e) {
@@ -28,7 +28,6 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             localStorage.chartDateRanges = JSON.stringify(chartDateRanges);
         },
         charts: [{
-            itemId: itemId,
             toolTip: {
                 shared: true
             },
@@ -102,6 +101,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             },
             axisY: {
                 suffix: "g",
+                stripLines: markLines,
             },
             legend: {
                 verticalAlign: "top"
