@@ -49,13 +49,13 @@
     </form>
 </div>
 <table style="margin: 10px auto; " class="pure-table pure-table-striped">
-    <th>Gold volume</th>
-    <th>Trade volume</th>
+    <th class="right-align">Gold volume</th>
+    <th class="right-align">Trade volume</th>
     <th>Item</th>
     {% for item in items %}
         <tr>
-            <td style="text-align:right">{{ item.cum_goldvol|number_format }}</td>
-            <td style="text-align:right;">{{ item.cum_tradevol|number_format }}</td>
+            <td class="right-align">{{ item.cum_goldvol|number_format }}</td>
+            <td class="right-align">{{ item.cum_tradevol|number_format }}</td>
             <td><a href="/mvp.php?item_id={{ item.item_id }}">{{ item.name }}</a></td>
         </tr>
     {% endfor %}

@@ -36,9 +36,9 @@
             <tr>
                 <th>Name</th>
                 <th>Comment</th>
-                <th class="number">Mark</th>
-                <th class="number">Current Price</th>
-                <th class="number">Chg%</th>
+                <th class="right-align">Mark</th>
+                <th class="right-align">Current Price</th>
+                <th class="right-align">Chg%</th>
                 <!-- <th>json</th> -->
                 <th></th>
             </tr>
@@ -50,11 +50,11 @@
                     </a>
                 </td>
                 <td><i>{{ item.comment }}</i></td>
-                <td class="number">{{ item.mark.toLocaleString("en-US") }}</td>
-                <td class="number" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
+                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
                     {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
                 </td>
-                <td class="number" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
                     {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
                 </td>
                 <!-- <td>{{ item }}</td> -->

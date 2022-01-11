@@ -13,20 +13,20 @@
         <div class="pure-u-1 pure-u-lg-1-2">
             <div style="padding:10px">
                 <table style="margin:auto;" class="pure-table pure-table-striped">
-                    <th style="max-width:70px" class="number">% Chg</th>
+                    <th style="max-width:70px" class="right-align">% Chg</th>
                     <th>Item</th>
-                    <th style="max-width:110px" class="number">Current price</th>
-                    <th style="max-width:110px" class="number">Gold volume*</th>
+                    <th style="max-width:110px" class="right-align">Current price</th>
+                    <th style="max-width:110px" class="right-align">Gold volume*</th>
                     {% for row in dataset %}
                         <tr>
                             {% if row.change_pct >= 0 %}
-                                <td style="text-align:right; color:green">+{{ row.change_pct|number_format }}%</td>
+                                <td class="right-align gains-text">+{{ row.change_pct|number_format }}%</td>
                             {% else %}
-                                <td style="text-align:right; color:red">{{ row.change_pct|number_format }}%</td>
+                                <td class="right-align loss-text">{{ row.change_pct|number_format }}%</td>
                             {% endif %}
                             <td><a href="/mvp.php?item_id={{ row.item_id }}">{{ row.name }}</a></td>
-                            <td style="text-align:right">{{ row.latest_price|number_format }}</td>
-                            <td style="text-align:right">{{ row.gold_volume|number_format }}</td>
+                            <td class="right-align">{{ row.latest_price|number_format }}</td>
+                            <td class="right-align">{{ row.gold_volume|number_format }}</td>
                         </tr>
                     {% endfor %}
                 </table>

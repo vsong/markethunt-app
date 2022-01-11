@@ -43,8 +43,8 @@ table.pure-table {
     color: red;
 }
 
-.number {
-    text-align: right;
+.right-align {
+    text-align: right !important;
 }
 
 table.small-td-text td {
