@@ -31,5 +31,7 @@ if ($date_range['from'] === $date_range['to']) {
 }
 echo $twig->render('highestvolumes.html', [
     'title' => $title,
-    'items' => getCumulativeVolume($date_range['from'], $date_range['to'])
+    'items' => getCumulativeVolume($date_range['from'], $date_range['to']),
+    'from' => $date_range['from'],
+    'to' => $date_range['to']
 ]);

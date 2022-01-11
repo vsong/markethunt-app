@@ -7,6 +7,16 @@ pre {
     white-space: pre-wrap;
 }
 
+.param-form-container {
+    text-align: center;
+    margin: 20px;
+}
+
+.param-form-container form {
+    /* border: 1px solid black; */
+    display: inline-block;
+}
+
 /* table stuff */
 table.pure-table {
     border-collapse: collapse;
@@ -81,6 +91,12 @@ a:link, a:visited {
     border: 2px solid var(--highlight-color);
     color: var(--highlight-color)
 } */
+
+/* jquery-ui theme overrides */
+.ui-state-active {
+    border: 1px solid var(--highlight-color) !important;
+    background: var(--highlight-color) !important;
+}
 
 /* watchlist page specific */
 #watchlist-container {
