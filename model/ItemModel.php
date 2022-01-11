@@ -107,6 +107,52 @@ function getAllItemVolumes($period = measurementPeriod::DAY): array
     return $results;
 }
 
+/**
+ * Retrieves cumulative volume data for each item in a specific date range
+ *
+ * @param string $from_date From datestring in ISO format
+ * @param string $to_date To datestring in ISO format
+ * @return array
+ */
+function getCumulativeVolume(string $from_date, string $to_date): array
+{
+    $results = Db::getConnection()
+        ->query("WITH dgv as 
+        (
+            SELECT
+                p.item_id,
+                p.date,
+                p.price * v.raw_volume_day as goldvol,
+                v.raw_volume_day as tradevol 
+            FROM
+                `daily_price` p 
+                LEFT JOIN
+                    `daily_volume` v USING (item_id, date) 
+            WHERE
+                date >= '2021-12-01' 
+            ORDER BY
+                `item_id` DESC
+        )
+        SELECT
+            dgv.item_id,
+            sum(dgv.goldvol) as cum_goldvol,
+            sum(dgv.tradevol) as cum_tradevol,
+            i.name 
+        FROM
+            dgv 
+            LEFT JOIN
+                item_meta i USING (item_id) 
+        WHERE
+            dgv.date >= '$from_date'
+            AND dgv.date <= '$to_date'
+        GROUP BY
+            item_id
+        ORDER BY
+            cum_goldvol DESC")->fetchAll();
+
+    return $results;
+}
+
 function getTopMovers(string $from, string $to, int $volume_limit, bool $get_winners = true, int $limit = 50): array {
     if ($get_winners) {
         $order = 'DESC';
