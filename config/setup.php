@@ -6,6 +6,7 @@ if ($_SERVER['APPENV'] === 'dev') {
 }
 
 require_once($_SERVER['APPDIR'] . '/vendor/autoload.php');
+require_once($_SERVER['APPDIR'] . "/tools/tools.php");
 
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;

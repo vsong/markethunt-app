@@ -30,33 +30,20 @@ if ($period === 'day') {
 } else if ($period === 'custom') {
     try {
         // get date params
-        foreach (['from', 'to'] as $get_param) {
-            if (!isset($_GET[$get_param])) {
-                throw new Exception("Missing parameter $get_param");
-            }
+        $from = validateISODate($_GET['from'] ?? '', 
+            '2000-01-01', 
+            '2000-01-01', 
+            null);
+        $to = validateISODate($_GET['to'] ?? '', 
+            date_create()->modify('-1 day')->format('Y-m-d'), 
+            null, 
+            date_create()->modify('-1 day')->format('Y-m-d'));
 
-            $parsed_date = date_parse_from_format('Y-m-d', $_GET[$get_param]);
-            if ($parsed_date['error_count'] > 0 || !checkdate((int)$parsed_date['month'], (int)$parsed_date['day'], (int)$parsed_date['year'])) {
-                throw new Exception("Bad '$get_param' parameter " . htmlspecialchars($_GET[$get_param]));
-            }
-
-            $date_range[$get_param] = date_create_from_format('Y-m-d', $_GET[$get_param]);
-        }
-
-        // verify date params
-        if ($date_range['to'] > date_create()->modify('-1 day')) {
-            $date_range['to'] = date_create()->modify('-1 day');
-        }
-        if ($date_range['from'] >= $date_range['to']) {
+        if (!isValidISODateRange($from, $to)) {
             throw new Exception("The 'from' date is larger than or equal to 'to' date");
         }
-        if ($date_range['from'] < date_create('2000-01-01')) {
-            throw new Exception("Date is out of range");
-        }
 
-        foreach ($date_range as $k=>$v) {
-            $date_range[$k] = $v->format('Y-m-d');
-        }
+        $date_range = compact('from', 'to');
     } catch (Exception $e) {
         $date_range = create_date_range('-7 day');
     }
