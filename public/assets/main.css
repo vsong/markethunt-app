@@ -8,19 +8,19 @@ pre {
 }
 
 /* table stuff */
-table {
+table.pure-table {
     border-collapse: collapse;
     text-align: left;
 }
 
-th {
+.pure-table th {
     background-color:var(--highlight-color);
     color: white;
     padding: 10px 7px !important;
     border: 0px solid red !important;
 }
 
-td {
+.pure-table td {
     padding: 9px 7px !important;
     border: 0px solid red !important;
 }
