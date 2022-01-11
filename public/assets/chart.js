@@ -165,7 +165,6 @@ function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
 
     $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function(retval) {
         daily_prices = []; daily_trade_volume = [];
-        console.dir(retval);
         for (var i = 0; i < retval.data.length; i++) {
             stockChart.options.charts[0].data[0].dataPoints.push({
                 x: new Date(retval.data[i].date + timezone),
