@@ -18,7 +18,12 @@
     renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
     function handleChartSubmit() {
-        window.location.href = "/mvp.php?item_id=" + document.getElementById('chartSelector').value;
+        var selector = document.getElementById('chartSelector');
+        var itemId = selector.value;
+        var itemName = selector.options[selector.selectedIndex].text;
+        window.history.replaceState({}, itemName, "/mvp.php?item_id=" + itemId);
+        document.title = itemName; // change title after replaceState to preserve title of previous history entry 
+        renderChartWithItemId(itemId, itemName);
     }
 </script>
 {% endblock %}
