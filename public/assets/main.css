@@ -17,6 +17,10 @@ pre {
     display: inline-block;
 }
 
+.param-form-container input {
+    margin-right: 10px;
+}
+
 /* table stuff */
 table.pure-table {
     border-collapse: collapse;

@@ -26,8 +26,8 @@ if ($period === 'day') {
     try {
         // get date params
         $from = validateISODate($_GET['from'] ?? '', 
-            '2000-01-01', 
-            '2000-01-01', 
+            createISODateRangeYesterday('-7 day')['from'], 
+            '2020-08-20', 
             null
         );
         $to = validateISODate($_GET['to'] ?? '', 
@@ -52,6 +52,8 @@ echo $twig->render('topmovers.html', [
     'title' => 'Top movers',
     'date_range' => $date_range,
     'volume_limit' => $volume_limit,
+    'from' => $date_range['from'],
+    'to' => $date_range['to'],
     'datasets' => [
         getTopMovers($date_range['from'], $date_range['to'], $volume_limit, true, 999),
         getTopMovers($date_range['from'], $date_range['to'], $volume_limit, false, 999)

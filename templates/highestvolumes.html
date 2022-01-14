@@ -8,7 +8,7 @@
         var dateFormat = "yy-mm-dd";
         var dateOptions = { 
             minDate: new Date(2021, 12-1, 01), 
-            maxDate: -1, 
+            maxDate: 0, 
             dateFormat: dateFormat,
             changeMonth: true,
             changeYear: true,
@@ -38,7 +38,6 @@
     });
 </script>
 <h1 style="text-align: center">{{ title }}</h1>
-<!-- <p>Date: <input type="text" id="datepicker"></p> -->
 <div class="param-form-container">
     <form id="paramForm" action="highestvolumes.php" method="GET" class="pure-form">
         <label for="from">From:</label>

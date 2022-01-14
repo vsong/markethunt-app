@@ -3,8 +3,53 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
+<script>
+    $(function() {
+        var dateFormat = "yy-mm-dd";
+        var dateOptions = { 
+            minDate: new Date(2020, 8-1, 20), 
+            maxDate: 0, 
+            dateFormat: dateFormat,
+            changeMonth: true,
+            changeYear: true,
+            showOtherMonths: true,
+            selectOtherMonths: true
+        };
+
+        var from = $("#from")
+            .datepicker(dateOptions)
+            .on("change", function() {to.datepicker( "option", "minDate", getDate(this));
+        });
+
+        var to = $("#to")
+            .datepicker(dateOptions)
+            .on("change", function() {from.datepicker( "option", "maxDate", getDate(this));
+        });
+
+        function getDate(element) {
+            var date;
+            try {
+                date = $.datepicker.parseDate(dateFormat, element.value);
+            } catch (error) {
+                date = null;
+            }
+            return date;
+        }
+    });
+</script>
+<h1 style="text-align: center">Top winners and losers {{ date_range.from }} to {{ date_range.to }}</h1>
+<div class="param-form-container">
+    <form id="paramForm" action="top.php" method="GET" class="pure-form">
+        <label for="from">From:</label>
+        <input type="text" id="from" name="from" value={{ from }}>
+        <label for="to">To:</label>
+        <input type="text" id="to" name="to" value={{ to }}>
+        <label for="volume_limit">Minimum Volume:</label>
+        <input type="number" id="volume_limit" name="volume_limit" min=0 max=1000000000 value={{ volume_limit }}>
+        <input type="submit" class="pure-button pure-button-primary">
+    </form>
+</div>
 <div style="text-align: center">
-    <h1>Top winners and losers {{ date_range.from }} to {{ date_range.to }}</h1>
     <p><i>*Only showing items with a daily gold volume of at least {{ volume_limit|number_format}}.<br>
     Due to missing volume data before 2021-12-01, the numbers you see are yesterday's volumes. </i></p>
 </div>
