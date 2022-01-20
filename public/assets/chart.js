@@ -1,6 +1,7 @@
 // chart vars
 var eventBandColor = "#eeeeee";
 var eventBandFontColor = "#555555";
+var primaryLineColor = "#4f52aa";
 
 // prepare data
 var timezone = "T00:00:00"
@@ -134,8 +135,10 @@ function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
             data: [{
                 showInLegend: true,
                 name: "Daily marketplace price",
+                color: primaryLineColor,
                 yValueFormatString: "#,###",
                 type: "line",
+                lineThickness: 1.5,
                 click: onClickDatapoint,
                 dataPoints: daily_prices
             }]
@@ -154,6 +157,7 @@ function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
             data: [{
                 showInLegend: true,
                 name: "Volume",
+                color: "#51cda0",
                 yValueFormatString: "#,###.##",
                 dataPoints: daily_trade_volume
             }]
@@ -162,6 +166,7 @@ function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
             enabled: true,
             height: 50,
             data: [{
+                color: primaryLineColor,
                 dataPoints: daily_prices
             }],
             slider: {
