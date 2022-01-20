@@ -16,24 +16,20 @@
             selectOtherMonths: true
         };
 
-        var from = $("#from")
-            .datepicker(dateOptions)
+        var from = $("#from").datepicker(dateOptions)
             .on("change", function() {to.datepicker( "option", "minDate", getDate(this));
         });
 
-        var to = $("#to")
-            .datepicker(dateOptions)
+        var to = $("#to").datepicker(dateOptions)
             .on("change", function() {from.datepicker( "option", "maxDate", getDate(this));
         });
 
         function getDate(element) {
-            var date;
             try {
-                date = $.datepicker.parseDate(dateFormat, element.value);
+                return $.datepicker.parseDate(dateFormat, element.value);
             } catch (error) {
-                date = null;
+                return null;
             }
-            return date;
         }
     });
 </script>

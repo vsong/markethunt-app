@@ -112,11 +112,21 @@ function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
                         label: "GWH 2021",
                         labelFontColor: eventBandFontColor
                     },
-                ]
+                ],
+                crosshair: {
+                    enabled: true,
+                    snapToDataPoint: true,
+                    label: "", //disable axis tooltop
+                }
             },
             axisY: {
                 suffix: "g",
                 stripLines: markLines,
+                crosshair: {
+                    enabled: true,
+                    snapToDataPoint: true,
+                    label: "", //disable axis tooltop
+                }
             },
             legend: {
                 verticalAlign: "top"
