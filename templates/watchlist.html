@@ -116,6 +116,13 @@ function addToWatchlist(itemId, mark, comment) {
     localStorage.watchlistv1 = JSON.stringify(appData.watchlistItems);
 }
 
+// reload when other tab edits watchlist
+window.addEventListener('storage', (e) => {
+    if (e.key == "watchlistv1") {
+        window.location.reload();
+    }
+});
+
 // Add form data to watchlist
 function addFormToWatchlist() {
     if (addForm['itemSelector'].value.trim() === '') {
