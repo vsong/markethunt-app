@@ -63,13 +63,19 @@ table.small-td-text td {
 }
 
 /* theming */
-a:link, a:visited {
+a, a:link, a:visited {
     color: #06C;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .highlight {
     background-color: var(--highlight-color);
     color: white;
+}
+
+.highlight a {
+    color: var(--a-in-highlight);
 }
 
 .highlight a:link {
