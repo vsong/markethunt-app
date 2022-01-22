@@ -21,7 +21,10 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         'label': entry.comment, 
                         'color': 'red', 
                         'lineDashType': 'dash',
-                        'labelFontColor': 'red'
+                        'labelFontColor': 'red',
+                        'labelBackgroundColor': '#ffffff55',
+                        'labelAlign': 'near',
+                        'showOnTop': true,
                     }})
     } catch (e) {
         var filteredEntries = [];

@@ -94,11 +94,10 @@ function unhideChart() {
 
 function onClickDatapoint(e) {
     var datestring = e.dataPoint.x.toISOString().substring(0,10);
-    var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${e.dataPoint.y}\nDate: ${datestring}\n\nEdit Comment:`,
-        `Price on ${datestring}`);
+    var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${e.dataPoint.y}\n\nComment:`, "");
 
-        if (comment === null) {
-        return
+    if (comment === null) {
+        return;
     }
     addToWatchlist(document.getElementById('chartSelector').value, e.dataPoint.y, comment)
 }
@@ -109,11 +108,16 @@ addForm['itemSelector'].value = '';
 
 // Generic add to watchlist
 function addToWatchlist(itemId, mark, comment) {
-    appData.watchlistItems.push({'item_id': itemId,
+    appData.watchlistItems.push({
+        'item_id': itemId,
         'mark': parseInt(mark),
         'comment': comment
     });
     setWatchlistObj(appData.watchlistItems);
+
+    if (itemId === document.getElementById('chartSelector').value) {
+        renderChartWithItemId(itemId, appData.itemData[itemId].name);
+    }
 }
 
 // reload when other tab edits watchlist
@@ -141,9 +145,7 @@ function addFormToWatchlist() {
 function updateMarkInput() {
     addForm['itemMark'].value = appData.itemData[addForm['itemSelector'].value].latest_price;
 }
-</script>
 
-<script>
 /* vue script block */
 const { reactive } = Vue;
 

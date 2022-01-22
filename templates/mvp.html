@@ -11,8 +11,23 @@
 {% block body %}
 {% include('chartContainer.html') %}
 <script>
-    function onClickDatapoint () {
-        // do nothing
+    function onClickDatapoint(e) {
+        var datestring = e.dataPoint.x.toISOString().substring(0,10);
+        var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${e.dataPoint.y}\n\nComment:`, "");
+
+        if (comment === null) {
+            return;
+        }
+
+        var watchlist = getWatchlistObj();
+        watchlist.push({
+            'item_id': document.getElementById('chartSelector').value,
+            'mark': parseInt(e.dataPoint.y),
+            'comment': comment
+        });
+
+        setWatchlistObj(watchlist);
+        window.location.reload();
     }
 
     renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
