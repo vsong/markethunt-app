@@ -113,7 +113,7 @@ function addToWatchlist(itemId, mark, comment) {
         'mark': parseInt(mark),
         'comment': comment
     });
-    localStorage.watchlistv1 = JSON.stringify(appData.watchlistItems);
+    setWatchlistObj(appData.watchlistItems);
 }
 
 // reload when other tab edits watchlist
@@ -147,13 +147,10 @@ function updateMarkInput() {
 /* vue script block */
 const { reactive } = Vue;
 
-// get saved watchlist
-if (localStorage.watchlistv1 === undefined) {
-    // fill with one item to show user how it works instead of just blank table
+if (!savedWatchlistExists()) {
     var watchlistRaw = [{'item_id':114, 'mark':10000, 'comment':'Default comment'}]; 
 } else {
-    var watchlistRaw = JSON.parse(localStorage.watchlistv1);
-    watchlistRaw = watchlistRaw.filter(item => item.item_id && item.mark);
+    var watchlistRaw = getWatchlistObj();
 }
 
 const appData = reactive({
@@ -205,20 +202,12 @@ const app = Vue.createApp({
         },
         removeWatchItem(idx) {
             appData.watchlistItems.splice(idx, 1);
-            localStorage.watchlistv1 = JSON.stringify(appData.watchlistItems);
+            setWatchlistObj(appData.watchlistItems);
         },
         renderChart(itemId, headerText) {
             unhideChart();
             document.getElementById('chartSelector').value = itemId;
-            filteredEntries = appData.watchlistItems.filter(entry => entry.item_id == itemId)
-                .map(function(entry){return {
-                    'value': entry.mark, 
-                    'label': entry.comment, 
-                    'color': 'red', 
-                    'lineDashType': 'dash',
-                    'labelFontColor': 'red'
-                }})
-            renderChartWithItemId(itemId, headerText, filteredEntries);
+            renderChartWithItemId(itemId, headerText);
         }
     }
 });

@@ -6,26 +6,34 @@ var timezone = "T00:00:00"
 var daily_prices = [];
 var daily_trade_volume = [];
 
-// get saved date range
-if (localStorage.chartDateRanges === undefined) {
-    var chartDateRanges = {};
-} else {
-    var chartDateRanges = JSON.parse(localStorage.chartDateRanges);
-}
-
-function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
+function renderChartWithItemId(itemId, chartHeaderText) {
     try {
-        var currentDateMinimum = chartDateRanges[itemId]['min'];
+        var currentDateMinimum = getChartDateRangesObj()[itemId]['min'];
     } catch (e) {
         var currentDateMinimum = 1;
+    }
+
+    try {
+        // get entries on watchlist that matches itemId
+        var filteredEntries = getWatchlistObj().filter(entry => entry.item_id == itemId)
+                    .map(function(entry){return {
+                        'value': entry.mark, 
+                        'label': entry.comment, 
+                        'color': 'red', 
+                        'lineDashType': 'dash',
+                        'labelFontColor': 'red'
+                    }})
+    } catch (e) {
+        var filteredEntries = [];
     }
 
     var stockChart = new CanvasJS.StockChart("chartContainer", {
         theme: "light2",
         exportEnabled: false,
         rangeChanged: function(e){
+            var chartDateRanges = getChartDateRangesObj();
             chartDateRanges[itemId] = {'min': e.minimum};
-            localStorage.chartDateRanges = JSON.stringify(chartDateRanges);
+            setChartDateRangesObj(chartDateRanges);
         },
         charts: [{
             toolTip: {
@@ -43,7 +51,7 @@ function renderChartWithItemId(itemId, chartHeaderText, markLines = []) {
             },
             axisY: {
                 suffix: "g",
-                stripLines: markLines,
+                stripLines: filteredEntries,
                 crosshair: {
                     enabled: true,
                     snapToDataPoint: true,
