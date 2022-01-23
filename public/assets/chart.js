@@ -2,11 +2,89 @@
 var primaryLineColor = "#4f52aa";
 
 // prepare data
-var timezone = "T00:00:00"
+var timezone = "T00:00:00+00:00"
 var daily_prices = [];
 var daily_trade_volume = [];
 
 function renderChartWithItemId(itemId, chartHeaderText) {
+    try {
+        var currentDateMinimum = getChartDateRangesObj()[itemId]['min'];
+    } catch (e) {
+        var currentDateMinimum = 1;
+    }
+    
+    $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function (response) {
+        var daily_prices = [];
+        var daily_trade_volume = [];
+        for (var i = 0; i < response.data.length; i++) {
+            daily_prices.push([
+                (new Date(response.data[i].date + timezone)).getTime(),
+                Number(response.data[i].price)
+            ]);
+            daily_trade_volume.push([
+                (new Date(response.data[i].date + timezone)).getTime(),
+                Number(response.data[i].volume)
+            ]);
+        }
+
+        Highcharts.setOptions({
+            plotOptions: {
+                series: {
+                    animation: false
+                }
+            }
+        });
+
+        // Create the chart
+        Highcharts.stockChart('chartContainer', {
+            title: {
+                text: chartHeaderText
+            },
+
+            tooltip: {
+                animation: false,
+                shared: true,
+                split: false,
+            },
+
+            series: [{
+                name: chartHeaderText,
+                data: daily_prices,
+                dataGrouping: {
+                    enabled: false
+                },
+            }, {
+                name: 'Volume',
+                type: 'column',
+                data: daily_trade_volume,
+                dataGrouping: {
+                    enabled: false
+                },
+                yAxis: 1,
+            }],
+
+            yAxis: [{
+                height: '70%',
+                lineWidth: 2,
+            }, {
+                title: {
+                    text: 'Volume'
+                },
+                top: '75%',
+                height: '25%',
+                offset: 0,
+                lineWidth: 2
+            }],
+
+            xAxis: {
+                type: 'datetime',
+                range: Date.now() - currentDateMinimum,
+            },
+        });
+    });
+
+    return;
+
     try {
         var currentDateMinimum = getChartDateRangesObj()[itemId]['min'];
     } catch (e) {
