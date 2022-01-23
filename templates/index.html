@@ -36,7 +36,7 @@
         var selector = document.getElementById('chartSelector');
         var itemId = selector.value;
         var itemName = selector.options[selector.selectedIndex].text;
-        window.history.replaceState({}, itemName, "/mvp.php?item_id=" + itemId);
+        window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
         document.title = itemName; // change title after replaceState to preserve title of previous history entry 
         renderChartWithItemId(itemId, itemName);
     }

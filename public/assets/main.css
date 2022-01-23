@@ -56,7 +56,7 @@ table.small-td-text td {
 }
 
 /* toolbar stuff */
-#toolbar {
+.toolbar {
     width: 100%;
     padding: 7px 0px;
     margin: 0px 0px 10px 0px;
