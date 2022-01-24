@@ -1,168 +1,301 @@
 // chart vars
 var primaryLineColor = "#4f52aa";
+var volumeColor = "#51cda0";
+var UtcTimezone = "T00:00:00+00:00"
 
-// prepare data
-var timezone = "T00:00:00"
-var daily_prices = [];
-var daily_trade_volume = [];
+// colors
+var eventBandColor = "#f3f3f3";
+var eventBandFontColor = "#aaaaaa"; // recommend to have same or close color as yGridLineColor for visual clarity
+var xGridLineColor = "#bbbbbb";
+var yGridLineColor = "#bbbbbb";
+var yGridLineColorLighter = "#dddddd";
+var axisLabelColor = "#555555";
+var crosshairColor = "#555555";
+
+function UtcIsoDateToMillis(dateStr) {
+    return (new Date(dateStr + UtcTimezone)).getTime();
+}
+
+function eventBand(IsoStrFrom, IsoStrTo, labelText) {
+    return {
+        from: UtcIsoDateToMillis(IsoStrFrom),
+        to: UtcIsoDateToMillis(IsoStrTo),
+        color: eventBandColor,
+        label: {
+            text: labelText,
+            rotation: 270,
+            textAlign: 'right',
+            y: 5, // pixels from top of chart
+            x: 4, // fix slight centering issue
+            style: {
+                color: "#999999",
+                fontWeight: 'bold',
+            },
+        },
+    }
+}
+
+var eventData = [
+    eventBand('2020-08-18', '2020-09-08', 'Ronza 2020'),
+    eventBand('2020-10-14', '2020-11-03', 'Halloween 2020'),
+    eventBand('2020-12-08', '2021-01-06', 'GWH 2020'),
+    eventBand('2021-02-09', '2021-02-23', 'LNY 2021'),
+    eventBand('2021-03-02', '2021-03-23', 'Birthday 2021'),
+    eventBand('2021-03-30', '2021-04-27', 'SEH 2021'),
+    eventBand('2021-05-25', '2021-06-08', 'KGA 2021'),
+    eventBand('2021-06-29', '2021-07-13', 'Jaq 2021'),
+    eventBand('2021-07-27', '2021-08-17', 'Ronza 2021'),
+    eventBand('2021-10-13', '2021-11-02', 'Halloween 2021'),
+    eventBand('2021-12-07', '2022-01-05', 'GWH 2021'),
+]
 
 function renderChartWithItemId(itemId, chartHeaderText) {
+    document.getElementById('chartHeader').innerHTML = chartHeaderText;
+
+    // get saved daterange preferences
     try {
         var currentDateMinimum = getChartDateRangesObj()[itemId]['min'];
     } catch (e) {
         var currentDateMinimum = 1;
     }
-
+    
+    // get entries on watchlist that matches itemId
     try {
-        // get entries on watchlist that matches itemId
-        var filteredEntries = getWatchlistObj().filter(entry => entry.item_id == itemId)
-                    .map(function(entry){return {
-                        'value': entry.mark, 
-                        'label': entry.comment, 
-                        'color': 'red', 
-                        'lineDashType': 'dash',
-                        'labelFontColor': 'red',
-                        'labelBackgroundColor': '#ffffff55',
-                        'labelAlign': 'near',
-                        'showOnTop': true,
-                    }})
+        var filteredEntries = getWatchlistObj().filter(entry => entry.item_id == itemId).map(function(entry) {
+            return {
+                value: entry.mark, 
+                label: {
+                    text: entry.comment,
+                    style: {
+                        color: 'red',
+                        backgroundColor: "green",
+                    },
+                    x: 0, // remove left padding
+                },
+                color: 'red', 
+                dashStyle: 'dash',
+                zIndex: 6,
+            };
+        });
     } catch (e) {
         var filteredEntries = [];
     }
+    
+    $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function (response) {
+        var daily_prices = [];
+        var daily_trade_volume = [];
+        for (var i = 0; i < response.data.length; i++) {
+            daily_prices.push([
+                UtcIsoDateToMillis(response.data[i].date),
+                Number(response.data[i].price)
+            ]);
+            daily_trade_volume.push([
+                UtcIsoDateToMillis(response.data[i].date),
+                Number(response.data[i].volume)
+            ]);
+        }
 
-    var stockChart = new CanvasJS.StockChart("chartContainer", {
-        theme: "light2",
-        exportEnabled: false,
-        rangeChanged: function(e){
-            var chartDateRanges = getChartDateRangesObj();
-            chartDateRanges[itemId] = {'min': e.minimum};
-            setChartDateRangesObj(chartDateRanges);
-        },
-        charts: [{
-            toolTip: {
-                shared: true
+        Highcharts.setOptions({
+            plotOptions: {
+                series: {
+                    animation: false,
+                    dataGrouping: {
+                        enabled: false
+                    },
+                    showInLegend: true,
+                },
             },
-            axisX: {
-                lineThickness: 3,
-                tickLength: 0,
-                stripLines: eventData,
-                crosshair: {
-                    enabled: true,
-                    snapToDataPoint: true,
-                    label: "", //disable axis tooltop
+            xAxis: {
+                // lineColor: '#555',
+                tickColor: xGridLineColor,
+                // gridLineWidth: 1,
+                gridLineColor: xGridLineColor,
+                labels: {
+                    style: {
+                        color: axisLabelColor,
+                        fontSize: '12px',
+                    }
                 }
             },
-            axisY: {
-                suffix: "g",
-                stripLines: filteredEntries,
-                crosshair: {
-                    enabled: true,
-                    snapToDataPoint: true,
-                    label: "", //disable axis tooltop
+            yAxis: {
+                gridLineColor: yGridLineColor,
+                labels: {
+                    style: {
+                        color: axisLabelColor,
+                        fontSize: '12px',
+                    }
                 }
-            },
-            legend: {
-                verticalAlign: "top"
-            },
-            data: [{
-                showInLegend: true,
-                name: "Daily marketplace price",
-                color: primaryLineColor,
-                yValueFormatString: "#,###",
-                type: "line",
-                lineThickness: 1.5,
-                click: onClickDatapoint,
-                dataPoints: daily_prices
-            }]
-        }, {
-            height: 120,
-            toolTip: {
-                shared: true
-            },
-            axisY: {
-                prefix: "",
-                labelFormatter: addSymbols
-            },
-            legend: {
-                verticalAlign: "top"
-            },
-            data: [{
-                showInLegend: true,
-                name: "Volume",
-                color: "#51cda0",
-                yValueFormatString: "#,###.##",
-                dataPoints: daily_trade_volume
-            }]
-        }],
-        navigator: {
-            enabled: true,
-            height: 50,
-            data: [{
-                color: primaryLineColor,
-                dataPoints: daily_prices
-            }],
-            slider: {
-                minimum: new Date(currentDateMinimum),
-                // maximum: new Date(2099, 08, 01)
             }
-        }
-    });
-
-    document.getElementById('chartHeader').innerHTML = chartHeaderText;
-
-    $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function(retval) {
-        daily_prices = []; daily_trade_volume = [];
-        for (var i = 0; i < retval.data.length; i++) {
-            stockChart.options.charts[0].data[0].dataPoints.push({
-                x: new Date(retval.data[i].date + timezone),
-                y: Number(retval.data[i].price)
-            });
-            stockChart.options.charts[1].data[0].dataPoints.push({
-                x: new Date(retval.data[i].date + timezone),
-                y: Number(retval.data[i].volume)
-            });
-        }
-        stockChart.render();
-    });
-}
-
-//calculateMovingAverage(stockChart);
-
-function addSymbols(e) {
-    var suffixes = ["", "K", "M", "B"];
-    var order = Math.max(Math.floor(Math.log(e.value) / Math.log(1000)), 0);
-    if (order > suffixes.length - 1)
-        order = suffixes.length - 1;
-    var suffix = suffixes[order];
-    return CanvasJS.formatNumber(e.value / Math.pow(1000, order)) + suffix;
-}
-
-function calculateMovingAverage(chart) {
-    var numOfDays = 7;
-    // return if there are insufficient dataPoints
-    if (chart.options.charts[0].data[0].dataPoints.length <= numOfDays) {
-        return;
-    } else {
-        // Add a new line series for  Moving Averages
-        chart.options.charts[0].data.push({
-            visible: true,
-            showInLegend: true,
-            type: "line",
-            markerSize: 0,
-            name: "7 day trailing average",
-            yValueFormatString: "#,###",
-            dataPoints: []
         });
-        var total;
-        for (var i = numOfDays; i < chart.options.charts[0].data[0].dataPoints.length; i++) {
-            total = 0;
-            for (var j = (i - numOfDays); j < i; j++) {
-                total += chart.options.charts[0].data[0].dataPoints[j].y;
+
+        // Create the chart
+        var chart = new Highcharts.stockChart('chartContainer', {
+            chart: {
+                animation: false, // disable range selector zooming animation
+                events: {
+                    click: onClickDatapoint
+                }
+            },
+            // must keep scrollbar enabled for dynamic scrolling, so hide the scrollbar instead
+            scrollbar: {
+                height: 0,
+                buttonArrowColor: "#ffffff00",
+            },
+            title: {
+                enabled: false,
+            },
+            rangeSelector: {
+                buttons: [
+                    {
+                        type: 'month',
+                        count: 1,
+                        text: '1M'
+                    }, {
+                        type: 'month',
+                        count: 3,
+                        text: '3M'
+                    }, {
+                        type: 'year',
+                        count: 1,
+                        text: '1Y'
+                    }, {
+                        type: 'all',
+                        text: 'All'
+                    },
+                ],
+                inputEnabled: false,
+            },
+            legend: {
+                enabled: true,
+                verticalAlign: 'top',
+                y: -36,
+            },
+            tooltip: {
+                animation: false,
+                shared: true,
+                split: false,
+                headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>',
+                xDateFormat: '%b %e, %Y',
+                backgroundColor: 'rgba(255, 255, 255, 1)',
+                hideDelay: 0, // makes tooltip feel more responsive when crossing gap between plots
+                style: {
+                    fontSize: '13px',
+                }
+            },
+            series: [
+                {
+                    name: 'Daily average price',
+                    id: 'dailyPrice',
+                    data: daily_prices,
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    color: primaryLineColor,
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    },
+                    point: {
+                        events: {
+                            click: onClickDatapoint,
+                        }
+                    },
+                    tooltip: {
+                        pointFormatter: function() {
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + ` ${this.series.name}:`
+                                + ` <b>${this.y.toLocaleString()}</b><br/>`;
+                        },
+                    },
+                }, {
+                    name: 'Volume',
+                    type: 'column',
+                    data: daily_trade_volume,
+                    pointPadding: 0, // disable point and group padding to simulate column area chart
+                    groupPadding: 0,
+                    yAxis: 1,
+                    color: volumeColor,
+                    tooltip: {
+                        pointFormatter: function() {
+                            if (this.y !== 0){
+                                var suffixes = ["", "K", "M", "B"];
+                                var order = Math.max(Math.floor(Math.log(this.y) / Math.log(1000)), 0);
+                                if (order > suffixes.length - 1) {
+                                    order = suffixes.length - 1;
+                                }
+                                var significand = this.y / Math.pow(1000, order);
+                                var volumeText = significand.toFixed(1).replace(/\.0+$/,'') + suffixes[order];
+                            } else {
+                                var volumeText = 'n/a';
+                            }
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + ` ${this.series.name}:`
+                                + ` <b>${volumeText}</b><br/>`;
+                        },
+                    },
+                },
+            ],
+            yAxis: [{
+                height: '80%',
+                // lineWidth: 1,
+                plotLines: filteredEntries,
+                labels: {
+                    formatter: function() {
+                        return Number(this.value).toLocaleString() + 'g';
+                    }
+                },
+                showLastLabel: true, // show label at top of chart
+                crosshair: {
+                    dashStyle: 'Dot',
+                    color: crosshairColor,
+                },
+                opposite: false,
+                resize: {
+                    enabled: true,
+                },
+            }, {
+                top: '82%',
+                height: '18%',
+                offset: 0,
+                opposite: false,
+                // gridLineColor: yGridLineColorLighter,
+                tickPixelInterval: 35,
+            }],
+            xAxis: {
+                type: 'datetime',
+                ordinal: false, // show continuous x axis if dates are missing
+                plotBands: eventData,
+                range: Date.now() - currentDateMinimum,
+                crosshair: {
+                    dashStyle: 'Dot',
+                    color: crosshairColor,
+                },
+                dateTimeLabelFormats:{
+                    day: '%b %e',
+                    week: '%b %e, \'%y',
+                    month: '%b %Y',
+                    year: '%Y'
+                },
+                events: {
+                    setExtremes: function(event) {
+                        var chartDateRanges = getChartDateRangesObj();
+                        chartDateRanges[itemId] = {'min': parseInt(event.min)};
+                        setChartDateRangesObj(chartDateRanges);
+                    },
+                }
+            },
+            navigator: {
+                height: 45,
+                margin: 5,
+                maskInside: false,
             }
-            chart.options.charts[0].data[1].dataPoints.push({
-                x: chart.options.charts[0].data[0].dataPoints[i].x,
-                y: total / numOfDays
-            });
-        }
-    }
+        });
+    });
 }

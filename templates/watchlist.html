@@ -93,13 +93,13 @@ function unhideChart() {
 }
 
 function onClickDatapoint(e) {
-    var datestring = e.dataPoint.x.toISOString().substring(0,10);
-    var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${e.dataPoint.y}\n\nComment:`, "");
+    var y = parseInt(this.hoverPoints[0].y);
+    var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${y.toLocaleString()}\n\nComment:`, "");
 
     if (comment === null) {
         return;
     }
-    addToWatchlist(document.getElementById('chartSelector').value, e.dataPoint.y, comment)
+    addToWatchlist(document.getElementById('chartSelector').value, y, comment)
 }
 
 // form handling
