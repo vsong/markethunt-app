@@ -167,8 +167,11 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             },
             legend: {
                 enabled: true,
+                align: 'right',
                 verticalAlign: 'top',
-                y: -36,
+                width: '35%',
+                y: -28,
+                padding: 0,
             },
             tooltip: {
                 animation: false,
