@@ -20,7 +20,7 @@
     <body>
         <div id="main-toolbar" class="toolbar highlight">
             {% if constant('APPENV') == 'dev' %}
-                <span style="background-color: red;">You are browsing the DEV site. <a href="https://markethunt.vsong.ca">Go to the production site</a></span> | 
+                <span style="background-color: red;">You are browsing the DEV site. <a href="https://markethunt.vsong.ca">Go to the PROD site</a></span> | 
             {% endif %}
             <a href=index.php>Main page</a>
             | <a href="/highestvolumes.php">Highest volume items</a>
@@ -29,7 +29,6 @@
             <a href="/top.php?period=month">month</a>
             <a href="/top.php?period=qtr">qtr</a>
             <a href="/top.php?period=year">year</a>
-            <a href="/top.php?period=custom&from=2021-12-06&to=2022-01-05">gwh-2021</a>
             | <a href="/watchlist.php">Watchlist</a>
         </div>
         {% block body %}

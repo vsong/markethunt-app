@@ -292,7 +292,8 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         chartDateRanges[itemId] = {'min': parseInt(event.min)};
                         setChartDateRangesObj(chartDateRanges);
                     },
-                }
+                },
+                tickPixelInterval: 120,
             },
             navigator: {
                 height: 45,
