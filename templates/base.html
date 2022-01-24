@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
     <head>
         {% block head %}
+        {# pretty much all viewports are >350px, so initial-scale of 0.8 guarantees viewport >430px #}
+        <meta name="viewport" content="width=device-width, initial-scale=0.8" />
         <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" 
                 integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" crossorigin="anonymous">
         <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/grids-responsive-min.css" />
@@ -19,7 +21,7 @@
     <body>
         <div id="main-toolbar" class="toolbar highlight">
             {% if constant('APPENV') == 'dev' %}
-                <span style="background-color: red;">You are browsing the DEV site. <a href="https://markethunt.vsong.ca">Go to the production site</a></span> | 
+                <span style="background-color: red;">You are browsing the DEV site. <a href="https://markethunt.vsong.ca">Go to the PROD site</a></span> | 
             {% endif %}
             <a href=index.php>Main page</a>
             | <a href="/highestvolumes.php">Highest volume items</a>
@@ -28,7 +30,6 @@
             <a href="/top.php?period=month">month</a>
             <a href="/top.php?period=qtr">qtr</a>
             <a href="/top.php?period=year">year</a>
-            <a href="/top.php?period=custom&from=2021-12-06&to=2022-01-05">gwh-2021</a>
             | <a href="/watchlist.php">Watchlist</a>
         </div>
         {% block body %}

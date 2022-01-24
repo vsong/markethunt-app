@@ -3,14 +3,16 @@ var primaryLineColor = "#4f52aa";
 var volumeColor = "#51cda0";
 var UtcTimezone = "T00:00:00+00:00"
 
-// colors
-var eventBandColor = "#f3f3f3";
-var eventBandFontColor = "#aaaaaa"; // recommend to have same or close color as yGridLineColor for visual clarity
+// style
+var eventBandColor = "#f2f2f2";
+var eventBandFontColor = "#888888"; // recommend to have same or close color as yGridLineColor for visual clarity
 var xGridLineColor = "#bbbbbb";
-var yGridLineColor = "#bbbbbb";
+var yGridLineColor = "#aaaaaa";
 var yGridLineColorLighter = "#dddddd";
-var axisLabelColor = "#555555";
+var axisLabelColor = "#444444";
 var crosshairColor = "#555555";
+
+var chartFont = "arial";
 
 function UtcIsoDateToMillis(dateStr) {
     return (new Date(dateStr + UtcTimezone)).getTime();
@@ -28,8 +30,10 @@ function eventBand(IsoStrFrom, IsoStrTo, labelText) {
             y: 5, // pixels from top of chart
             x: 4, // fix slight centering issue
             style: {
-                color: "#999999",
+                color: eventBandFontColor,
                 fontWeight: 'bold',
+                fontSize: '13px',
+                fontFamily: 'Trebuchet MS',
             },
         },
     }
@@ -68,7 +72,6 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     text: entry.comment,
                     style: {
                         color: 'red',
-                        backgroundColor: "green",
                     },
                     x: 0, // remove left padding
                 },
@@ -96,6 +99,11 @@ function renderChartWithItemId(itemId, chartHeaderText) {
         }
 
         Highcharts.setOptions({
+            chart: {
+                style: {
+                    fontFamily: chartFont,
+                },
+            },
             plotOptions: {
                 series: {
                     animation: false,
@@ -114,7 +122,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     style: {
                         color: axisLabelColor,
                         fontSize: '12px',
-                    }
+                }
                 }
             },
             yAxis: {
@@ -123,7 +131,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     style: {
                         color: axisLabelColor,
                         fontSize: '12px',
-                    }
+                }
                 }
             }
         });
@@ -164,11 +172,20 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     },
                 ],
                 inputEnabled: false,
+                labelStyle: {
+                    color: axisLabelColor,
+                }
             },
             legend: {
                 enabled: true,
+                align: 'right',
                 verticalAlign: 'top',
-                y: -36,
+                width: '40%',
+                y: -28,
+                padding: 0,
+                itemStyle: {
+                    fontSize: "13px",
+                },
             },
             tooltip: {
                 animation: false,
@@ -289,7 +306,8 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         chartDateRanges[itemId] = {'min': parseInt(event.min)};
                         setChartDateRangesObj(chartDateRanges);
                     },
-                }
+                },
+                tickPixelInterval: 120,
             },
             navigator: {
                 height: 45,
