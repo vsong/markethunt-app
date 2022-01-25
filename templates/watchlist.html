@@ -93,7 +93,12 @@ function unhideChart() {
 }
 
 function onClickDatapoint(e) {
-    var y = parseInt(this.hoverPoints[0].y);
+    if (typeof this.hoverPoints === 'undefined'){
+        var y = parseInt(this.y);
+    } else {
+        var y = parseInt(this.hoverPoints[0].y);
+    }
+    
     var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${y.toLocaleString()}\n\nComment:`, "");
 
     if (comment === null) {
