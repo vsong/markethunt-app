@@ -184,6 +184,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 y: -28,
                 padding: 0,
                 itemStyle: {
+                    color: '#000000',
                     fontSize: "13px",
                 },
             },
@@ -191,11 +192,12 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 animation: false,
                 shared: true,
                 split: false,
-                headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>',
+                headerFormat: '<span style="font-size: 13px">{point.key}</span><br/>',
                 xDateFormat: '%b %e, %Y',
                 backgroundColor: 'rgba(255, 255, 255, 1)',
                 hideDelay: 0, // makes tooltip feel more responsive when crossing gap between plots
                 style: {
+                    color: '#000000',
                     fontSize: '13px',
                 }
             },
