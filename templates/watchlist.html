@@ -22,7 +22,7 @@
     <div id="watchlist-container" class="pure-u-1 pure-u-xl-1-2">
         <form action="javascript:;" onsubmit="addFormToWatchlist()" class="pure-form" id="addForm" style="text-align: center;padding: 10px;">
             <select name="item_id" onchange="updateMarkInput()" id="itemSelector" style="max-width: 35%;">
-                {% for item in data %}
+                {% for item in item_metadata %}
                     <option value="{{ item.item_id }}">
                         {{- item.name }} {{ '(' ~ item.latest_price|number_format ~ 'g)' -}}
                     </option>
@@ -161,7 +161,7 @@ if (!savedWatchlistExists()) {
 }
 
 const appData = reactive({
-    itemData: {{ data | json_encode | raw }},
+    itemData: {{ item_metadata | json_encode | raw }},
     watchlistItems: watchlistRaw
 });
 
