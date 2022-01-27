@@ -49,7 +49,6 @@ if ($period === 'day') {
 }
 
 echo $twig->render('topmovers.html', [
-    'title' => 'Top movers',
     'date_range' => $date_range,
     'volume_limit' => $volume_limit,
     'from' => $date_range['from'],

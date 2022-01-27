@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block title %}{{ title }}{% endblock %}
+{% block meta_description %}My watchlisted items{% endblock %}
+{% block title %}Watchlist{% endblock %}
 
 {% block head %}
 {{ parent() }}
@@ -72,7 +72,6 @@ function handleChartSubmit(addToHistory = true) {
     renderChartWithItemId(itemId, itemName);
     if (addToHistory === true) {
         window.history.replaceState({}, itemName, "/watchlist.php?item_id=" + itemId);
-        document.title = 'Watchlist | ' + itemName; // change title after replaceState to preserve title of previous history entry 
     }
 }
 

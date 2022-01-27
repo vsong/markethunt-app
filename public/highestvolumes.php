@@ -25,12 +25,12 @@ try {
 }
 
 if ($date_range['from'] === $date_range['to']) {
-    $title = 'Highest volume items on ' . $date_range['from'];
+    $header_title = 'Highest volume items on ' . $date_range['from'];
 } else {
-    $title = 'Highest volume items from ' . $date_range['from'] . ' to ' . $date_range['to'];
+    $header_title = 'Highest volume items from ' . $date_range['from'] . ' to ' . $date_range['to'];
 }
 echo $twig->render('highestvolumes.html', [
-    'title' => $title,
+    'header_title' => $header_title,
     'items' => getCumulativeVolume($date_range['from'], $date_range['to']),
     'from' => $date_range['from'],
     'to' => $date_range['to']
