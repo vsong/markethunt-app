@@ -20,17 +20,24 @@
     </head>
     <body>
         <div id="main-toolbar" class="toolbar highlight">
-            {% if constant('APPENV') == 'dev' %}
-                <span style="background-color: red;">You are browsing DEV. <a href="https://markethunt.vsong.ca">Go to PROD</a></span> | 
-            {% endif %}
-            <a href=index.php>Main page</a>
-            | <a href="/highestvolumes.php">Highest volume items</a>
-            | Top movers: <a href="/top.php?period=day">day</a>
-            <a href="/top.php?period=week">week</a>
-            <a href="/top.php?period=month">month</a>
-            <a href="/top.php?period=qtr">qtr</a>
-            <a href="/top.php?period=year">year</a>
-            | <a href="/watchlist.php">Watchlist</a>
+                <div class="toolbar-left">
+                    {% if constant('APPENV') == 'dev' %}
+                        <span style="background-color: red;">You are browsing DEV. <a href="https://markethunt.vsong.ca">Go to PROD</a></span> | 
+                    {% endif %}
+                    <a href=index.php>Main page</a>
+                    | <a href="/highestvolumes.php">Highest volume items</a>
+                    | Top movers: <a href="/top.php?period=day">day</a>
+                    <a href="/top.php?period=week">week</a>
+                    <a href="/top.php?period=month">month</a>
+                    <a href="/top.php?period=qtr">qtr</a>
+                    <a href="/top.php?period=year">year</a>
+                    | <a href="/watchlist.php">Watchlist</a>
+                </div>
+                <div class="toolbar-right">
+                    <div style="height: 5px">
+                        <a href="https://github.com/vsong/markethunt"><img src="assets/GitHub-Mark-Light-32px.png"></a>
+                    </div>
+                </div>
         </div>
         {% block body %}
         {% endblock %}

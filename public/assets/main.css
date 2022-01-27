@@ -57,9 +57,28 @@ table.small-td-text td {
 
 /* toolbar stuff */
 .toolbar {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
     padding: 7px 0px;
     margin: 0px 0px 10px 0px;
+}
+
+.toolbar-left {
+    display: inline-block;
+    margin: 0px 0px 0px 0px;
+    text-align:left;
+}
+
+.toolbar-right {
+    display: inline-block;
+    margin: 0px 4px;
+    overflow: visible;
+}
+
+.toolbar-right img {
+    width: 20px;
+    height: auto;
 }
 
 /* theming */
