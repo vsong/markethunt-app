@@ -22,13 +22,14 @@
     <form id="add-watchlist-form" name="add-watchlist-form" class="pure-form pure-form-stacked">
         <fieldset>
             <label for="set-watch-price" class="pure-checkbox">
-                <input type="checkbox" id="set-watch-price" /> Set price benchmark
+                <input type="checkbox" id="set-watch-price" /> Set price benchmark:
             </label>
             <input type="number" id="watch-price" min=1 max=9999999999>
-            <label for="comment">Comment</label>
+            <label for="comment">Comment:</label>
             <input type="text" id="comment" />
         </fieldset>
     </form>
+    <p style="margin: 16px 0px 0px 0px;"><i>You can view your saved watches in the <a href="/watchlist.php">Watchlist</a> page.</i></p>
 </div>
 <script>
 $('#set-watch-price').change(function() {

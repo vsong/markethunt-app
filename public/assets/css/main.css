@@ -160,11 +160,11 @@ a, a:link, a:visited {
 }
 
 #add-watchlist-dialog input[type="number"] {
-    width: 150px;
+    width: 100%;
 }
 
 #add-watchlist-dialog input[type="text"] {
-    width: 250px;
+    width: 100%;
 }
 
 /* watchlist page specific */
