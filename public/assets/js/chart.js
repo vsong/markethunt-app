@@ -142,7 +142,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 animation: false, // disable range selector zooming animation
                 events: {
                     click: function() {
-                        onClickDatapoint(parseInt(this.hoverPoints[0].y));
+                        addToWatchlistModal(parseInt(this.hoverPoints[0].y));
                     },
                 },
             },
@@ -226,7 +226,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     point: {
                         events: {
                             click: function() {
-                                onClickDatapoint(parseInt(this.y));
+                                addToWatchlistModal(parseInt(this.y));
                             },
                         },
                     },

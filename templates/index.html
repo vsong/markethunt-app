@@ -11,19 +11,14 @@
 {% block body %}
 {% include('chartContainer.html') %}
 <script>
-    function onClickDatapoint(y) {
+    function processWatchlistFormData(price, comment) {
         var selector = document.getElementById('chartSelector');
         var itemId = selector.value;
         var itemName = selector.options[selector.selectedIndex].text;
-
-        var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${y.toLocaleString()}\n\nComment:`, "");
-        if (comment === null) {
-            return;
-        }
         var watchlist = getWatchlistObj();
         watchlist.push({
             'item_id': itemId,
-            'mark': y,
+            'mark': price,
             'comment': comment
         });
         setWatchlistObj(watchlist);

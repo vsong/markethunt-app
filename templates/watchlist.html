@@ -31,15 +31,15 @@
             </select>
             <input type="number" min="1" max="9999999999" placeholder="Mark price" style="max-width: 15%;" id="itemMark">
             <input type="text" placeholder="Comment (optional)" style="max-width: 25%;" id="itemComment">
-            <input type="submit" class="pure-button pure-button-primary" style="" value="Add to watchlist">
+            <input type="submit" class="pure-button pure-button-primary" value="Add to watchlist">
         </form>
         <table v-cloak id="vue-container" class="pure-table pure-table-striped small-td-text" style="width:100%; background-color: white;">
             <tr>
                 <th>Item</th>
                 <th>Comment</th>
-                <th class="right-align">Mark</th>
-                <th class="right-align">Current Price</th>
+                <th class="right-align">Benchmark</th>
                 <th class="right-align">Chg%</th>
+                <th class="right-align">Current Price</th>
                 <!-- <th>json</th> -->
                 <th></th>
             </tr>
@@ -51,13 +51,20 @@
                     </a>
                 </td>
                 <td><i>{{ item.comment }}</i></td>
-                <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
-                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                    {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
-                </td>
-                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                    {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
-                </td>
+                <template v-if="item.mark !== null">
+                    <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
+                    <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                        {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
+                    </td>
+                    <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                        {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
+                    </td>
+                </template>
+                <template v-else>
+                    <td class="right-align"></td>
+                    <td class="right-align"></td>
+                    <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}</td>
+                </template>
                 <!-- <td>{{ item }}</td> -->
                 <td style="text-align: right;">
                     <button @click="removeWatchItem(idx)" class="pure-button pure-button-primary" style="font-size:0.8em">
@@ -86,13 +93,8 @@ function handleChartSubmit(addToHistory = true) {
     }
 }
 
-function onClickDatapoint(y) {
-    var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${y.toLocaleString()}\n\nComment:`, "");
-
-    if (comment === null) {
-        return;
-    }
-    addToWatchlist(document.getElementById('chartSelector').value, y, comment)
+function processWatchlistFormData(price, comment) {
+    addToWatchlist(document.getElementById('chartSelector').value, price, comment)
 }
 
 // form handling
@@ -103,7 +105,7 @@ addForm['itemSelector'].value = '';
 function addToWatchlist(itemId, mark, comment) {
     appData.watchlistItems.push({
         'item_id': itemId,
-        'mark': parseInt(mark),
+        'mark': mark,
         'comment': comment
     });
     setWatchlistObj(appData.watchlistItems);

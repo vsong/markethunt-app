@@ -4,7 +4,7 @@ function getWatchlistObj() {
         var watchlist = [];
     } else {
         var watchlist = JSON.parse(localStorage.watchlistv1);
-        watchlist = watchlist.filter(item => item.item_id && item.mark);
+        // watchlist = watchlist.filter(item => item.item_id && item.mark);
     }
     return watchlist;
 }
