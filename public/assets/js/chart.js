@@ -141,8 +141,10 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             chart: {
                 animation: false, // disable range selector zooming animation
                 events: {
-                    click: onClickDatapoint
-                }
+                    click: function() {
+                        onClickDatapoint(parseInt(this.hoverPoints[0].y));
+                    },
+                },
             },
             // must keep scrollbar enabled for dynamic scrolling, so hide the scrollbar instead
             scrollbar: {
@@ -223,8 +225,10 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     },
                     point: {
                         events: {
-                            click: onClickDatapoint,
-                        }
+                            click: function() {
+                                onClickDatapoint(parseInt(this.y));
+                            },
+                        },
                     },
                     tooltip: {
                         pointFormatter: function() {

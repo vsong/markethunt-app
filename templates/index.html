@@ -11,24 +11,23 @@
 {% block body %}
 {% include('chartContainer.html') %}
 <script>
-    function onClickDatapoint() {
-        if (typeof this.hoverPoints === 'undefined'){
-            var y = parseInt(this.y);
-        } else {
-            var y = parseInt(this.hoverPoints[0].y);
-        }
+    function onClickDatapoint(y) {
+        var selector = document.getElementById('chartSelector');
+        var itemId = selector.value;
+        var itemName = selector.options[selector.selectedIndex].text;
+
         var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${y.toLocaleString()}\n\nComment:`, "");
         if (comment === null) {
             return;
         }
         var watchlist = getWatchlistObj();
         watchlist.push({
-            'item_id': document.getElementById('chartSelector').value,
+            'item_id': itemId,
             'mark': y,
             'comment': comment
         });
         setWatchlistObj(watchlist);
-        window.location.reload();
+        renderChartWithItemId(itemId, itemName);
     }
 
     renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
