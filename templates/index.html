@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% block meta_description %}Marketplace price history for {{ current_item_name }}{% endblock %}
 {% block title %}{{ current_item_name }}{% endblock %}
 
 {% block head %}
@@ -33,7 +33,7 @@
         var itemName = selector.options[selector.selectedIndex].text;
         if (addToHistory === true) {
             window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
-            document.title = itemName; // change title after replaceState to preserve title of previous history entry 
+            document.title = itemName + ' - Markethunt'; // change title after replaceState to preserve title of previous history entry 
         }
         renderChartWithItemId(itemId, itemName);
     }

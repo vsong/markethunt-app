@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-
-{% block title %}{{ title }}{% endblock %}
+{% block meta_description %}My watchlisted items{% endblock %}
+{% block title %}Watchlist{% endblock %}
 
 {% block head %}
 {{ parent() }}
@@ -21,8 +21,8 @@
                 <th>Item</th>
                 <th>Comment</th>
                 <th class="right-align">Benchmark</th>
-                <th class="right-align">Chg%</th>
                 <th class="right-align">Current Price</th>
+                <th class="right-align">Chg%</th>
                 <!-- <th>json</th> -->
                 <th></th>
             </tr>
@@ -37,16 +37,16 @@
                 <template v-if="item.mark !== null">
                     <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
                     <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                        {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
+                        {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
                     </td>
                     <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                        {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
+                        {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
                     </td>
                 </template>
                 <template v-else>
                     <td class="right-align"></td>
-                    <td class="right-align"></td>
                     <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}</td>
+                    <td class="right-align"></td>
                 </template>
                 <!-- <td>{{ item }}</td> -->
                 <td style="text-align: right;">
@@ -72,7 +72,6 @@ function handleChartSubmit(addToHistory = true) {
     renderChartWithItemId(itemId, itemName);
     if (addToHistory === true) {
         window.history.replaceState({}, itemName, "/watchlist.php?item_id=" + itemId);
-        document.title = 'Watchlist | ' + itemName; // change title after replaceState to preserve title of previous history entry 
     }
 }
 
