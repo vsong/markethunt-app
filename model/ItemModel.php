@@ -11,15 +11,6 @@ abstract class measurementPeriod
     const YEAR = "year";
 }
 
-function getAllItemMetadata(): array
-{
-    $results = Db::getConnection()
-        ->query("SELECT item_id, name FROM item_meta ORDER BY name ASC")
-        ->fetchAll();
-
-    return ($results === false) ? [] : $results;
-}
-
 function getItemName($item_id): string
 {
     $result = Db::getConnection()

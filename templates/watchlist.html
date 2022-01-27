@@ -5,40 +5,24 @@
 {% block head %}
 {{ parent() }}
 <script src="https://unpkg.com/vue@next"></script>
-<style>#chartContainer {display: none}</style> <!-- hide chart until first click -->
 {% endblock %}
 
 {% block body %}
-<div style="text-align: center">
-    <h1>{{ title }}</h1>
-</div>
 <div class="pure-g">
-    <div style="text-align: center;padding: 10px;" class="pure-u-1 pure-u-xl-1-2" >
-        
+    <div class="pure-u-1 pure-u-xl-1-2">
+        {% include('chartContainer.html') %}
     </div>
-</div>
-
-<div class="pure-g">
     <div id="watchlist-container" class="pure-u-1 pure-u-xl-1-2">
-        <form action="javascript:;" onsubmit="addFormToWatchlist()" class="pure-form" id="addForm" style="text-align: center;padding: 10px;">
-            <select name="item_id" onchange="updateMarkInput()" id="itemSelector" style="max-width: 35%;">
-                {% for item in data %}
-                    <option value="{{ item.item_id }}">
-                        {{- item.name }} {{ '(' ~ item.latest_price|number_format ~ 'g)' -}}
-                    </option>
-                {% endfor %}
-            </select>
-            <input type="number" min="1" max="9999999999" placeholder="Mark price" style="max-width: 15%;" id="itemMark">
-            <input type="text" placeholder="Comment (optional)" style="max-width: 25%;" id="itemComment">
-            <input type="submit" class="pure-button pure-button-primary" style="" value="Add to watchlist">
-        </form>
+        <div style="text-align: center">
+            <h1>Watchlist</h1>
+        </div>
         <table v-cloak id="vue-container" class="pure-table pure-table-striped small-td-text" style="width:100%; background-color: white;">
             <tr>
-                <th>Name</th>
+                <th>Item</th>
                 <th>Comment</th>
-                <th class="right-align">Mark</th>
-                <th class="right-align">Current Price</th>
+                <th class="right-align">Benchmark</th>
                 <th class="right-align">Chg%</th>
+                <th class="right-align">Current Price</th>
                 <!-- <th>json</th> -->
                 <th></th>
             </tr>
@@ -50,13 +34,20 @@
                     </a>
                 </td>
                 <td><i>{{ item.comment }}</i></td>
-                <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
-                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                    {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
-                </td>
-                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                    {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
-                </td>
+                <template v-if="item.mark !== null">
+                    <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
+                    <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                        {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
+                    </td>
+                    <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                        {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
+                    </td>
+                </template>
+                <template v-else>
+                    <td class="right-align"></td>
+                    <td class="right-align"></td>
+                    <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}</td>
+                </template>
                 <!-- <td>{{ item }}</td> -->
                 <td style="text-align: right;">
                     <button @click="removeWatchItem(idx)" class="pure-button pure-button-primary" style="font-size:0.8em">
@@ -67,55 +58,33 @@
         {% endverbatim %}
         </table>
     </div>
-    <div class="pure-u-1 pure-u-xl-1-2">
-        <div class="backgroundText" id="chartInstructions">
-            <p>Use search box below or click on an item in your watchlist to show the chart.<br>
-                To add to your watchlist, click on a datapoint on the chart or manually enter data using the form.</p>
-        </div>
-        {% include('chartContainer.html') %}
-    </div>
 </div>
 
 <script>
 /* main script block */
 // chart handling
-document.getElementById('chartSelector').value = '';
+renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
-function handleChartSubmit() {
-    unhideChart();
-    var itemId = document.getElementById('chartSelector').value;
-    renderChartWithItemId(itemId, appData.itemData[itemId].name);
-}
-
-function unhideChart() {
-    document.getElementById('chartContainer').style.display = "block"; // unhide chart
-    document.getElementById('chartInstructions').style.display = "none";
-}
-
-function onClickDatapoint(e) {
-    if (typeof this.hoverPoints === 'undefined'){
-        var y = parseInt(this.y);
-    } else {
-        var y = parseInt(this.hoverPoints[0].y);
+function handleChartSubmit(addToHistory = true) {
+    var selector = document.getElementById('chartSelector');
+    var itemId = selector.value;
+    var itemName = selector.options[selector.selectedIndex].text;
+    renderChartWithItemId(itemId, itemName);
+    if (addToHistory === true) {
+        window.history.replaceState({}, itemName, "/watchlist.php?item_id=" + itemId);
+        document.title = 'Watchlist | ' + itemName; // change title after replaceState to preserve title of previous history entry 
     }
-    
-    var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${y.toLocaleString()}\n\nComment:`, "");
-
-    if (comment === null) {
-        return;
-    }
-    addToWatchlist(document.getElementById('chartSelector').value, y, comment)
 }
 
-// form handling
-const addForm = document.getElementById('addForm');
-addForm['itemSelector'].value = '';
+function processWatchlistFormData(price, comment) {
+    addToWatchlist(document.getElementById('chartSelector').value, price, comment)
+}
 
 // Generic add to watchlist
 function addToWatchlist(itemId, mark, comment) {
     appData.watchlistItems.push({
         'item_id': itemId,
-        'mark': parseInt(mark),
+        'mark': mark,
         'comment': comment
     });
     setWatchlistObj(appData.watchlistItems);
@@ -132,25 +101,6 @@ window.addEventListener('storage', (e) => {
     }
 });
 
-// Add form data to watchlist
-function addFormToWatchlist() {
-    if (addForm['itemSelector'].value.trim() === '') {
-        return;
-    }
-
-    addToWatchlist(addForm['itemSelector'].value, 
-        addForm['itemMark'].value, 
-        addForm['itemComment'].value);
-
-    addForm['itemSelector'].value = '';
-    addForm['itemMark'].value = '';
-    addForm['itemComment'].value = '';
-}
-
-function updateMarkInput() {
-    addForm['itemMark'].value = appData.itemData[addForm['itemSelector'].value].latest_price;
-}
-
 /* vue script block */
 const { reactive } = Vue;
 
@@ -161,7 +111,7 @@ if (!savedWatchlistExists()) {
 }
 
 const appData = reactive({
-    itemData: {{ data | json_encode | raw }},
+    itemData: {{ item_metadata | json_encode | raw }},
     watchlistItems: watchlistRaw
 });
 
@@ -210,9 +160,9 @@ const app = Vue.createApp({
         removeWatchItem(idx) {
             appData.watchlistItems.splice(idx, 1);
             setWatchlistObj(appData.watchlistItems);
+            handleChartSubmit(false);
         },
         renderChart(itemId, headerText) {
-            unhideChart();
             document.getElementById('chartSelector').value = itemId;
             renderChartWithItemId(itemId, headerText);
         }

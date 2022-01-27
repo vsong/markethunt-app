@@ -14,12 +14,9 @@ if (filter_input(INPUT_GET, 'item_id', FILTER_VALIDATE_INT)) {
 }
 
 $current_item_name = getItemName($current_item_id);
-$stock_data = json_encode(getItemChartData($current_item_id));
-$stock_data = str_replace("},{", "},\n{", $stock_data); // make the html more readable
 
 echo $twig->render('index.html', [
     'current_item_id' => $current_item_id,
     'current_item_name' => $current_item_name,
-    'item_metadata' => getAllItemMetadata(),
-    'stock_data' => $stock_data
+    'item_metadata' => getAllItemNamesAndLatestPrice(),
 ]);

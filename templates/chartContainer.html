@@ -1,9 +1,9 @@
-<script type="text/javascript" src="/assets/highstock/highstock.js"></script>
+<script type="text/javascript" src="/assets/lib/highstock/highstock.js"></script>
 <div id="chartBundle" style="text-align:center; max-width:800px; margin:auto;">
     <h1 id="chartHeader">{% block chart_header %}{% endblock %}</h1>
     <div id="chartContainer" style="width:100%; height:550px; margin:auto;"></div>
     <form id="chartForm" action="javascript:;" onsubmit="handleChartSubmit()" class="pure-form" style="margin: 10px;">
-        <select id="chartSelector" name="item_id" onchange="handleChartSubmit()" style="max-width: 80%;">
+        <select id="chartSelector" name="item_id" onchange="handleChartSubmit()" style="max-width: 70%;">
             <option value="" disabled selected hidden>Select an item</option>
             {% for item in item_metadata %}
                 <option value="{{ item.item_id }}" {% if item.item_id == current_item_id %} selected="selected"{% endif %}>
@@ -12,6 +12,94 @@
             {% endfor %}
         </select>
         <!-- <input type="submit" class="pure-button pure-button-primary"> -->
+        <button id="add-to-watchlist" class="pure-button pure-button-primary" onclick="addToWatchlistModal(null)">
+            Add to watchlist
+        </button>
     </form>
 </div>
-<script src="/assets/chart.js"></script>
+<script src="/assets/js/chart.js"></script>
+<div id="add-watchlist-dialog" style="display:none">
+    <form id="add-watchlist-form" name="add-watchlist-form" class="pure-form pure-form-stacked">
+        <fieldset>
+            <label for="set-watch-price" class="pure-checkbox">
+                <input type="checkbox" id="set-watch-price" /> Set price benchmark
+            </label>
+            <input type="number" id="watch-price" min=1 max=9999999999>
+            <label for="comment">Comment</label>
+            <input type="text" id="comment" />
+            <!-- <input type="submit" id="submit-watchlist" value="Add to watchlist" style="display: none"> -->
+        </fieldset>
+    </form>
+</div>
+<script>
+$('#set-watch-price').change(function() {
+    $('#watch-price').prop('disabled', !this.checked);
+});
+
+function addToWatchlistModal(price) {
+    var selector = document.getElementById('chartSelector');
+    var itemId = selector.value;
+    var itemName = selector.options[selector.selectedIndex].text;
+
+    var dialog = $("#add-watchlist-dialog").dialog({
+        dialogClass: 'themed-titlebar',
+        title: `Add ${itemName} to watchlist`,
+        draggable: false,
+        autoOpen: false,
+        // height: 280,
+        // width: 350,
+        modal: true,
+        buttons: [
+            {
+                text: "Add to watchlist",
+                id: "add-to-watchlist-confirm",
+                click: function() {
+                    if (document.forms["add-watchlist-form"].reportValidity()) {
+                        if ($("#set-watch-price").is(':checked')) {
+                            var inputPrice = Number($('#watch-price').val());
+                            if (!Number.isInteger(inputPrice)) {
+                                console.error("Parsed input price is not an integer: " + inputPrice);
+                                inputPrice = null;
+                            }
+                        } else {
+                            var inputPrice = null;
+                        }
+                        processWatchlistFormData(inputPrice, $('#comment').val());
+                        dialog.dialog("close");
+                    }
+                },
+            },
+            {
+                text: "Cancel",
+                id: "add-to-watchlist-cancel",
+                click: function() {
+                    dialog.dialog("close");
+                },
+            },
+        ],
+        open: function(event, ui) {
+            // click outside to close
+            $('.ui-widget-overlay').bind('click', function() { 
+                dialog.dialog('close'); 
+            });
+
+            // override button classes
+            $('#add-to-watchlist-confirm').removeClass().addClass("pure-button pure-button-primary");
+            $('#add-to-watchlist-cancel').removeClass().addClass("pure-button");
+
+            // set up form and clear data from last use
+            if (price === null) {
+                $('#set-watch-price').prop("checked", false);
+                $('#watch-price').prop('disabled', true);
+                $('#watch-price').val('');
+            } else {
+                $('#set-watch-price').prop("checked", true);
+                $('#watch-price').prop('disabled', false);
+                $('#watch-price').val(price);
+            }
+        }
+    });
+
+    dialog.dialog("open");
+}
+</script>

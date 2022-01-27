@@ -11,34 +11,30 @@
 {% block body %}
 {% include('chartContainer.html') %}
 <script>
-    function onClickDatapoint() {
-        if (typeof this.hoverPoints === 'undefined'){
-            var y = parseInt(this.y);
-        } else {
-            var y = parseInt(this.hoverPoints[0].y);
-        }
-        var comment = prompt(`Add datapoint to watchlist?\n\nPrice: ${y.toLocaleString()}\n\nComment:`, "");
-        if (comment === null) {
-            return;
-        }
+    function processWatchlistFormData(price, comment) {
+        var selector = document.getElementById('chartSelector');
+        var itemId = selector.value;
+        var itemName = selector.options[selector.selectedIndex].text;
         var watchlist = getWatchlistObj();
         watchlist.push({
-            'item_id': document.getElementById('chartSelector').value,
-            'mark': y,
+            'item_id': itemId,
+            'mark': price,
             'comment': comment
         });
         setWatchlistObj(watchlist);
-        window.location.reload();
+        renderChartWithItemId(itemId, itemName);
     }
 
     renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
-    function handleChartSubmit() {
+    function handleChartSubmit(addToHistory = true) {
         var selector = document.getElementById('chartSelector');
         var itemId = selector.value;
         var itemName = selector.options[selector.selectedIndex].text;
-        window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
-        document.title = itemName; // change title after replaceState to preserve title of previous history entry 
+        if (addToHistory === true) {
+            window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
+            document.title = itemName; // change title after replaceState to preserve title of previous history entry 
+        }
         renderChartWithItemId(itemId, itemName);
     }
 </script>
