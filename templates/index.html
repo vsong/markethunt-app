@@ -33,12 +33,14 @@
 
     renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
-    function handleChartSubmit() {
+    function handleChartSubmit(addToHistory = true) {
         var selector = document.getElementById('chartSelector');
         var itemId = selector.value;
         var itemName = selector.options[selector.selectedIndex].text;
-        window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
-        document.title = itemName; // change title after replaceState to preserve title of previous history entry 
+        if (addToHistory === true) {
+            window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
+            document.title = itemName; // change title after replaceState to preserve title of previous history entry 
+        }
         renderChartWithItemId(itemId, itemName);
     }
 </script>

@@ -5,16 +5,14 @@
 {% block head %}
 {{ parent() }}
 <script src="https://unpkg.com/vue@next"></script>
-<style>#chartContainer {display: none}</style> <!-- hide chart until first click -->
 {% endblock %}
 
 {% block body %}
 <div style="text-align: center">
-    <h1>{{ title }}</h1>
+    <h1>Watchlist</h1>
 </div>
 <div class="pure-g">
     <div style="text-align: center;padding: 10px;" class="pure-u-1 pure-u-xl-1-2" >
-        
     </div>
 </div>
 
@@ -79,12 +77,17 @@
 <script>
 /* main script block */
 // chart handling
-document.getElementById('chartSelector').value = '';
+renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
-function handleChartSubmit() {
-    unhideChart();
-    var itemId = document.getElementById('chartSelector').value;
-    renderChartWithItemId(itemId, appData.itemData[itemId].name);
+function handleChartSubmit(addToHistory = true) {
+    var selector = document.getElementById('chartSelector');
+    var itemId = selector.value;
+    var itemName = selector.options[selector.selectedIndex].text;
+    renderChartWithItemId(itemId, itemName);
+    if (addToHistory === true) {
+        window.history.replaceState({}, itemName, "/watchlist.php?item_id=" + itemId);
+        document.title = 'Watchlist | ' + itemName; // change title after replaceState to preserve title of previous history entry 
+    }
 }
 
 function unhideChart() {
@@ -210,6 +213,7 @@ const app = Vue.createApp({
         removeWatchItem(idx) {
             appData.watchlistItems.splice(idx, 1);
             setWatchlistObj(appData.watchlistItems);
+            handleChartSubmit(false);
         },
         renderChart(itemId, headerText) {
             unhideChart();
