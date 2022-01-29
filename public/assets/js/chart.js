@@ -3,8 +3,8 @@ var UtcTimezone = "T00:00:00+00:00"
 
 // style
 var primaryLineColor = "#4f52aa";
-var sbiLineColor = "#1fc9e0"
-var volumeColor = "#00cc00";
+var sbiLineColor = "#00c000"
+var volumeColor = "#51cda0";
 
 var eventBandColor = "#f2f2f2";
 var eventBandFontColor = "#888888"; // recommend to have same or close color as yGridLineColor for visual clarity
@@ -246,6 +246,32 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         },
                     },
                 }, {
+                    name: 'Volume',
+                    type: 'column',
+                    data: daily_trade_volume,
+                    pointPadding: 0, // disable point and group padding to simulate column area chart
+                    groupPadding: 0,
+                    yAxis: 2,
+                    color: volumeColor,
+                    tooltip: {
+                        pointFormatter: function() {
+                            if (this.y !== 0){
+                                var suffixes = ["", "K", "M", "B"];
+                                var order = Math.max(Math.floor(Math.log(this.y) / Math.log(1000)), 0);
+                                if (order > suffixes.length - 1) {
+                                    order = suffixes.length - 1;
+                                }
+                                var significand = this.y / Math.pow(1000, order);
+                                var volumeText = significand.toFixed(1).replace(/\.0+$/,'') + suffixes[order];
+                            } else {
+                                var volumeText = 'n/a';
+                            }
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + ` ${this.series.name}:`
+                                + ` <b>${volumeText}</b><br/>`;
+                        },
+                    },
+                }, {
                     name: 'SBI',
                     id: 'sbi',
                     data: sbi,
@@ -278,34 +304,8 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                                 var sbiText = this.y.toFixed(3).toLocaleString();
                             }
                             return `<span style="color:${this.color}">\u25CF</span>`
-                                + `SB Index:`
+                                + ` SB Index:`
                                 + ` <b>${sbiText} SB</b><br/>`;
-                        },
-                    },
-                }, {
-                    name: 'Volume',
-                    type: 'column',
-                    data: daily_trade_volume,
-                    pointPadding: 0, // disable point and group padding to simulate column area chart
-                    groupPadding: 0,
-                    yAxis: 2,
-                    color: volumeColor,
-                    tooltip: {
-                        pointFormatter: function() {
-                            if (this.y !== 0){
-                                var suffixes = ["", "K", "M", "B"];
-                                var order = Math.max(Math.floor(Math.log(this.y) / Math.log(1000)), 0);
-                                if (order > suffixes.length - 1) {
-                                    order = suffixes.length - 1;
-                                }
-                                var significand = this.y / Math.pow(1000, order);
-                                var volumeText = significand.toFixed(1).replace(/\.0+$/,'') + suffixes[order];
-                            } else {
-                                var volumeText = 'n/a';
-                            }
-                            return `<span style="color:${this.color}">\u25CF</span>`
-                                + ` ${this.series.name}:`
-                                + ` <b>${volumeText}</b><br/>`;
                         },
                     },
                 },
