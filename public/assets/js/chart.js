@@ -1,16 +1,18 @@
 // chart vars
-var primaryLineColor = "#4f52aa";
-var volumeColor = "#51cda0";
 var UtcTimezone = "T00:00:00+00:00"
 
 // style
+var primaryLineColor = "#4f52aa";
+var sbiLineColor = "#1fc9e0"
+var volumeColor = "#00cc00";
+
 var eventBandColor = "#f2f2f2";
 var eventBandFontColor = "#888888"; // recommend to have same or close color as yGridLineColor for visual clarity
 var xGridLineColor = "#bbbbbb";
 var yGridLineColor = "#aaaaaa";
 var yGridLineColorLighter = "#dddddd";
 var axisLabelColor = "#444444";
-var crosshairColor = "#555555";
+var crosshairColor = "#222222";
 
 var chartFont = "arial";
 
@@ -87,6 +89,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
     $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function (response) {
         var daily_prices = [];
         var daily_trade_volume = [];
+        var sbi = [];
         for (var i = 0; i < response.data.length; i++) {
             daily_prices.push([
                 UtcIsoDateToMillis(response.data[i].date),
@@ -95,6 +98,10 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             daily_trade_volume.push([
                 UtcIsoDateToMillis(response.data[i].date),
                 Number(response.data[i].volume)
+            ]);
+            sbi.push([
+                UtcIsoDateToMillis(response.data[i].date),
+                Number(response.data[i].sb_index)
             ]);
         }
 
@@ -205,7 +212,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             },
             series: [
                 {
-                    name: 'Daily average price',
+                    name: 'Daily price',
                     id: 'dailyPrice',
                     data: daily_prices,
                     lineWidth: 1.5,
@@ -215,6 +222,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                             halo: false, // disable translucent halo on marker hover
                         }
                     },
+                    yAxis: 0,
                     color: primaryLineColor,
                     marker: {
                         states: {
@@ -234,7 +242,44 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         pointFormatter: function() {
                             return `<span style="color:${this.color}">\u25CF</span>`
                                 + ` ${this.series.name}:`
-                                + ` <b>${this.y.toLocaleString()}</b><br/>`;
+                                + ` <b>${this.y.toLocaleString()}g</b><br/>`;
+                        },
+                    },
+                }, {
+                    name: 'SBI',
+                    id: 'sbi',
+                    data: sbi,
+                    visible: false,
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    yAxis: 1,
+                    color: sbiLineColor,
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    },
+                    tooltip: {
+                        pointFormatter: function() {
+                            if (this.y >= 1000) {
+                                var sbiText = Math.round(this.y).toLocaleString();
+                            } else if (this.y >= 100) {
+                                var sbiText = this.y.toFixed(1).toLocaleString();
+                            } else if (this.y >= 10) {
+                                var sbiText = this.y.toFixed(2).toLocaleString();
+                            } else {
+                                var sbiText = this.y.toFixed(3).toLocaleString();
+                            }
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + `SB Index:`
+                                + ` <b>${sbiText} SB</b><br/>`;
                         },
                     },
                 }, {
@@ -243,7 +288,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     data: daily_trade_volume,
                     pointPadding: 0, // disable point and group padding to simulate column area chart
                     groupPadding: 0,
-                    yAxis: 1,
+                    yAxis: 2,
                     color: volumeColor,
                     tooltip: {
                         pointFormatter: function() {
@@ -271,7 +316,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 plotLines: filteredEntries,
                 labels: {
                     formatter: function() {
-                        return Number(this.value).toLocaleString() + 'g';
+                        return this.value.toLocaleString() + 'g';
                     }
                 },
                 showLastLabel: true, // show label at top of chart
@@ -280,15 +325,23 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     color: crosshairColor,
                 },
                 opposite: false,
-                resize: {
-                    enabled: true,
+                alignTicks: false,
+            }, {
+                height: '80%',
+                gridLineWidth: 0,
+                labels: {
+                    formatter: function() {
+                        return this.value.toLocaleString() + ' SB';
+                    }
                 },
+                showLastLabel: true, // show label at top of chart
+                opposite: true,
+                alignTicks: false,
             }, {
                 top: '82%',
                 height: '18%',
                 offset: 0,
                 opposite: false,
-                // gridLineColor: yGridLineColorLighter,
                 tickPixelInterval: 35,
             }],
             xAxis: {
