@@ -48,18 +48,27 @@ function getItemChartData($item_id): array
     $results = [];
     $statement = Db::getConnection()
         ->query("SELECT
-        date,
+        dp.date,
         raw_volume_day,
-        price
-      FROM
-        `daily_volume` as dv RIGHT JOIN daily_price as dp USING (date, item_id)
-      WHERE
-        item_id = $item_id
-      ORDER BY
-        date ASC");
+        dp.price,
+        sbp.price AS sb_price,
+        cast(dp.price / sbp.price as double) AS sbi
+    FROM
+        `daily_volume` AS dv
+    RIGHT JOIN daily_price AS dp USING(DATE, item_id)
+    LEFT JOIN daily_price sbp ON
+        dp.date = sbp.date AND sbp.item_id = 114
+    WHERE
+        dp.item_id = $item_id
+    ORDER BY
+        DATE ASC");
 
     foreach ($statement as $row) {
-        array_push($results, array("date" => $row['date'], "volume" => $row['raw_volume_day'], "price" => $row['price']));
+        array_push($results, array(
+            "date" => $row['date'], 
+            "volume" => $row['raw_volume_day'], 
+            "price" => $row['price'],
+            "sb_index" => $row['sbi']));
     }
 
     return $results;
