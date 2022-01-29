@@ -325,7 +325,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     color: crosshairColor,
                 },
                 opposite: false,
-                alignTicks: false,
+                alignTicks: false, // disabled, otherwise autoranger will create too large a Y-window
             }, {
                 height: '80%',
                 gridLineWidth: 0,
