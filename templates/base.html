@@ -22,17 +22,17 @@
     <body>
         <div id="main-toolbar" class="toolbar highlight">
                 <div class="toolbar-left">
-                    {% if constant('APPENV') == 'dev' %}
-                        <span style="background-color: red;">You are browsing DEV. <a href="https://markethunt.vsong.ca">Go to PROD</a></span> | 
-                    {% endif %}
-                    <a href=index.php>Main page</a>
+                    <b><a href=index.php>Main page</a></b>
+                    | <b><a href="/watchlist.php">Watchlist</a></b>
                     | <a href="/highestvolumes.php">Highest volume items</a>
                     | Top movers: <a href="/top.php?period=day">day</a>
                     <a href="/top.php?period=week">week</a>
                     <a href="/top.php?period=month">month</a>
                     <a href="/top.php?period=qtr">qtr</a>
                     <a href="/top.php?period=year">year</a>
-                    | <a href="/watchlist.php">Watchlist</a>
+                    {% if constant('APPENV') == 'dev' %}
+                        | <span style="background-color: red;">You are browsing DEV. <a href="https://markethunt.vsong.ca">Go to PROD</a></span>
+                    {% endif %}
                 </div>
                 <div class="toolbar-right">
                     <div style="height: 5px">
