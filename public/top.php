@@ -53,9 +53,7 @@ echo $twig->render('topmovers.html', [
     'volume_limit' => $volume_limit,
     'from' => $date_range['from'],
     'to' => $date_range['to'],
-    'datasets' => [
-        getTopMovers($date_range['from'], $date_range['to'], $volume_limit, true, 999),
-        getTopMovers($date_range['from'], $date_range['to'], $volume_limit, false, 999)
-    ],
+    'winner_dataset' => getTopMovers($date_range['from'], $date_range['to'], $volume_limit, true, 999),
+    'loser_dataset' => getTopMovers($date_range['from'], $date_range['to'], $volume_limit, false, 999),
 ]);
 ?>

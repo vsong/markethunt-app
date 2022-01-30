@@ -3,6 +3,7 @@
 {% block title %}Top movers{% endblock %}
 
 {% block body %}
+<script type="text/javascript" src="/assets/lib/jquery.tablesorter.min.js"></script>
 <script>
     $(function() {
         var dateFormat = "yy-mm-dd";
@@ -50,29 +51,48 @@
     Due to missing volume data before 2021-12-01, the numbers you see are yesterday's volumes. </i></p>
 </div>
 <div class="pure-g" style="margin:auto; max-width:1400px">
-    {% for dataset in datasets %}
+    {% for dataset in [winner_dataset, loser_dataset] %}
         <div class="pure-u-1 pure-u-lg-1-2">
             <div style="padding:10px">
-                <table style="margin:auto;" class="pure-table pure-table-striped">
-                    <th style="max-width:70px" class="right-align">% Chg</th>
-                    <th>Item</th>
-                    <th style="max-width:110px" class="right-align">Current price</th>
-                    <th style="max-width:110px" class="right-align">Gold volume*</th>
-                    {% for row in dataset %}
-                        <tr>
-                            {% if row.change_pct >= 0 %}
-                                <td class="right-align gains-text">+{{ row.change_pct|number_format }}%</td>
-                            {% else %}
-                                <td class="right-align loss-text">{{ row.change_pct|number_format }}%</td>
-                            {% endif %}
-                            <td><a href="/index.php?item_id={{ row.item_id }}">{{ row.name }}</a></td>
-                            <td class="right-align">{{ row.latest_price|number_format }}</td>
-                            <td class="right-align">{{ row.gold_volume|number_format }}</td>
-                        </tr>
-                    {% endfor %}
+                <table style="margin:auto;" class="pure-table pure-table-striped table-sortable" id="table-id-{{ loop.index0 }}">
+                    <thead>
+                        <th style="width:75px" class="right-align">% Chg</th>
+                        <th style="max-width:500px">Item</th>
+                        <th style="width:125px" class="right-align">Current price</th>
+                        <th style="width:125px" class="right-align">Gold volume*</th>
+                    </thead>
+                    <tbody>
+                        {% for row in dataset %}
+                            <tr>
+                                {% if row.change_pct >= 0 %}
+                                    <td class="right-align gains-text">+{{ row.change_pct|number_format }}%</td>
+                                {% else %}
+                                    <td class="right-align loss-text">{{ row.change_pct|number_format }}%</td>
+                                {% endif %}
+                                <td><a href="/index.php?item_id={{ row.item_id }}">{{ row.name }}</a></td>
+                                <td class="right-align">{{ row.latest_price|number_format }}</td>
+                                <td class="right-align">{{ row.gold_volume|number_format }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
+        {# sort winner table Desc (0, 1) and sort loser table Asc (0, 0) #}
+        <script>
+            $(function () {
+                $("#table-id-{{ loop.index0 }}").tablesorter({
+                    headerTemplate: '{content}{icon}',
+                    cssIcon: 'ui-icon light-ui',
+                    cssIconNone: 'ui-icon-caret-2-n-s',
+                    cssIconAsc: 'ui-icon-caret-1-n',
+                    cssIconDesc: 'ui-icon-caret-1-s',
+                    cssIconDisabled: 'ui-icon-blank',
+                    //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
+                    sortList: [[0, 1 - {{ loop.index0 }}]]
+                });
+            });
+        </script>
     {% endfor %}
 </div>
 {% endblock %}
