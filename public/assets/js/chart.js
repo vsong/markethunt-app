@@ -129,7 +129,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     style: {
                         color: axisLabelColor,
                         fontSize: '12px',
-                }
+                    }
                 }
             },
             yAxis: {
@@ -138,7 +138,8 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     style: {
                         color: axisLabelColor,
                         fontSize: '12px',
-                }
+                    },
+                    y: 3,
                 }
             }
         });
@@ -325,7 +326,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     color: crosshairColor,
                 },
                 opposite: false,
-                alignTicks: false,
+                alignTicks: false, // disabled, otherwise autoranger will create too large a Y-window
             }, {
                 height: '80%',
                 gridLineWidth: 0,

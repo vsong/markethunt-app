@@ -2,7 +2,7 @@
 <div id="chartBundle" style="text-align:center; max-width:800px; margin:auto;">
     <h1 id="chartHeader">{% block chart_header %}{% endblock %}</h1>
     <div id="chartContainer" style="width:100%; height:550px; margin:auto;"></div>
-    <form id="chartForm" action="javascript:;" onsubmit="handleChartSubmit()" class="pure-form" style="margin: 10px;">
+    <form id="chartForm" action="javascript:;" onsubmit="" class="pure-form" style="margin: 10px;">
         <select id="chartSelector" name="item_id" onchange="handleChartSubmit()" style="max-width: 70%;">
             <option value="" disabled selected hidden>Select an item</option>
             {% for item in item_metadata %}
@@ -11,7 +11,6 @@
                 </option>
             {% endfor %}
         </select>
-        <!-- <input type="submit" class="pure-button pure-button-primary"> -->
         <button id="add-to-watchlist" class="pure-button pure-button-primary" onclick="addToWatchlistModal(null)">
             Add to watchlist
         </button>

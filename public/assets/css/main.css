@@ -30,13 +30,13 @@ table.pure-table {
 .pure-table th {
     background-color: var(--highlight-color);
     color: white;
-    padding: 10px 7px !important;
-    border: 0px solid red !important;
+    padding: 10px 7px;
+    border: 0px solid red;
 }
 
 .pure-table td {
-    padding: 9px 7px !important;
-    border: 0px solid red !important;
+    padding: 9px 7px;
+    border: 0px solid red;
 }
 
 .gains-text {
@@ -131,6 +131,14 @@ a, a:link, a:visited {
     background: var(--highlight-color) !important;
 }
 
+.table-sortable .ui-icon {
+    background-image: url("/assets/lib/jquery-ui/images/ui-icons_ffffff_256x240.png");
+}
+
+.table-sortable th.tablesorter-header {
+    padding-right: 3px; /* decrease padding so arrows line up with content on right-aligned columns */
+}
+
 /* dialog overrides */
 .themed-titlebar.ui-dialog {
     padding: 0px;
@@ -153,10 +161,6 @@ a, a:link, a:visited {
 
 .themed-titlebar .ui-button {
     display: none;
-}
-
-.themed-titlebar .ui-dialog-buttonpane {
-    /* border-width: 0; */
 }
 
 #add-watchlist-dialog input[type="number"] {

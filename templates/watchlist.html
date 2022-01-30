@@ -164,6 +164,7 @@ const app = Vue.createApp({
         renderChart(itemId, headerText) {
             document.getElementById('chartSelector').value = itemId;
             renderChartWithItemId(itemId, headerText);
+            window.history.replaceState({}, headerText, "/watchlist.php?item_id=" + itemId);
         }
     }
 });
