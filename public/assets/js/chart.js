@@ -138,7 +138,8 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     style: {
                         color: axisLabelColor,
                         fontSize: '12px',
-                }
+                    },
+                    y: 3,
                 }
             }
         });
