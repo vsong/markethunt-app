@@ -60,11 +60,11 @@ table.small-td-text td {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
 }
 
-.table-sortable th.tablesorter-header {
+.table-sortable th.tablesorter-header, .table-sortable .sortable-header {
     padding-right: 3px; /* decrease padding so arrows line up with content on right-aligned columns */
 }
 
-.tablesorter-header-inner {
+.table-sortable .tablesorter-header-inner, .table-sortable .sortable-header {
     cursor: pointer;
 }
 
