@@ -55,6 +55,19 @@ table.small-td-text td {
     font-size: 0.9em;
 }
 
+/* sortable table stuff */
+.table-sortable .ui-icon {
+    background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
+}
+
+.table-sortable th.tablesorter-header, .table-sortable .sortable-header {
+    padding-right: 3px; /* decrease padding so arrows line up with content on right-aligned columns */
+}
+
+.table-sortable .tablesorter-header-inner, .table-sortable .sortable-header {
+    cursor: pointer;
+}
+
 /* toolbar stuff */
 .toolbar {
     display: flex;
@@ -131,12 +144,8 @@ a, a:link, a:visited {
     background: var(--highlight-color) !important;
 }
 
-.table-sortable .ui-icon {
-    background-image: url("/assets/lib/jquery-ui/images/ui-icons_ffffff_256x240.png");
-}
-
-.table-sortable th.tablesorter-header {
-    padding-right: 3px; /* decrease padding so arrows line up with content on right-aligned columns */
+.ui-widget-overlay {
+    opacity: 0.4;
 }
 
 /* dialog overrides */

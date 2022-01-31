@@ -5,15 +5,15 @@
         {# pretty much all viewports are >350px, so initial-scale of 0.8 guarantees viewport >430px #}
         <meta name="viewport" content="width=device-width, initial-scale=0.8" />
         <meta name="description" content="{% block meta_description %}{% endblock %}">
-        <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css" 
-                integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/grids-responsive-min.css" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="/assets/lib/jquery-ui/jquery-ui.css">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.6/pure-min.css" / >
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.6/grids-responsive.min.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
         <link rel="stylesheet" href="/assets/css/main.css" />
 
-        <script type="text/javascript" src="/assets/lib/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="/assets/lib/jquery-ui/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/assets/js/userData.js"></script>
         
         <title>{% block title %}{% endblock %} - Markethunt</title>
@@ -31,7 +31,7 @@
                     <a href="/top.php?period=qtr">qtr</a>
                     <a href="/top.php?period=year">year</a>
                     {% if constant('APPENV') == 'dev' %}
-                        | <span style="background-color: red;">You are browsing DEV. <a href="https://markethunt.vsong.ca">Go to PROD</a></span>
+                        | <span style="background-color: rgb(218, 0, 0);">You are browsing DEV. <a href="https://markethunt.vsong.ca">Go to PROD</a></span>
                     {% endif %}
                 </div>
                 <div class="toolbar-right">
