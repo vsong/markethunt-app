@@ -4,7 +4,11 @@
 
 {% block head %}
 {{ parent() }}
-<script src="https://unpkg.com/vue@next"></script>
+{% if constant('APPENV') == 'prod' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.prod.min.js"></script>
+{% else %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.js"></script>
+{% endif %}
 {% endblock %}
 
 {% block body %}
