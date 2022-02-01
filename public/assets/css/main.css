@@ -50,6 +50,26 @@ table.pure-table {
     border: 0px solid red;
 }
 
+.pure-table td.button-container {
+    padding: 5px 7px;
+}
+
+.pure-table td.button-container .material-icons {
+    font-size: 24px;
+    color: var(--highlight-color);
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+.pure-table td.button-container .material-icons:not(:first-child) {
+    margin-left: 5px;
+}
+
+.pure-table td.button-container .material-icons:hover {
+    background: var(--highlight-color);
+    color: white;
+}
+
 .gains-text {
     color: green;
 }
@@ -73,10 +93,8 @@ table.small-td-text td {
 
 .table-sortable th.tablesorter-header, .table-sortable .sortable-header {
     padding-right: 3px; /* decrease padding so arrows line up with content on right-aligned columns */
-}
-
-.table-sortable .tablesorter-header-inner, .table-sortable .sortable-header {
     cursor: pointer;
+    user-select: none;
 }
 
 /* toolbar stuff */
@@ -127,10 +145,6 @@ a, a:link, a:visited {
 
 .highlight a:visited {
     color: var(--a-in-highlight);
-}
-
-.material-icons {
-    font-size: 24px;
 }
 
 .pure-button-primary {

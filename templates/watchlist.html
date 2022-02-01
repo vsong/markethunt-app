@@ -40,7 +40,7 @@
                         Chg%<i v-bind:class="getSortIconClass('chg')"></i>
                     </th>
                     <!-- <th>json</th> -->
-                    <th></th>
+                    <th style="width: 56px;"></th>
                 </tr>
             </thead>
             <tbody>
@@ -67,10 +67,9 @@
                             <td class="right-align"></td>
                         </template>
                         <!-- <td>{{ item }}</td> -->
-                        <td style="text-align: right;">
-                            <button @click="removeWatchItem(idx)" class="pure-button pure-button-primary" style="font-size:0.8em">
-                                Delete
-                            </button>
+                        <td class="right-align button-container">
+                            <span @click="editWatchItem(idx)" class="material-icons">edit</span>
+                            <span @click="removeWatchItem(idx)" class="material-icons">delete</span>
                         </td>
                     </tr>
                 {% endverbatim %}
@@ -96,6 +95,12 @@ function handleChartSubmit(addToHistory = true) {
 
 function processWatchlistFormData(price, comment) {
     addToWatchlist(document.getElementById('chartSelector').value, price, comment)
+}
+
+function processWatchlistEdit(itemId, price, comment, idx) {
+    appData.watchlistItems.splice(idx, 1);
+    setWatchlistObj(appData.watchlistItems);
+    addToWatchlist(itemId, price, comment);
 }
 
 // Generic add to watchlist
@@ -225,6 +230,15 @@ const app = Vue.createApp({
         removeWatchItem(idx) {
             appData.watchlistItems.splice(idx, 1);
             setWatchlistObj(appData.watchlistItems);
+        },
+        editWatchItem(idx) {
+            addToWatchlistModal(
+                appData.watchlistItems[idx].mark, 
+                true, 
+                appData.watchlistItems[idx].item_id, 
+                appData.watchlistItems[idx].comment, 
+                idx
+            );
         },
         renderChart(itemId, headerText) {
             document.getElementById('chartSelector').value = itemId;
