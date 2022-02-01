@@ -44,14 +44,13 @@ $('#set-watch-price').change(function() {
     $('#watch-price').prop('disabled', !this.checked);
 });
 
-function addToWatchlistModal(price) {
+function addToWatchlistModal(price, editMode = false, editItemId = null, editComment = null, editIdx = null) {
     var selector = document.getElementById('chartSelector');
-    var itemId = selector.value;
-    var itemName = selector.options[selector.selectedIndex].text;
+    var itemId = editMode ? editItemId : selector.value;
 
     var dialog = $("#add-watchlist-dialog").dialog({
         dialogClass: 'themed-titlebar',
-        title: `Add ${itemName} to watchlist`,
+        title: editMode ? 'Edit watchlist entry' : `Add ${selector.options[selector.selectedIndex].text} to watchlist`,
         draggable: false,
         autoOpen: false,
         // height: 280,
@@ -59,20 +58,24 @@ function addToWatchlistModal(price) {
         modal: true,
         buttons: [
             {
-                text: "Add to watchlist",
+                text: editMode? "Save changes" : "Add to watchlist",
                 id: "add-to-watchlist-confirm",
                 click: function() {
                     if (document.forms["add-watchlist-form"].reportValidity()) {
                         if ($("#set-watch-price").is(':checked')) {
                             var inputPrice = Number($('#watch-price').val());
-                            if (!Number.isInteger(inputPrice)) {
-                                console.error("Parsed input price is not an integer: " + inputPrice);
+                            if (!Number.isInteger(inputPrice) || inputPrice < 1) {
+                                console.log("Parsed input price is not a positive integer: " + inputPrice);
                                 inputPrice = null;
                             }
                         } else {
                             var inputPrice = null;
                         }
-                        processWatchlistFormData(inputPrice, $('#comment').val());
+                        if (editMode) {
+                            processWatchlistEdit(editItemId, inputPrice, $('#comment').val(), editIdx);
+                        } else {
+                            processWatchlistFormData(inputPrice, $('#comment').val());
+                        }
                         dialog.dialog("close");
                     }
                 },
@@ -96,7 +99,7 @@ function addToWatchlistModal(price) {
             $('#add-to-watchlist-cancel').removeClass().addClass("pure-button");
 
             // set up form and clear data from last use
-            if (price === null) {
+            if (price == null) {
                 $('#set-watch-price').prop("checked", false);
                 $('#watch-price').prop('disabled', true);
                 $('#watch-price').val('');
@@ -105,6 +108,7 @@ function addToWatchlistModal(price) {
                 $('#watch-price').prop('disabled', false);
                 $('#watch-price').val(price);
             }
+            $('#comment').val(editMode ? editComment : '');
         }
     });
 
