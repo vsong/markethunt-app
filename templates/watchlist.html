@@ -24,25 +24,20 @@
             <thead>
                 <tr>
                     <th class="sortable-header" @click="sort('item')">
-                        {# Make twig remove whitespace between text and i tag #}
-                        {{ "Item" -}}
-                        <i v-bind:class="getSortIconClass('item')"></i>
+                        {# Text and icon must be on same line #}
+                        Item<i v-bind:class="getSortIconClass('item')"></i>
                     </th>
                     <th class="sortable-header" @click="sort('comment')">
-                        {{ "Comment" -}}
-                        <i v-bind:class="getSortIconClass('comment')"></i>
+                        Comment<i v-bind:class="getSortIconClass('comment')"></i>
                     </th>
                     <th class="sortable-header right-align" @click="sort('mark')">
-                        {{ "Benchmark" -}}
-                        <i v-bind:class="getSortIconClass('mark')"></i>
+                        Benchmark<i v-bind:class="getSortIconClass('mark')"></i>
                     </th>
                     <th class="sortable-header right-align" @click="sort('price')">
-                        {{ "Current Price" -}}
-                        <i v-bind:class="getSortIconClass('price')"></i>
+                        Current Price<i v-bind:class="getSortIconClass('price')"></i>
                     </th>
                     <th class="sortable-header right-align" @click="sort('chg')">
-                        {{ "Chg%" -}}
-                        <i v-bind:class="getSortIconClass('chg')"></i>
+                        Chg%<i v-bind:class="getSortIconClass('chg')"></i>
                     </th>
                     <!-- <th>json</th> -->
                     <th></th>

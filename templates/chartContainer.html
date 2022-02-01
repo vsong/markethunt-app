@@ -15,6 +15,15 @@
             Add to watchlist
         </button>
     </form>
+    {% if include_credits %}
+        <div class="credits">
+            <p>Thanks to Chad and Coyu for their historical data.</p>
+            <p>
+                <a href="https://github.com/vsong/markethunt/issues">Leave feedback</a>
+                | <a href="https://github.com/vsong/markethunt">Contribute</a>
+            </p>
+        </div>
+    {% endif %}
 </div>
 <script src="/assets/js/chart.js"></script>
 <div id="add-watchlist-dialog" style="display:none">

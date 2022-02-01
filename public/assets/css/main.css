@@ -21,6 +21,17 @@ pre {
     margin-right: 10px;
 }
 
+.credits {
+    text-align: left;
+    margin-top: 50px;
+    font-size: 14px;
+    color: grey;
+}
+
+.credits p {
+    margin: 2px;
+}
+
 /* table stuff */
 table.pure-table {
     border-collapse: collapse;
