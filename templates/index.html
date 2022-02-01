@@ -9,7 +9,9 @@
 {% block chart_header %}{{ current_item_name }}{% endblock %}
 
 {% block body %}
-{% include('chartContainer.html') %}
+<div>
+    {% include 'chartContainer.html' with {'include_credits': true} %}
+</div>
 <script>
     function processWatchlistFormData(price, comment) {
         var selector = document.getElementById('chartSelector');
