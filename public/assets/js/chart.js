@@ -115,7 +115,9 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 series: {
                     animation: false,
                     dataGrouping: {
-                        enabled: false
+                        enabled: (itemId == 114114) ? true : false,
+                        units: [['day', [1]], ['week', [1]]],
+                        groupPixelWidth: 2,
                     },
                     showInLegend: true,
                 },
