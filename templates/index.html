@@ -13,6 +13,8 @@
     {% include 'chartContainer.html' with {'include_credits': true} %}
 </div>
 <script>
+    var initialJson = {{ initial_stock_data |raw }};
+
     function processWatchlistFormData(price, comment) {
         var selector = document.getElementById('chartSelector');
         var itemId = selector.value;
@@ -27,7 +29,7 @@
         renderChartWithItemId(itemId, itemName);
     }
 
-    renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
+    renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}", initialJson);
 
     function handleChartSubmit(addToHistory = true) {
         var selector = document.getElementById('chartSelector');

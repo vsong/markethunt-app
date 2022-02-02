@@ -55,7 +55,7 @@ var eventData = [
     eventBand('2021-12-07', '2022-01-05', 'GWH 2021'),
 ]
 
-function renderChartWithItemId(itemId, chartHeaderText) {
+function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     document.getElementById('chartHeader').innerHTML = chartHeaderText;
 
     // get saved daterange preferences
@@ -86,7 +86,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
         var filteredEntries = [];
     }
     
-    $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function (response) {
+    function renderChart(response) {
         var daily_prices = [];
         var daily_trade_volume = [];
         var sbi = [];
@@ -377,5 +377,13 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 maskInside: false,
             }
         });
-    });
+    }
+    
+    if (jsonData == null) {
+        $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function (response) {
+            renderChart(response);
+        });
+    } else {
+        renderChart(jsonData);
+    }
 }
