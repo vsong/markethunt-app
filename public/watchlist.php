@@ -18,5 +18,6 @@ $current_item_name = getItemName($current_item_id);
 echo $twig->render('watchlist.html', [
     'current_item_id' => $current_item_id,
     'current_item_name' => $current_item_name,
-    'item_metadata' => getAllItemNamesAndLatestPrice()
+    'item_metadata' => getAllItemNamesAndLatestPrice(),
+    'initial_stock_data' => '{"success":true, "data":' . json_encode(getItemChartData($current_item_id)) . '}'
 ]);
