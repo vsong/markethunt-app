@@ -53,6 +53,7 @@ var eventData = [
     eventBand('2021-07-27', '2021-08-17', 'Ronza 2021'),
     eventBand('2021-10-13', '2021-11-02', 'Halloween 2021'),
     eventBand('2021-12-07', '2022-01-05', 'GWH 2021'),
+    eventBand('2022-01-31', '2022-02-15', 'LNY 2022'),
 ]
 
 function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
