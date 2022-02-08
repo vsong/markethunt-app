@@ -38,6 +38,11 @@ table.pure-table {
     text-align: left;
 }
 
+/* fix Pure CSS Library bug */
+.pure-table-striped tr:nth-child(2n-1) {
+    background-color: #f2f2f2;
+}
+
 .pure-table th {
     background-color: var(--highlight-color);
     color: white;
@@ -45,9 +50,18 @@ table.pure-table {
     border: 0px solid red;
 }
 
+.pure-table th.shrink-wrap {
+    width: 0px;
+    white-space: nowrap;
+}
+
 .pure-table td {
     padding: 9px 7px;
     border: 0px solid red;
+}
+
+.pure-table th.button-container {
+    width: 56px;
 }
 
 .pure-table td.button-container {
@@ -84,6 +98,10 @@ table.pure-table {
 
 table.small-td-text td {
     font-size: 0.9em;
+}
+
+.no-comment {
+    visibility: hidden;
 }
 
 /* sortable table stuff */
@@ -207,7 +225,7 @@ a, a:link, a:visited {
 
 /* watchlist page specific */
 #watchlist-container {
-    height: calc(100vh - 175px);
+    height: calc(100vh - 45px);
     overflow-y: auto;
     padding: 0px 10px;
     box-sizing: border-box !important;
@@ -227,4 +245,30 @@ a, a:link, a:visited {
 
 [v-cloak] {
     display: none;
+}
+
+@media (max-width: 600px) {
+    .collapse-column {
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
+
+    .no-padding-override {
+        padding: 0px !important;
+    }
+
+    .pure-table th {
+        vertical-align: middle;
+    }
+
+    .pure-table th.button-container {
+        width: 30px;
+    }
+
+    .collapse-column.comment-column:empty::before {
+        content: "No comment";
+        color: #bbbbbb;
+        font-style: italic;
+    }
 }
