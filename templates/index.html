@@ -17,14 +17,10 @@
 
     function processWatchlistFormData(price, comment) {
         var selector = document.getElementById('chartSelector');
-        var itemId = selector.value;
+        var itemId = Number(selector.value);
         var itemName = selector.options[selector.selectedIndex].text;
         var watchlist = getWatchlistObj();
-        watchlist.push({
-            'item_id': itemId,
-            'mark': price,
-            'comment': comment
-        });
+        watchlist[0].watches.push(newWatchlistItem(itemId, comment, (price == null) ? null : "gold", price));
         setWatchlistObj(watchlist);
         renderChartWithItemId(itemId, itemName);
     }
@@ -33,7 +29,7 @@
 
     function handleChartSubmit(addToHistory = true) {
         var selector = document.getElementById('chartSelector');
-        var itemId = selector.value;
+        var itemId = Number(selector.value);
         var itemName = selector.options[selector.selectedIndex].text;
         if (addToHistory === true) {
             window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);

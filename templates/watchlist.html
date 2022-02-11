@@ -47,7 +47,7 @@
                 {% verbatim %}
                     <tr v-for="(item, idx) in watchlistSorted">
                         <td class="collapse-column">
-                            <a @click="renderChart(item.item_id, appData.itemData[item.item_id].name)">
+                            <a @click="setChart(item.item_id, appData.itemData[item.item_id].name)">
                                 {{ appData.itemData[item.item_id].name }}
                             </a>
                         </td>
@@ -99,21 +99,17 @@ function processWatchlistFormData(price, comment) {
 }
 
 function processWatchlistEdit(itemId, price, comment, idx) {
-    appData.watchlistItems.splice(idx, 1);
-    setWatchlistObj(appData.watchlistItems);
+    appData.watchlists[0].watches.splice(idx, 1);
+    setWatchlistObj(appData.watchlists);
     addToWatchlist(itemId, price, comment);
 }
 
 // Generic add to watchlist
 function addToWatchlist(itemId, mark, comment) {
-    appData.watchlistItems.push({
-        'item_id': itemId,
-        'mark': mark,
-        'comment': comment
-    });
-    setWatchlistObj(appData.watchlistItems);
+    appData.watchlists[0].watches.push(newWatchlistItem(itemId, comment, (mark == null) ? null : "gold", mark));
+    setWatchlistObj(appData.watchlists);
 
-    if (itemId === document.getElementById('chartSelector').value) {
+    if (itemId === Number(document.getElementById('chartSelector').value)) {
         renderChartWithItemId(itemId, appData.itemData[itemId].name);
     }
 }
@@ -127,16 +123,10 @@ window.addEventListener('storage', (e) => {
 
 /* vue script block */
 const { reactive } = Vue;
-
-if (!savedWatchlistExists()) {
-    var watchlistRaw = [{'item_id':114, 'mark':10000, 'comment':'Default comment'}]; 
-} else {
-    var watchlistRaw = getWatchlistObj();
-}
-
+var watchlistRaw = getWatchlistObj();
 const appData = reactive({
     itemData: {{ item_metadata | json_encode | raw }},
-    watchlistItems: watchlistRaw
+    watchlists: watchlistRaw,
 });
 
 const app = Vue.createApp({
@@ -149,7 +139,7 @@ const app = Vue.createApp({
     },
     computed: {
         watchlistSorted() {
-            return this.appData.watchlistItems.sort((a,b) => {
+            return this.appData.watchlists[0].watches.sort((a,b) => {
                 var order = (this.currentSortDir === 'asc') ? 1 : -1;
                 if (this.currentSort === 'item') {
                     var a_val = appData.itemData[a.item_id].name;
@@ -229,19 +219,27 @@ const app = Vue.createApp({
             }
         },
         removeWatchItem(idx) {
-            appData.watchlistItems.splice(idx, 1);
-            setWatchlistObj(appData.watchlistItems);
+            var thisItemId =  appData.watchlists[0].watches[idx].item_id;
+            appData.watchlists[0].watches.splice(idx, 1);
+            setWatchlistObj(appData.watchlists);
+            if (thisItemId === Number(document.getElementById('chartSelector').value)) {
+                renderChartWithItemId(thisItemId, appData.itemData[thisItemId].name);
+            }
         },
         editWatchItem(idx) {
+            var thisItemId =  appData.watchlists[0].watches[idx].item_id;
             addToWatchlistModal(
-                appData.watchlistItems[idx].mark, 
+                appData.watchlists[0].watches[idx].mark, 
                 true, 
-                appData.watchlistItems[idx].item_id, 
-                appData.watchlistItems[idx].comment, 
+                appData.watchlists[0].watches[idx].item_id, 
+                appData.watchlists[0].watches[idx].comment, 
                 idx
             );
+            if (thisItemId === Number(document.getElementById('chartSelector').value)) {
+                renderChartWithItemId(thisItemId, appData.itemData[thisItemId].name);
+            }
         },
-        renderChart(itemId, headerText) {
+        setChart(itemId, headerText) {
             document.getElementById('chartSelector').value = itemId;
             renderChartWithItemId(itemId, headerText);
             window.history.replaceState({}, headerText, "/watchlist.php?item_id=" + itemId);
