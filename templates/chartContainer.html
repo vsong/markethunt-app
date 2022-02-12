@@ -44,7 +44,7 @@ $('#set-watch-price').change(function() {
     $('#watch-price').prop('disabled', !this.checked);
 });
 
-function addToWatchlistModal(price, editMode = false, editItemId = null, editComment = null, editIdx = null) {
+function addToWatchlistModal(price, editMode = false, editItemId = null, editComment = null, editWidx = null, editIdx = null) {
     var selector = document.getElementById('chartSelector');
     var itemId = editMode ? editItemId : selector.value;
 
@@ -72,7 +72,7 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
                             var inputPrice = null;
                         }
                         if (editMode) {
-                            processWatchlistEdit(editItemId, inputPrice, $('#comment').val(), editIdx);
+                            processWatchlistEdit(editItemId, inputPrice, $('#comment').val(), editWidx, editIdx);
                         } else {
                             processWatchlistFormData(inputPrice, $('#comment').val());
                         }

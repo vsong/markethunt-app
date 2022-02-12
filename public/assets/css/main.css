@@ -36,6 +36,7 @@ pre {
 table.pure-table {
     border-collapse: collapse;
     text-align: left;
+    border-top: 0px;
 }
 
 /* fix Pure CSS Library bug */
@@ -183,12 +184,17 @@ a, a:link, a:visited {
 
 /* jquery-ui theme overrides */
 .ui-state-active {
-    border: 1px solid var(--highlight-color) !important;
+    border: 1px solid var(--highlight-color);
     background: var(--highlight-color) !important;
+    color: white;
 }
 
 .ui-widget-overlay {
     opacity: 0.4;
+}
+
+.ui-widget-content a {
+    color: #06C;
 }
 
 /* dialog overrides */
@@ -221,6 +227,79 @@ a, a:link, a:visited {
 
 #add-watchlist-dialog input[type="text"] {
     width: 100%;
+}
+
+/* Tab UI overrides */
+.watchlist-tabs-container.ui-tabs {
+    padding: 0px;
+    border: 0px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
+    cursor: pointer;
+}
+
+.watchlist-tabs-container .ui-tabs-nav {
+    padding: 0px;
+    border: 0px;
+    background: inherit;
+    line-height: 1;
+    display: flex;
+    flex-wrap: wrap-reverse;
+}
+
+.watchlist-tabs-container .ui-tabs-nav::after {
+	content: "";
+	flex-grow: 100;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab {
+    padding-bottom: 0px;
+    margin: 0px;
+    border-top: 1px #cbcbcb solid;
+    border-left: 1px #cbcbcb solid;
+    border-right: 1px #cbcbcb solid;
+    font-weight: bold;
+    border-radius: 0px;
+    flex-grow: 1;
+    display: flex;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab a {
+    width: 100%;
+    text-align: center;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab .tab-control-container {
+    margin: auto 6px;
+}
+
+.tab-control-container i {
+    margin-left: 3px;
+    cursor: pointer;
+}
+
+.tab-control-container i:hover {
+    background-color: red;
+}
+
+.watchlist-tab-content.ui-tabs-panel {
+    padding: 0px;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab.ui-tabs-active {
+    padding: 0px;
+    margin: 0px;
+}
+
+.watchlist-tabs-container .ui-tabs-active .ui-icon:hover {
+    background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_444444_256x240.png");
+    background-color: white;
+}
+
+.watchlist-tabs-container .ui-tabs-tab:not(.ui-tabs-active) .ui-icon:hover {
+    background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
+    background-color: var(--highlight-color);
 }
 
 /* watchlist page specific */
