@@ -185,7 +185,7 @@ function handleChartSubmit(addToHistory = true) {
     }
 }
 
-function processNewWatchlistFormData(watchlistName, editWidx) {
+function processNewWatchlistFormData(watchlistName, editWidx = null) {
     if (editWidx !== null) {
         appData.watchlists[editWidx].name = watchlistName;
     } else {
@@ -196,15 +196,14 @@ function processNewWatchlistFormData(watchlistName, editWidx) {
     setWatchlistObj(appData.watchlists);
 }
 
-function processWatchlistFormData(price, comment) {
-    //TODO: add support for multi watchlist
-    addToWatchlist(0, document.getElementById('chartSelector').value, price, comment)
+function processWatchlistFormData(price, comment, widx) {
+    addToWatchlist(widx, document.getElementById('chartSelector').value, price, comment)
 }
 
-function processWatchlistEdit(itemId, price, comment, widx, idx) {
+function processWatchlistEdit(itemId, price, comment, widx, idx, newWidx = null) {
     appData.watchlists[widx].watches.splice(idx, 1);
     setWatchlistObj(appData.watchlists);
-    addToWatchlist(widx, itemId, price, comment);
+    addToWatchlist(newWidx === null ? widx : newWidx, itemId, price, comment);
 }
 
 // Generic add to watchlist

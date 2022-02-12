@@ -229,6 +229,10 @@ a, a:link, a:visited {
     width: 100%;
 }
 
+#add-watchlist-dialog select {
+    width: 100%;
+}
+
 /* Tab UI overrides */
 .watchlist-tabs-container.ui-tabs {
     padding: 0px;
