@@ -80,7 +80,7 @@
                                 <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}</td>
                                 <td class="right-align"></td>
                             </template>
-                            <td v-if="debugMode">{{ watchlist.watches.length }}</td>
+                            <td v-if="debugMode">{{ selectedWatchlistIdx }}</td>
                             <td class="right-align button-container">
                                 <span @click="editWatchItem(widx, idx)" class="material-icons">edit</span>
                                 <span @click="removeWatchItem(widx, idx)" class="material-icons">delete</span>
@@ -219,7 +219,7 @@ function addToWatchlist(widx, itemId, mark, comment) {
 
 // reload when other tab edits watchlist
 window.addEventListener('storage', (e) => {
-    if (e.key == "watchlistv1") {
+    if (e.key == getWatchlistObjKey()) {
         window.location.reload();
     }
 });
@@ -342,15 +342,16 @@ const app = Vue.createApp({
                 widx,
                 idx
             );
-            if (thisItemId === Number(document.getElementById('chartSelector').value)) {
-                renderChartWithItemId(thisItemId, appData.itemData[thisItemId].name);
-            }
         },
         removeWatchlist(widx) {
             showUndeleteToast(getWatchlistObjKey());
             appData.watchlists.splice(widx, 1);
             this.appData.redrawTabs = true;
             setWatchlistObj(appData.watchlists);
+            if (widx === this.selectedWatchlistIdx && widx > 0) {
+                this.selectedWatchlistIdx = widx - 1;
+                $("#vue-container").tabs("option", "active", widx - 1);
+            }
         },
         editWatchlist(widx) {
             newWatchlistModal(widx);

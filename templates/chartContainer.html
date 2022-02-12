@@ -123,7 +123,7 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
             $('#add-to-watchlist-confirm').removeClass().addClass("pure-button pure-button-primary");
             $('#add-to-watchlist-cancel').removeClass().addClass("pure-button");
 
-            // set up form and clear data from last use
+            // set up benchmark and comment and clear data from last use
             if (price == null) {
                 $('#set-watch-price').prop("checked", false);
                 $('#watch-price').prop('disabled', true);
@@ -133,22 +133,26 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
                 $('#watch-price').prop('disabled', false);
                 $('#watch-price').val(price);
             }
-
+            
             $('#comment').val(editMode ? editComment : '');
 
-            $('#new-watchlist-name-input-container').css("display", "none");
-
-            // edge case when user has no watchlists
+            // show new watchlist inputs for edge case when user has no watchlists
             if (getWatchlistObj().length === 0) {
                 $('#new-watchlist-name-addwatch').prop('required', true);
                 $('#new-watchlist-name-input-container').css("display", "block");
+            } else {
+                $('#new-watchlist-name-input-container').css("display", "none");
             }
 
+            // set up watchlist selector
             $('#watchlist-select').empty();
             getWatchlistObj().forEach(function(watchlist, widx) {
                 $('#watchlist-select').append(`<option value="${widx}">${watchlist.name}</option>`);
             });
             $('#watchlist-select').append('<option value="newWatchlistOption">New watchlist ...</option>');
+            if (editWidx !== null) {
+                $('#watchlist-select').val(editWidx);
+            }
         }
     });
 
