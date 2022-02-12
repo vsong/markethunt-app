@@ -34,13 +34,7 @@ function importWatchlistObjV1() {
         var watchlistv1 = JSON.parse(localStorage.watchlistv1);
     }
 
-    var watchlistv2 = [
-        {
-            'name': 'Default Watchlist',
-            'uid': 'watchlist-' + uuidv4(),
-            'watches': [],
-        }
-    ];
+    var watchlistv2 = [newWatchlistObject("Default Watchlist")];
 
     watchlistv1.forEach(entry => {
         watchlistv2[0].watches.push(newWatchlistItem(
@@ -83,7 +77,6 @@ function uuidv4() {
  * @return {Object}
  */
 function newWatchlistItem(item_id, comment = '', mark_type = null, mark = null, alert_date = null, alert_price = null) {
-    // var itemID2 = Number(item_id);
     return {
         'uid': "watch-" + uuidv4(),
         'date_created': Date.now(),
@@ -95,4 +88,12 @@ function newWatchlistItem(item_id, comment = '', mark_type = null, mark = null, 
         'alert_date': (alert_date == null) ? null : Number(alert_date),
         'alert_price': (alert_price == null) ? null : Number(alert_price),
     };
+}
+
+function newWatchlistObject(name) {
+    return {
+        'name': name,
+        'uid': 'watchlist-' + uuidv4(),
+        'watches': [],
+    }
 }

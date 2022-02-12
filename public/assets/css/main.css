@@ -268,10 +268,11 @@ a, a:link, a:visited {
 .watchlist-tabs-container .watchlist-tab.ui-tab a {
     width: 100%;
     text-align: center;
+    padding: 8px 6px 8px 12px;
 }
 
 .watchlist-tabs-container .watchlist-tab.ui-tab .tab-control-container {
-    margin: auto 6px;
+    margin: auto 6px auto 0px;
 }
 
 .tab-control-container i {

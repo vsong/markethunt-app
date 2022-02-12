@@ -29,8 +29,8 @@
                 <li v-for="(watchlist, widx) in appData.watchlists" class="watchlist-tab">
                     <a v-bind:href="'#' + watchlist.uid" @click="setTabIndex(widx)">{{ watchlist.name }}</a>
                     <div class="tab-control-container">
-                        <i class="ui-icon light-ui tablesorter-icon ui-icon-pencil"></i>
-                        <i class="ui-icon light-ui tablesorter-icon ui-icon-close"></i>
+                        <i class="ui-icon light-ui tablesorter-icon ui-icon-pencil" @click="editWatchlist(widx)"></i>
+                        <i class="ui-icon light-ui tablesorter-icon ui-icon-close" @click="removeWatchlist(widx)"></i>
                     </div>
                 </li>
                 <li class="watchlist-tab"><a style="padding: 0px;" href="#newlist" @click="newWatchlist()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
@@ -54,7 +54,7 @@
                             <th class="sortable-header right-align shrink-wrap" @click="sort('chg')">
                                 Chg%<i v-bind:class="getSortIconClass('chg')"></i>
                             </th>
-                            <th style="background-color: rgb(216, 0, 0)" v-if:"debugMode">Debug</th>
+                            <th style="background-color: rgb(216, 0, 0)" v-if="debugMode">Debug</th>
                             <th class="button-container"></th>
                         </tr>
                     </thead>
@@ -80,7 +80,7 @@
                                 <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}</td>
                                 <td class="right-align"></td>
                             </template>
-                            <td v-if:"debugMode">{{ widx }}</td>
+                            <td v-if="debugMode">{{ widx }}</td>
                             <td class="right-align button-container">
                                 <span @click="editWatchItem(widx, idx)" class="material-icons">edit</span>
                                 <span @click="removeWatchItem(widx, idx)" class="material-icons">delete</span>
@@ -89,7 +89,10 @@
                     </tbody>
                 </table>
             </div>
-            <div id="newlist" class="watchlist-tab-content">asdf</div>
+            <div id="newlist" class="watchlist-tab-content">
+                <p>You deleted all your watchlists! Click on the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new watchlist. </p>
+                <img src="/assets/img/NotLikeDuck.png" />
+            </div>
         </div>
         {% endverbatim %}
     </div>
@@ -104,11 +107,22 @@
 </div>
 <script>
 /* main script block */
+// initial jquery tabs update
+$( function() {
+    $("#vue-container").tabs({
+        beforeActivate: function(event, ui) {
+            if (ui.newPanel.attr('id') === 'newlist'){
+                event.preventDefault();
+            }
+        }
+    });
+});
+
 // set up new watchlist modal
 function newWatchlistModal(editWidx = null) {
     var dialog = $("#new-watchlist-dialog").dialog({
         dialogClass: 'themed-titlebar',
-        title: editWidx ? 'Edit watchlist' : 'Add new watchlist',
+        title: editWidx !== null ? 'Edit watchlist' : 'Add new watchlist',
         draggable: false,
         autoOpen: false,
         // height: 280,
@@ -116,7 +130,7 @@ function newWatchlistModal(editWidx = null) {
         modal: true,
         buttons: [
             {
-                text: editWidx ? "Save changes" : "Create watchlist",
+                text: editWidx !== null ? "Save changes" : "Create watchlist",
                 id: "new-watchlist-confirm",
                 click: function() {
                     if (document.forms["new-watchlist-form"].reportValidity()) {
@@ -145,7 +159,7 @@ function newWatchlistModal(editWidx = null) {
             $('#new-watchlist-cancel').removeClass().addClass("pure-button");
 
             // set up form and clear data from last use
-            if (editWidx) {
+            if (editWidx !== null) {
                 $('#new-watchlist-name').val(appData.watchlists[editWidx].name);
             } else {
                 $('#new-watchlist-name').val('');
@@ -155,19 +169,6 @@ function newWatchlistModal(editWidx = null) {
 
     dialog.dialog("open");
 }
-
-// jquery tabs
-$( function() {
-    $("#vue-container").tabs({
-        beforeActivate: function(event, ui) {
-            console.dir(ui);
-            if (ui.newPanel.attr('id') === 'newlist'){
-                event.preventDefault();
-            }
-        }
-    });
-});
-
 // chart handling
 var initialJson = {{ initial_stock_data |raw }};
 renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}", initialJson);
@@ -183,7 +184,14 @@ function handleChartSubmit(addToHistory = true) {
 }
 
 function processNewWatchlistFormData(watchlistName, editWidx) {
+    if (editWidx !== null) {
+        appData.watchlists[editWidx].name = watchlistName;
+    } else {
+        appData.watchlists.push(newWatchlistObject(watchlistName));
+        appData.redrawTabs = true; // set to true *after* modifying watchlist
+    }
 
+    setWatchlistObj(appData.watchlists);
 }
 
 function processWatchlistFormData(price, comment) {
@@ -202,7 +210,7 @@ function addToWatchlist(widx, itemId, mark, comment) {
     appData.watchlists[widx].watches.push(newWatchlistItem(itemId, comment, (mark == null) ? null : "gold", mark));
     setWatchlistObj(appData.watchlists);
 
-    if (itemId === Number(document.getElementById('chartSelector').value)) {
+    if (Number(itemId) === Number(document.getElementById('chartSelector').value)) {
         renderChartWithItemId(itemId, appData.itemData[itemId].name);
     }
 }
@@ -220,6 +228,7 @@ var watchlistRaw = getWatchlistObj();
 const appData = reactive({
     itemData: {{ item_metadata | json_encode | raw }},
     watchlists: watchlistRaw,
+    redrawTabs: false,
 });
 
 const app = Vue.createApp({
@@ -335,6 +344,14 @@ const app = Vue.createApp({
                 renderChartWithItemId(thisItemId, appData.itemData[thisItemId].name);
             }
         },
+        removeWatchlist(widx) {
+            appData.watchlists.splice(widx, 1);
+            this.appData.redrawTabs = true;
+            setWatchlistObj(appData.watchlists);
+        },
+        editWatchlist(widx) {
+            newWatchlistModal(widx);
+        },
         setChart(itemId, headerText) {
             document.getElementById('chartSelector').value = itemId;
             renderChartWithItemId(itemId, headerText);
@@ -345,6 +362,12 @@ const app = Vue.createApp({
         },
         newWatchlist() {
             newWatchlistModal();
+        }
+    },
+    updated() {
+        if (this.appData.redrawTabs) {
+            this.appData.redrawTabs = false;
+            $("#vue-container").tabs('refresh');
         }
     }
 });
