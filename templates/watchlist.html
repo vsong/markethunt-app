@@ -80,7 +80,7 @@
                                 <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}</td>
                                 <td class="right-align"></td>
                             </template>
-                            <td v-if="debugMode">{{ widx }}</td>
+                            <td v-if="debugMode">{{ watchlist.watches.length }}</td>
                             <td class="right-align button-container">
                                 <span @click="editWatchItem(widx, idx)" class="material-icons">edit</span>
                                 <span @click="removeWatchItem(widx, idx)" class="material-icons">delete</span>
@@ -88,9 +88,11 @@
                         </tr>
                     </tbody>
                 </table>
+                <div v-if="watchlist.watches.length === 0" class="empty-watchlist-message">This watchlist is empty.</div>
             </div>
-            <div id="newlist" class="watchlist-tab-content">
-                <p>You deleted all your watchlists! Click on the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new watchlist. </p>
+            <div id="newlist" class="watchlist-tab-content"></div>
+            <div v-if="appData.watchlists.length === 0">
+                <p>You deleted all your watchlists! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new watchlist. </p>
                 <img src="/assets/img/NotLikeDuck.png" />
             </div>
         </div>

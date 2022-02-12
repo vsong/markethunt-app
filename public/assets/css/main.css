@@ -323,6 +323,13 @@ a, a:link, a:visited {
     width: 100%
 }
 
+.empty-watchlist-message {
+    text-align: center;
+    color: dimgrey;
+    padding: 10px;
+    background-color: #f2f2f2;
+}
+
 [v-cloak] {
     display: none;
 }
