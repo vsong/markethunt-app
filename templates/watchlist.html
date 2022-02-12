@@ -107,6 +107,7 @@
         </fieldset>
     </form>
 </div>
+{% include('toasts.html') %}
 <script>
 /* main script block */
 // initial jquery tabs update
@@ -346,6 +347,7 @@ const app = Vue.createApp({
             }
         },
         removeWatchlist(widx) {
+            showUndeleteToast(getWatchlistObjKey());
             appData.watchlists.splice(widx, 1);
             this.appData.redrawTabs = true;
             setWatchlistObj(appData.watchlists);

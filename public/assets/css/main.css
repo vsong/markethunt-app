@@ -32,6 +32,36 @@ pre {
     margin: 2px;
 }
 
+/* toasts */
+#toast-undelete {
+    cursor: pointer;
+    user-select: none;
+    margin-left: -125px;
+    background-color: var(--highlight-color);
+    color: #fff;
+    text-align: center;
+    border-radius: 45px;
+    padding: 10px 20px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+}
+
+#toast-undelete.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 30px;
+    transition-property: opacity, bottom;
+    transition-duration: 0.5s;
+}
+
+#toast-undelete:not(.show) {
+    bottom: 0px;
+    opacity: 0;
+    transition: visibility 0s linear 0.25s, opacity 0.25s linear, bottom 0.25s linear;
+    visibility: hidden;
+}
+
 /* table stuff */
 table.pure-table {
     border-collapse: collapse;

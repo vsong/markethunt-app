@@ -1,3 +1,7 @@
+function getWatchlistObjKey() {
+    return 'watchlistv2';
+}
+
 // gets saved watchlist
 function getWatchlistObj() {
     if (localStorage.watchlistv2 === undefined) {
