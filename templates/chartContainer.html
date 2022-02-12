@@ -30,15 +30,15 @@
     <form id="add-watchlist-form" name="add-watchlist-form" class="pure-form pure-form-stacked">
         <fieldset>
             <label for="set-watch-price" class="pure-checkbox">
-                <input type="checkbox" id="set-watch-price" /> Set price benchmark:
+                <input type="checkbox" id="set-watch-price" /> Set price benchmark
             </label>
             <input type="number" id="watch-price" min=1 max=9999999999>
-            <label for="comment">Comment:</label>
+            <label for="comment">Comment</label>
             <input type="text" id="comment" />
-            <label for="watchlist-select">Watchlist:</label>
-            <select type="text" id="watchlist-select"></select>
+            <label for="watchlist-select">Watchlist</label>
+            <select type="text" id="watchlist-select" required></select>
             <div style="display: none;" id="new-watchlist-name-input-container">
-                <label for="new-watchlist-name-addwatch">New watchlist name: *</label>
+                <label for="new-watchlist-name-addwatch">New watchlist name <span class="required-indicator">*</span></label>
                 <input type="text" id="new-watchlist-name-addwatch" pattern=".+" />
             </div>
         </fieldset>
@@ -133,15 +133,26 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
                 $('#watch-price').prop('disabled', false);
                 $('#watch-price').val(price);
             }
-            
+
             $('#comment').val(editMode ? editComment : '');
+            $('#new-watchlist-name-addwatch').val('');
 
             // show new watchlist inputs for edge case when user has no watchlists
             if (getWatchlistObj().length === 0) {
                 $('#new-watchlist-name-addwatch').prop('required', true);
                 $('#new-watchlist-name-input-container').css("display", "block");
             } else {
+                $('#new-watchlist-name-addwatch').prop('required', false);
                 $('#new-watchlist-name-input-container').css("display", "none");
+            }
+
+            // preserve selector value from last time
+            var oldWidxVal = Number($('#watchlist-select').val());
+            console.dir(oldWidxVal);
+            if (oldWidxVal >= getWatchlistObj().length) {
+                oldWidxVal = 0;
+            } else if (isNaN(oldWidxVal)) { // user made a new watchlist last time, so select it this time
+                oldWidxVal = getWatchlistObj().length - 1;
             }
 
             // set up watchlist selector
@@ -152,6 +163,8 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
             $('#watchlist-select').append('<option value="newWatchlistOption">New watchlist ...</option>');
             if (editWidx !== null) {
                 $('#watchlist-select').val(editWidx);
+            } else {
+                $('#watchlist-select').val(oldWidxVal);
             }
         }
     });

@@ -102,7 +102,7 @@
 <div id="new-watchlist-dialog" style="display:none">
     <form id="new-watchlist-form" name="new-watchlist-form" class="pure-form pure-form-stacked">
         <fieldset>
-            <label for="new-watchlist-name">* Watchlist name:</label>
+            <label for="new-watchlist-name">Watchlist name <span class="required-indicator">*</span></label>
             <input style="width: 100%" type="text" id="new-watchlist-name" required pattern=".+" />
         </fieldset>
     </form>
@@ -245,6 +245,9 @@ const app = Vue.createApp({
     },
     computed: {
         watchlistSorted() {
+            if (this.selectedWatchlistIdx >= this.appData.watchlists.length) {
+                this.selectedWatchlistIdx = appData.watchlists.length - 1;
+            }
             return this.appData.watchlists[this.selectedWatchlistIdx].watches.sort((a,b) => {
                 var order = (this.currentSortDir === 'asc') ? 1 : -1;
                 if (this.currentSort === 'item') {
@@ -348,9 +351,9 @@ const app = Vue.createApp({
             appData.watchlists.splice(widx, 1);
             this.appData.redrawTabs = true;
             setWatchlistObj(appData.watchlists);
-            if (widx === this.selectedWatchlistIdx && widx > 0) {
-                this.selectedWatchlistIdx = widx - 1;
-                $("#vue-container").tabs("option", "active", widx - 1);
+            if (widx < this.selectedWatchlistIdx && widx > 0) {
+                this.selectedWatchlistIdx--;
+                $("#vue-container").tabs("option", "active", this.selectedWatchlistIdx);
             }
         },
         editWatchlist(widx) {
@@ -363,6 +366,7 @@ const app = Vue.createApp({
         },
         setTabIndex(widx) {
             this.selectedWatchlistIdx = widx;
+            $('#watchlist-select').val(widx);
         },
         newWatchlist() {
             newWatchlistModal();

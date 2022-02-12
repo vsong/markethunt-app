@@ -32,6 +32,10 @@ pre {
     margin: 2px;
 }
 
+.required-indicator {
+    color: red;
+}
+
 /* toasts */
 #toast-undelete {
     cursor: pointer;
@@ -202,7 +206,7 @@ a, a:link, a:visited {
 }
 
 .pure-form-stacked label {
-    margin: 1em 0 .5em 0;
+    margin: 1.5em 0 .5em 0;
 }
 
 /* .pure-button-primary {
@@ -284,7 +288,7 @@ a, a:link, a:visited {
 
 .watchlist-tabs-container .ui-tabs-nav::after {
 	content: "";
-	flex-grow: 100;
+	flex-grow: 1000;
 }
 
 .watchlist-tabs-container .watchlist-tab.ui-tab {
