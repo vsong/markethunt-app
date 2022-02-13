@@ -53,8 +53,12 @@ function importWatchlistObjV1() {
     return watchlistv2;
 }
 
-function uuidv4() {
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+/**
+ * Generate a true random 48bit number represented as a 12 character hex string
+ * @returns Cryptographically random 12 character hex string
+ */
+function uid() {
+    return '000000000000'.replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
 }
@@ -82,7 +86,7 @@ function uuidv4() {
  */
 function newWatchlistItem(item_id, comment = '', mark_type = null, mark = null, alert_date = null, alert_price = null) {
     return {
-        'uid': "watch-" + uuidv4(),
+        'uid': "watch-" + uid(),
         'date_created': Date.now(),
         'date_modified': Date.now(),
         'item_id': Number(item_id),
@@ -97,7 +101,7 @@ function newWatchlistItem(item_id, comment = '', mark_type = null, mark = null, 
 function newWatchlistObject(name) {
     return {
         'name': name,
-        'uid': 'watchlist-' + uuidv4(),
+        'uid': 'watchlist-' + uid(),
         'watches': [],
     }
 }
