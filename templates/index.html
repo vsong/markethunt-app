@@ -15,16 +15,18 @@
 <script>
     var initialJson = {{ initial_stock_data |raw }};
 
-    function processWatchlistFormData(price, comment) {
+    function processNewWatchlistFormData(watchlistName) {
+        var watchlists = getWatchlistObj();
+        watchlists.push(newWatchlistObject(watchlistName));
+        setWatchlistObj(watchlists);
+    }
+
+    function processWatchlistFormData(price, comment, widx) {
         var selector = document.getElementById('chartSelector');
-        var itemId = selector.value;
+        var itemId = Number(selector.value);
         var itemName = selector.options[selector.selectedIndex].text;
         var watchlist = getWatchlistObj();
-        watchlist.push({
-            'item_id': itemId,
-            'mark': price,
-            'comment': comment
-        });
+        watchlist[widx].watches.push(newWatchlistItem(itemId, comment, (price == null) ? null : "gold", price));
         setWatchlistObj(watchlist);
         renderChartWithItemId(itemId, itemName);
     }
@@ -33,7 +35,7 @@
 
     function handleChartSubmit(addToHistory = true) {
         var selector = document.getElementById('chartSelector');
-        var itemId = selector.value;
+        var itemId = Number(selector.value);
         var itemName = selector.options[selector.selectedIndex].text;
         if (addToHistory === true) {
             window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
