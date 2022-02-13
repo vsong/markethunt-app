@@ -148,7 +148,6 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
 
             // preserve selector value from last time
             var oldWidxVal = Number($('#watchlist-select').val());
-            console.dir(oldWidxVal);
             if (oldWidxVal >= getWatchlistObj().length) {
                 oldWidxVal = 0;
             } else if (isNaN(oldWidxVal)) { // user made a new watchlist last time, so select it this time
