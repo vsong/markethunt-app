@@ -58,6 +58,7 @@ var eventData = [
 
 function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     document.getElementById('chartHeader').innerHTML = chartHeaderText;
+    itemId = Number(itemId);
 
     // get saved daterange preferences
     try {
@@ -67,24 +68,30 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     }
     
     // get entries on watchlist that matches itemId
+    var filteredEntries = [];
     try {
-        var filteredEntries = getWatchlistObj().filter(entry => entry.item_id == itemId).map(function(entry) {
-            return {
-                value: entry.mark, 
-                label: {
-                    text: entry.comment,
-                    style: {
-                        color: 'red',
-                    },
-                    x: 0, // remove left padding
-                },
-                color: 'red', 
-                dashStyle: 'dash',
-                zIndex: 6,
-            };
+        getWatchlistObj().forEach(function(watchlist) {
+            watchlist.watches.forEach(function(entry) {
+                if (entry.item_id === itemId && entry.mark_type === 'gold') {
+                    filteredEntries.push({
+                        value: entry.mark, 
+                        label: {
+                            text: watchlist.name + ": " + entry.comment,
+                            style: {
+                                color: 'red',
+                            },
+                            x: 0, // remove left padding
+                        },
+                        color: 'red', 
+                        dashStyle: 'dash',
+                        zIndex: 6,
+                    });
+                }
+            });
         });
     } catch (e) {
-        var filteredEntries = [];
+        console.log(e.stack);
+        console.error('Failed to filter watchlist entries for item ' + itemId);
     }
     
     function renderChart(response) {

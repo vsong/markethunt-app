@@ -32,10 +32,46 @@ pre {
     margin: 2px;
 }
 
+.required-indicator {
+    color: red;
+}
+
+/* toasts */
+#toast-undelete {
+    cursor: pointer;
+    user-select: none;
+    margin-left: -80px;
+    background-color: var(--highlight-color);
+    color: #fff;
+    box-shadow: 0px 0px 5px 10px white;
+    text-align: center;
+    border-radius: 45px;
+    padding: 10px 20px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+}
+
+#toast-undelete.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 30px;
+    transition-property: opacity, bottom;
+    transition-duration: 0.5s;
+}
+
+#toast-undelete:not(.show) {
+    bottom: 0px;
+    opacity: 0;
+    transition: visibility 0s linear 0.25s, opacity 0.25s linear, bottom 0.25s linear;
+    visibility: hidden;
+}
+
 /* table stuff */
 table.pure-table {
     border-collapse: collapse;
     text-align: left;
+    border-top: 0px;
 }
 
 /* fix Pure CSS Library bug */
@@ -171,7 +207,7 @@ a, a:link, a:visited {
 }
 
 .pure-form-stacked label {
-    margin: 1em 0 .5em 0;
+    margin: 1.5em 0 .5em 0;
 }
 
 /* .pure-button-primary {
@@ -183,12 +219,17 @@ a, a:link, a:visited {
 
 /* jquery-ui theme overrides */
 .ui-state-active {
-    border: 1px solid var(--highlight-color) !important;
+    border: 1px solid var(--highlight-color);
     background: var(--highlight-color) !important;
+    color: white;
 }
 
 .ui-widget-overlay {
     opacity: 0.4;
+}
+
+.ui-widget-content a {
+    color: #06C;
 }
 
 /* dialog overrides */
@@ -223,6 +264,84 @@ a, a:link, a:visited {
     width: 100%;
 }
 
+#add-watchlist-dialog select {
+    width: 100%;
+}
+
+/* Tab UI overrides */
+.watchlist-tabs-container.ui-tabs {
+    padding: 0px;
+    border: 0px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
+    cursor: pointer;
+}
+
+.watchlist-tabs-container .ui-tabs-nav {
+    padding: 0px;
+    border: 0px;
+    background: inherit;
+    line-height: 1;
+    display: flex;
+    flex-wrap: wrap-reverse;
+}
+
+.watchlist-tabs-container .ui-tabs-nav::after {
+	content: "";
+	flex-grow: 1000;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab {
+    padding-bottom: 0px;
+    margin: 0px;
+    border-top: 1px #cbcbcb solid;
+    border-left: 1px #cbcbcb solid;
+    border-right: 1px #cbcbcb solid;
+    font-weight: bold;
+    border-radius: 0px;
+    flex-grow: 1;
+    display: flex;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab a {
+    width: 100%;
+    text-align: center;
+    padding: 8px 6px 8px 12px;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab .tab-control-container {
+    margin: auto 6px auto 0px;
+}
+
+.tab-control-container i {
+    margin-left: 3px;
+    cursor: pointer;
+}
+
+.tab-control-container i:hover {
+    background-color: red;
+}
+
+.watchlist-tab-content.ui-tabs-panel {
+    padding: 0px;
+}
+
+.watchlist-tabs-container .watchlist-tab.ui-tab.ui-tabs-active {
+    padding: 0px;
+    margin: 0px;
+}
+
+.watchlist-tabs-container .ui-tabs-active .ui-icon:hover {
+    background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_444444_256x240.png");
+    background-color: white;
+}
+
+.watchlist-tabs-container .ui-tabs-tab:not(.ui-tabs-active) .ui-icon:hover {
+    background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
+    background-color: var(--highlight-color);
+}
+
 /* watchlist page specific */
 #watchlist-container {
     height: calc(100vh - 45px);
@@ -241,6 +360,13 @@ a, a:link, a:visited {
     text-align: center;
     color: grey;
     width: 100%
+}
+
+.empty-watchlist-message {
+    text-align: center;
+    color: dimgrey;
+    padding: 10px;
+    background-color: #f2f2f2;
 }
 
 [v-cloak] {
