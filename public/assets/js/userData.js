@@ -67,7 +67,6 @@ function uid() {
  * Helper function to create a watchlist object in the correct format. Returns an object in the following format:
  *  {
  *      uid: <str>
- *      date_created: <Unix millis>
  *      date_modified: <Unix millis>
  *      item_id: <int>
  *      mark_type: enum "gold", "sb", or null
@@ -85,9 +84,14 @@ function uid() {
  * @return {Object}
  */
 function newWatchlistItem(item_id, comment = '', mark_type = null, mark = null, alert_date = null, alert_price = null) {
+    if (mark_type !== null && mark_type !== 'gold' && mark_type !== 'sb') {
+        mark_type = null;
+        mark = null;
+        console.error('Invalid benchmark type. Defaulting to none.');
+    }
+
     return {
         'uid': "watch-" + uid(),
-        'date_created': Date.now(),
         'date_modified': Date.now(),
         'item_id': Number(item_id),
         'mark_type': mark_type,
