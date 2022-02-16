@@ -42,10 +42,10 @@
                 <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
                     <thead>
                         <tr>
-                            <th class="sortable-header collapse-column" @click="sort('item')">
+                            <th class="sortable-header collapse-column-mobile" @click="sort('item')">
                                 Item<i v-bind:class="getSortIconClass('item')"></i>
                             </th>
-                            <th class="sortable-header collapse-column" @click="sort('comment')">
+                            <th class="sortable-header collapse-column-mobile" @click="sort('comment')">
                                 Comment<i v-bind:class="getSortIconClass('comment')"></i>
                             </th>
                             <th class="sortable-header right-align shrink-wrap" @click="sort('mark')">

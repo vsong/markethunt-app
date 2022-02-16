@@ -36,6 +36,14 @@ pre {
     color: red;
 }
 
+.nowrap-label-input {
+    white-space: nowrap;
+}
+
+.nowrap-label-input input {
+    margin-bottom: 5px;
+}
+
 /* toasts */
 #toast-undelete {
     cursor: pointer;
@@ -91,6 +99,11 @@ table.pure-table {
     white-space: nowrap;
 }
 
+.pure-table th.shrink-wrap-wordwrap {
+    width: 0px;
+    white-space: normal;
+}
+
 .pure-table td {
     padding: 9px 7px;
     border: 0px solid red;
@@ -143,10 +156,11 @@ table.small-td-text td {
 /* sortable table stuff */
 .table-sortable .ui-icon {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
+    width: 12px;
 }
 
 .table-sortable th.tablesorter-header, .table-sortable .sortable-header {
-    padding-right: 3px; /* decrease padding so arrows line up with content on right-aligned columns */
+    /* padding-right: 3px; decrease padding so arrows line up with content on right-aligned columns */
     cursor: pointer;
     user-select: none;
 }
@@ -374,27 +388,26 @@ a, a:link, a:visited {
 }
 
 @media (max-width: 600px) {
-    .collapse-column {
+    .collapse-column-mobile {
         display: flex;
         width: 100%;
         height: 100%;
     }
-
-    .no-padding-override {
-        padding: 0px !important;
-    }
-
-    .pure-table th {
-        vertical-align: middle;
-    }
-
-    .pure-table th.button-container {
-        width: 30px;
-    }
-
-    .collapse-column.comment-column:empty::before {
+    .collapse-column-mobile.comment-column:empty::before {
         content: "No comment";
         color: #bbbbbb;
         font-style: italic;
+    }
+    .no-padding-override {
+        padding: 0px !important;
+    }
+    .pure-table th {
+        vertical-align: middle;
+    }
+    .pure-table th.button-container {
+        width: 30px;
+    }
+    .hide-mobile {
+        display: none;
     }
 }
