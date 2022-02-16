@@ -13,7 +13,6 @@ pre {
 }
 
 .param-form-container form {
-    /* border: 1px solid black; */
     display: inline-block;
 }
 
@@ -34,6 +33,14 @@ pre {
 
 .required-indicator {
     color: red;
+}
+
+.nowrap-label-input {
+    white-space: nowrap;
+}
+
+.nowrap-label-input input {
+    margin-bottom: 5px;
 }
 
 /* toasts */
@@ -91,6 +98,11 @@ table.pure-table {
     white-space: nowrap;
 }
 
+.pure-table th.shrink-wrap-wordwrap {
+    width: 0px;
+    white-space: normal;
+}
+
 .pure-table td {
     padding: 9px 7px;
     border: 0px solid red;
@@ -143,10 +155,10 @@ table.small-td-text td {
 /* sortable table stuff */
 .table-sortable .ui-icon {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
+    width: 12px;
 }
 
 .table-sortable th.tablesorter-header, .table-sortable .sortable-header {
-    padding-right: 3px; /* decrease padding so arrows line up with content on right-aligned columns */
     cursor: pointer;
     user-select: none;
 }
@@ -210,13 +222,6 @@ a, a:link, a:visited {
     margin: 1.5em 0 .5em 0;
 }
 
-/* .pure-button-primary {
-    background-color: white !important;
-    border-radius: 4px;
-    border: 2px solid var(--highlight-color);
-    color: var(--highlight-color)
-} */
-
 /* jquery-ui theme overrides */
 .ui-state-active {
     border: 1px solid var(--highlight-color);
@@ -239,7 +244,6 @@ a, a:link, a:visited {
 }
 
 .themed-titlebar .ui-dialog-titlebar {
-	/* display: none; */
 	border: 0px;
 	background: var(--highlight-color);
 	color: #ffffff;
@@ -374,27 +378,26 @@ a, a:link, a:visited {
 }
 
 @media (max-width: 600px) {
-    .collapse-column {
+    .collapse-column-mobile {
         display: flex;
         width: 100%;
         height: 100%;
     }
-
-    .no-padding-override {
-        padding: 0px !important;
-    }
-
-    .pure-table th {
-        vertical-align: middle;
-    }
-
-    .pure-table th.button-container {
-        width: 30px;
-    }
-
-    .collapse-column.comment-column:empty::before {
+    .collapse-column-mobile.comment-column:empty::before {
         content: "No comment";
         color: #bbbbbb;
         font-style: italic;
+    }
+    .no-padding-override {
+        padding: 0px !important;
+    }
+    .pure-table th {
+        vertical-align: middle;
+    }
+    .pure-table th.button-container {
+        width: 30px;
+    }
+    .hide-mobile {
+        display: none;
     }
 }

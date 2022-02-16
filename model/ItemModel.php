@@ -166,7 +166,7 @@ function getCumulativeVolume(string $from_date, string $to_date): array
     return $results;
 }
 
-function getTopMovers(string $from, string $to, int $volume_limit, bool $get_winners = true): array {
+function getTopMovers(string $from, int $volume_limit, bool $get_winners = true): array {
     if ($get_winners) {
         $order = 'DESC';
         $cutoff = '>= 1';
@@ -176,21 +176,15 @@ function getTopMovers(string $from, string $to, int $volume_limit, bool $get_win
     }
 
     $query = "WITH
-            latest AS (
+        latest AS (
             SELECT
-                p1.item_id,
-                p1.price latest_price,
-                p1.date latest_date
+                item_id,
+                price,
+                date,
+            	name
             FROM
-                `daily_price` p1
-            RIGHT JOIN (
-                SELECT
-                    item_id,
-                    MAX(DATE) AS DATE
-                FROM daily_price
-                    WHERE DATE >= '$from' AND DATE <= '$to'
-                GROUP BY item_id
-            ) p2 USING(item_id, DATE)
+                `v_latest_price`
+            WHERE date >= '$from'
         ),
         past AS (
             SELECT
@@ -203,46 +197,40 @@ function getTopMovers(string $from, string $to, int $volume_limit, bool $get_win
                     item_id,
                     MIN(DATE) AS DATE
                 FROM daily_price
-                    WHERE DATE >= '$from' AND DATE <= '$to'
+                    WHERE DATE >= '$from'
                 GROUP BY item_id
             ) p2 USING(item_id, DATE)
         ),
-        latest_volumes AS (
+        avg_volumes AS (
             SELECT
-                dv.item_id,
-                dv.raw_volume_day AS trade_volume,
-                latest_dv.date
-            FROM daily_volume dv
-            RIGHT JOIN (
-                SELECT
-                    MAX(DATE) AS DATE,
-                    item_id
-                FROM daily_volume
-                    WHERE raw_volume_day > 0
-                GROUP BY item_id
-            ) latest_dv USING(item_id, DATE)
+				dv.item_id,
+				cast(sum(dp.price * dv.raw_volume_day) / 13 as int) AS avg_gold_volume,
+				cast(sum(dv.raw_volume_day) / 13 as double) AS avg_trade_volume
+			FROM
+				daily_volume dv
+			INNER JOIN daily_price dp USING(item_id, DATE)
+			WHERE dv.date >= (NOW() - INTERVAL 14 DAY)
+			GROUP BY dv.item_id
         )
         SELECT * FROM (
             SELECT
-                item_meta.name,
+                latest.name,
                 latest.item_id,
-                latest.latest_price,
-                latest.latest_date,
+                latest.price,
+                latest.date,
                 past.past_price,
                 past.past_date,
                 CAST(
-                    latest.latest_price / past.past_price * 100 - 100 AS INT
+                    latest.price / past.past_price * 100 - 100 AS INT
                 ) AS change_pct,
-                v.trade_volume * dp.price AS gold_volume,
-                v.trade_volume
+				v.avg_gold_volume,
+				v.avg_trade_volume
             FROM latest
             INNER JOIN past USING(item_id)
-            LEFT JOIN item_meta USING(item_id)
-            LEFT JOIN latest_volumes v USING(item_id)
-            LEFT JOIN daily_price dp USING(item_id, date)
+            LEFT JOIN avg_volumes v USING(item_id)
         ) AS tbl
-        WHERE change_pct $cutoff AND gold_volume >= $volume_limit
-        ORDER BY change_pct $order, name ASC;";
+        WHERE change_pct $cutoff AND avg_gold_volume >= $volume_limit
+        ORDER BY avg_trade_volume $order, name ASC;";
 
     $results = Db::getConnection()->query($query)->fetchAll();
     return ($results === false) ? [] : $results;
