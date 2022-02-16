@@ -21,38 +21,26 @@
             selectOtherMonths: true
         };
 
-        var from = $("#from").datepicker(dateOptions)
-            .on("change", function() {to.datepicker( "option", "minDate", getDate(this));
-        });
-
-        var to = $("#to").datepicker(dateOptions)
-            .on("change", function() {from.datepicker( "option", "maxDate", getDate(this));
-        });
-
-        function getDate(element) {
-            try {
-                return $.datepicker.parseDate(dateFormat, element.value);
-            } catch (error) {
-                return null;
-            }
-        }
+        $("#from").datepicker(dateOptions);
     });
 </script>
 <h1 style="text-align: center">Top winners and losers {{ date_range.from }} to {{ date_range.to }}</h1>
 <div class="param-form-container">
     <form id="paramForm" action="top.php" method="GET" class="pure-form">
-        <label for="from">From:</label>
-        <input type="text" id="from" name="from" value={{ from }}>
-        <label for="to">To:</label>
-        <input type="text" id="to" name="to" value={{ to }}>
-        <label for="volume_limit">Minimum Volume:</label>
-        <input type="number" id="volume_limit" name="volume_limit" min=0 max=1000000000 value={{ volume_limit }}>
+        <span class="nowrap-label-input">
+            <label for="from">From:</label>
+            <input type="text" id="from" name="from" value={{ from }}>
+        </span>
+        <span class="nowrap-label-input">
+            <label for="volume_limit">Minimum gold volume:</label>
+            <input type="number" id="volume_limit" name="volume_limit" min=0 max=1000000000 value={{ volume_limit }}>
+        </span>
         <input type="submit" class="pure-button pure-button-primary">
     </form>
 </div>
 <div style="text-align: center">
     <p><i>*Only showing items with a daily gold volume of at least {{ volume_limit|number_format}}.<br>
-    Due to missing volume data before 2021-12-01, the numbers you see are yesterday's volumes. </i></p>
+    Daily gold volume and daily trade volume (Liquidity index) are measured from the past 14 days. </i></p>
 </div>
 <div class="pure-g" style="margin:auto; max-width:1400px">
     {% for dataset in [winner_dataset, loser_dataset] %}
@@ -62,8 +50,9 @@
                     <thead>
                         <th class="right-align shrink-wrap">Chg%</th>
                         <th>Item</th>
-                        <th class="right-align shrink-wrap">Price</th>
-                        <th class="right-align shrink-wrap">Gold volume*</th>
+                        <th class="right-align shrink-wrap-wordwrap">Current Price</th>
+                        <th class="right-align shrink-wrap-wordwrap">Daily Gold Volume</th>
+                        <th class="right-align shrink-wrap-wordwrap hide-mobile">Liquidity Index</th>
                     </thead>
                     <tbody>
                         {% for row in dataset %}
@@ -74,8 +63,9 @@
                                     <td class="right-align loss-text">{{ row.change_pct|number_format }}%</td>
                                 {% endif %}
                                 <td><a href="/index.php?item_id={{ row.item_id }}">{{ row.name }}</a></td>
-                                <td class="right-align">{{ row.latest_price|number_format }}</td>
-                                <td class="right-align">{{ row.gold_volume|number_format }}</td>
+                                <td class="right-align">{{ row.price|number_format }}</td>
+                                <td class="right-align">{{ row.avg_gold_volume|number_format }}</td>
+                                <td class="right-align hide-mobile">{{ row.avg_trade_volume|number_format(2) }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

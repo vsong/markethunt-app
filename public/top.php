@@ -30,11 +30,7 @@ if ($period === 'day') {
             '2020-08-20', 
             null
         );
-        $to = validateISODate($_GET['to'] ?? '', 
-            yesterdayAsISODate(), 
-            null, 
-            yesterdayAsISODate()
-        );
+        $to = yesterdayAsISODate();
 
         if (!isValidISODateRange($from, $to)) {
             throw new Exception("The 'from' date is larger than or equal to 'to' date");
@@ -53,7 +49,7 @@ echo $twig->render('topmovers.html', [
     'volume_limit' => $volume_limit,
     'from' => $date_range['from'],
     'to' => $date_range['to'],
-    'winner_dataset' => getTopMovers($date_range['from'], $date_range['to'], $volume_limit, true, 999),
-    'loser_dataset' => getTopMovers($date_range['from'], $date_range['to'], $volume_limit, false, 999),
+    'winner_dataset' => getTopMovers($date_range['from'], $volume_limit, true),
+    'loser_dataset' => getTopMovers($date_range['from'], $volume_limit, false),
 ]);
 ?>
