@@ -13,7 +13,6 @@ pre {
 }
 
 .param-form-container form {
-    /* border: 1px solid black; */
     display: inline-block;
 }
 
@@ -160,7 +159,6 @@ table.small-td-text td {
 }
 
 .table-sortable th.tablesorter-header, .table-sortable .sortable-header {
-    /* padding-right: 3px; decrease padding so arrows line up with content on right-aligned columns */
     cursor: pointer;
     user-select: none;
 }
@@ -224,13 +222,6 @@ a, a:link, a:visited {
     margin: 1.5em 0 .5em 0;
 }
 
-/* .pure-button-primary {
-    background-color: white !important;
-    border-radius: 4px;
-    border: 2px solid var(--highlight-color);
-    color: var(--highlight-color)
-} */
-
 /* jquery-ui theme overrides */
 .ui-state-active {
     border: 1px solid var(--highlight-color);
@@ -253,7 +244,6 @@ a, a:link, a:visited {
 }
 
 .themed-titlebar .ui-dialog-titlebar {
-	/* display: none; */
 	border: 0px;
 	background: var(--highlight-color);
 	color: #ffffff;
