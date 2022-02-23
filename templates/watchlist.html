@@ -63,12 +63,12 @@
                     </thead>
                     <tbody>
                         <tr v-for="(item, idx) in watchlistSorted">
-                            <td class="collapse-column">
+                            <td class="collapse-column-mobile">
                                 <a @click="setChart(item.item_id, appData.itemData[item.item_id].name)">
                                     {{ appData.itemData[item.item_id].name }}
                                 </a>
                             </td>
-                            <td class="collapse-column comment-column">{{ item.comment }}</td>
+                            <td class="collapse-column-mobile comment-column">{{ item.comment }}</td>
                             <template v-if="item.mark !== null">
                                 <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
                                 <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
