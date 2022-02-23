@@ -43,6 +43,10 @@ pre {
     margin-bottom: 5px;
 }
 
+.material-icons {
+    text-shadow: 1px 1px 1px #aaaaaa;
+}
+
 /* toasts */
 #toast-undelete {
     cursor: pointer;
@@ -170,6 +174,7 @@ table.small-td-text td {
     width: 100%;
     padding: 7px 0px;
     margin: 0px 0px 10px 0px;
+    box-shadow: 0px 2px 3px 0px #aaaaaa;
 }
 
 .toolbar-left {
@@ -216,6 +221,11 @@ a, a:link, a:visited {
 .pure-button-primary {
     background-color: var(--highlight-color) !important;
     border-radius: 0px;
+    box-shadow: 2px 2px 2px 0px #aaaaaa;
+}
+
+.pure-button-primary:active {
+    box-shadow: 2px 2px 2px 0px #aaaaaa, 0 0 0 1px rgba(0,0,0,.15) inset, 0 0 6px rgba(0,0,0,.2) inset;
 }
 
 .pure-form-stacked label {
