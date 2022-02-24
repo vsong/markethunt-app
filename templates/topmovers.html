@@ -26,15 +26,15 @@
 </script>
 <h1 style="text-align: center">Top winners and losers {{ date_range.from }} to {{ date_range.to }}</h1>
 <div class="param-form-container">
-    <form id="paramForm" action="top.php" method="GET" class="pure-form">
-        <span class="nowrap-label-input">
+    <form id="paramForm" action="top.php" method="GET" class="pure-form param-form">
+        <div>
             <label for="from">From:</label>
             <input type="text" id="from" name="from" value={{ from }}>
-        </span>
-        <span class="nowrap-label-input">
+        </div>
+        <div>
             <label for="volume_limit">Minimum gold volume:</label>
             <input type="number" id="volume_limit" name="volume_limit" min=0 max=1000000000 value={{ volume_limit }}>
-        </span>
+        </div>
         <input type="submit" class="pure-button pure-button-primary">
     </form>
 </div>
@@ -56,7 +56,7 @@
                     </thead>
                     <tbody>
                         {% for row in dataset %}
-                            <tr>
+                            <tr {{ (row.change_pct|abs < 10) ? 'class="hide-mobile"' }}>
                                 {% if row.change_pct >= 0 %}
                                     <td class="right-align gains-text">+{{ row.change_pct|number_format }}%</td>
                                 {% else %}
