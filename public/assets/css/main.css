@@ -20,6 +20,17 @@ pre {
     margin-right: 10px;
 }
 
+.param-form div {
+    display: inline-block;
+}
+
+@media (max-width: 900px) {
+    .param-form div {
+        display: block;
+        margin: 5px 0px;
+    }
+}
+
 .credits {
     text-align: left;
     margin-top: 50px;

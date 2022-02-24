@@ -40,15 +40,15 @@
 </script>
 <h1 style="text-align: center">{{ header_title }}</h1>
 <div class="param-form-container">
-    <form id="paramForm" action="highestvolumes.php" method="GET" class="pure-form">
-        <span class="nowrap-label-input">
+    <form id="paramForm" action="highestvolumes.php" method="GET" class="pure-form param-form">
+        <div>
             <label for="from">From:</label>
             <input type="text" id="from" name="from" value={{ from }}>
-        </span>
-        <span class="nowrap-label-input">
+        </div>
+        <div>
             <label for="to">To:</label>
             <input type="text" id="to" name="to" value={{ to }}>
-        </span>
+        </div>
         <input type="submit" class="pure-button pure-button-primary">
     </form>
 </div>
