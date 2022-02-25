@@ -1,5 +1,6 @@
 :root {
     --highlight-color: #4f52aa;
+    --highlight-color-active: #40438c;
     --a-in-highlight: #dcf1ff;
 }
 
@@ -144,7 +145,14 @@ table.pure-table {
 
 .pure-table td.button-container .material-icons:hover {
     background: var(--highlight-color);
+    text-shadow: unset;
+    box-shadow: 1px 1px 1px 0px #aaaaaa;
     color: white;
+}
+
+
+.pure-table td.button-container .material-icons:active {
+    background: var(--highlight-color-active);
 }
 
 .gains-text {
@@ -176,6 +184,10 @@ table.small-td-text td {
 .table-sortable th.tablesorter-header, .table-sortable .sortable-header {
     cursor: pointer;
     user-select: none;
+}
+
+.table-sortable th.tablesorter-header:active, .table-sortable .sortable-header:active {
+    background-color: var(--highlight-color-active);
 }
 
 /* toolbar stuff */
@@ -236,7 +248,8 @@ a, a:link, a:visited {
 }
 
 .pure-button-primary:active {
-    box-shadow: 2px 2px 2px 0px #aaaaaa, 0 0 0 1px rgba(0,0,0,.15) inset, 0 0 6px rgba(0,0,0,.2) inset;
+    box-shadow: 2px 2px 2px 0px #aaaaaa;
+    background-color: var(--highlight-color-active) !important;
 }
 
 .pure-form-stacked label {
@@ -344,10 +357,6 @@ a, a:link, a:visited {
     cursor: pointer;
 }
 
-.tab-control-container i:hover {
-    background-color: red;
-}
-
 .watchlist-tab-content.ui-tabs-panel {
     padding: 0px;
 }
@@ -362,9 +371,17 @@ a, a:link, a:visited {
     background-color: white;
 }
 
+.watchlist-tabs-container .ui-tabs-active .ui-icon:active {
+    background-color: #ddd;
+}
+
 .watchlist-tabs-container .ui-tabs-tab:not(.ui-tabs-active) .ui-icon:hover {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
     background-color: var(--highlight-color);
+}
+
+.watchlist-tabs-container .ui-tabs-tab:not(.ui-tabs-active) .ui-icon:active {
+    background-color: var(--highlight-color-active);
 }
 
 /* watchlist page specific */
