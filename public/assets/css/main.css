@@ -243,7 +243,7 @@ a, a:link, a:visited {
 
 .pure-button-primary {
     background-color: var(--highlight-color) !important;
-    border-radius: 0px;
+    border-radius: 2px;
     box-shadow: 2px 2px 2px 0px #aaaaaa;
 }
 
@@ -294,15 +294,19 @@ a, a:link, a:visited {
     display: none;
 }
 
-#add-watchlist-dialog input[type="number"] {
+.ui-dialog .pure-form fieldset > label:first-child {
+    margin-top: .5em;
+}
+
+.ui-dialog input[type="number"] {
     width: 100%;
 }
 
-#add-watchlist-dialog input[type="text"] {
+.ui-dialog input[type="text"] {
     width: 100%;
 }
 
-#add-watchlist-dialog select {
+.ui-dialog select {
     width: 100%;
 }
 
