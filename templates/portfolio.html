@@ -62,6 +62,27 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <template v-for="markType in ['gold', 'sb']">
+                            <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length > 1">
+                                <tr class="portfolio-summary-row">
+                                    <td>Total {{ markType }} value</td>
+                                    <td class="right-align">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString("en-US") }}</td>
+                                    <td class="right-align">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString("en-US") }}</td>
+                                    <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString("en-US") }}</td>
+                                    <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                        {{ getPortfolioTotalMarketValue(portfolio, markType).toLocaleString("en-US") }}
+                                    </td>
+                                    <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                        {{ formatPercent((getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
+                                    </td>
+                                    <td class="right-align">
+                                        {{ (getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(0) }}%
+                                    </td>
+                                    <td v-if="debugMode"></td>
+                                    <td></td>
+                                </tr>
+                            </template>
+                        </template>
                         <tr v-for="(position, idx) in portfolioSorted">
                             <td class="">
                                 <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
@@ -78,9 +99,9 @@
                                 {{ formatPercent((appData.itemData[position.item_id].latest_price / position.mark - 1) * 100) }}
                             </td>
                             <td class="right-align">
-                                TODO
+                                {{ (appData.itemData[position.item_id].latest_price * position.qty / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(0) }}%
                             </td>
-                            <td v-if="debugMode">{{ idx }} {{ position }}</td>
+                            <td v-if="debugMode">{{ idx }}</td>
                             <td class="right-align button-container">
                                 <span @click="editPosition(pidx, idx)" class="material-icons">edit</span>
                                 <span @click="removePosition(pidx, idx)" class="material-icons">delete</span>
@@ -263,16 +284,12 @@ const app = Vue.createApp({
                 } else if (this.currentSort === 'book') {
                     var a_val = a.mark * a.qty;
                     var b_val = b.mark * b.qty;
-                } else if (this.currentSort === 'market') {
+                } else if (this.currentSort === 'market' || this.currentSort === 'fraction') {
                     var a_val = a.qty * appData.itemData[a.item_id].latest_price;
                     var b_val = b.qty * appData.itemData[b.item_id].latest_price;
                 } else if (this.currentSort === 'chg') {
                     var a_val = (a.mark == null) ? null : appData.itemData[a.item_id].latest_price / a.mark - 1;
                     var b_val = (b.mark == null) ? null : appData.itemData[b.item_id].latest_price / b.mark - 1;
-                } else if (this.currentSort === 'fraction') {
-                    // TODO
-                    var a_val = 0;
-                    var b_val = 0;
                 } else {
                     throw new Error('Sort key not recognized: ' + this.currentSort);
                 }
@@ -334,6 +351,45 @@ const app = Vue.createApp({
             } else {
                 return ['ui-icon', 'light-ui', 'tablesorter-icon', 'ui-icon-caret-2-n-s'];
             }
+        },
+        getPortfolioTotalQty(portfolio, markType) {
+            return portfolio.positions.reduce(function(totalQty, position) {
+                if (position.mark_type === markType) {
+                    return totalQty + position.qty;
+                }
+            }, 0);
+        },
+        getPortfolioTotalBookValue(portfolio, markType) {
+            return portfolio.positions.reduce(function(totalBook, position) {
+                if (position.mark_type === markType) {
+                    return totalBook + position.qty * position.mark;
+                }
+            }, 0);
+        },
+        getPortfolioAvgBuyPrice(portfolio, markType) {
+            var avgPrice = this.getPortfolioTotalBookValue(portfolio, markType) / this.getPortfolioTotalQty(portfolio, markType);
+            if (markType == "gold") {
+                return Math.round(avgPrice);
+            } else {
+                return Math.round(avgPrice * 100) / 100;
+            }
+        },
+        getPortfolioTotalMarketValue(portfolio, markType) {
+            var value = portfolio.positions.reduce(function(totalMkt, position) {
+                if (position.mark_type === markType) {
+                    if (markType === "gold") {
+                        return totalMkt + position.qty * appData.itemData[position.item_id].latest_price;
+                    } else if (markType === "sb") {
+                        return totalMkt - 1; // not implemented yet
+                    }
+                } else {
+                    return totalMkt;
+                }
+            }, 0);
+            return value;
+        },
+        getPortfolioTotalMarketValueAllTypes(portfolio) {
+            return this.getPortfolioTotalMarketValue(portfolio, "gold") + this.getPortfolioTotalMarketValue(portfolio, "sb")
         },
         removePosition(pidx, idx) {
             var thisItemId =  appData.portfolios[pidx].positions[idx].item_id;
