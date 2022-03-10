@@ -58,8 +58,16 @@ var eventData = [
 ]
 
 function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
-    document.getElementById('chartHeader').innerHTML = chartHeaderText;
     itemId = Number(itemId);
+
+    // set up header elements
+    document.getElementById('chartHeader').innerHTML = chartHeaderText;
+    document.getElementById('chart-external-mh-link').href = 'https://www.mousehuntgame.com/i.php?id=' + itemId;
+    document.getElementById('chart-header-price').innerHTML = "-- g";
+    document.getElementById('chart-header-change').innerHTML = "-- (-- %)";
+    document.getElementById('chart-header-change').className = '';
+    document.getElementById('chart-header-sb-index').innerHTML = "-- SB";
+    document.getElementsByClassName('chart-loading')[0].style.display = "flex";
 
     // get saved daterange preferences
     try {
@@ -386,6 +394,36 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 maskInside: false,
             }
         });
+
+        document.getElementsByClassName('chart-loading')[0].style.display = "none";
+        if (response.data.length > 0) {
+            var latest = response.data[response.data.length - 1];
+            document.getElementById('chart-header-price').innerHTML = latest.price.toLocaleString() + 'g';
+            document.getElementById('chart-header-sb-index').innerHTML = latest.sb_index
+                .toLocaleString("en-US", {maximumFractionDigits: 2}) + ' SB';
+
+            if ((response.data.length > 1) && (Date.now() - UtcIsoDateToMillis(latest.date) < 2 * 86400 * 1000)) {
+                var secondLatest = response.data[response.data.length - 2];
+                var goldDiff = latest.price - secondLatest.price;
+                var diffClass = "";
+                var prefix = "";
+
+                if (goldDiff > 0) {
+                    prefix = '+';
+                    diffClass = 'gains-text';
+                } else if (goldDiff < 0) {
+                    prefix = '-';
+                    diffClass = 'loss-text';
+                }
+
+                document.getElementById('chart-header-change').innerHTML = prefix 
+                    + Math.abs(goldDiff).toLocaleString() + 'g'
+                    + ' (' + Math.abs((latest.price / secondLatest.price - 1) * 100).toFixed(1) + '%)';
+                document.getElementById('chart-header-change').className = diffClass;
+            } else {
+                document.getElementById('chart-header-change').innerHTML = "<i>No recent activity</i>";
+            }
+        }
     }
     
     if (jsonData == null) {
