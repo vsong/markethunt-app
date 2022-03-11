@@ -209,7 +209,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 enabled: true,
                 align: 'right',
                 verticalAlign: 'top',
-                width: '40%',
+                width: '35%',
                 y: -28,
                 padding: 0,
                 itemStyle: {

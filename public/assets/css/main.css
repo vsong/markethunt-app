@@ -8,6 +8,20 @@ pre {
     white-space: pre-wrap;
 }
 
+#chart-header-container {
+    display: flex;
+}
+
+#chart-header-right {
+    text-align: right;
+    white-space: nowrap;
+}
+
+#chart-header-price {
+    font-size: 1.7em;
+    margin-top: 0.9em;
+}
+
 .param-form-container {
     text-align: center;
     margin: 20px;
@@ -208,6 +222,14 @@ table.small-td-text td {
 .no-comment {
     visibility: hidden;
 }
+
+.book-value-mobile-hint {
+    white-space: nowrap;
+    font-size: 0.8em;
+    display: none;
+}
+
+
 
 /* sortable table stuff */
 .table-sortable .ui-icon {
@@ -454,6 +476,15 @@ a, a:link, a:visited {
 }
 
 @media (max-width: 600px) {
+    #chart-header-container {
+        display: block;
+    }
+    #chart-header-right {
+        text-align: left;
+    }
+    #chart-header-price {
+        margin-top: 0;
+    }
     .collapse-column-mobile {
         display: flex;
         width: 100%;
@@ -475,5 +506,8 @@ a, a:link, a:visited {
     }
     .hide-mobile {
         display: none;
+    }
+    .book-value-mobile-hint {
+        display: block;
     }
 }

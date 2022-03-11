@@ -5,7 +5,7 @@ var itemData = {{ item_metadata | json_encode | raw }};
 </script>
 
 <div id="chartBundle" style="max-width:800px; width: 100%; margin:auto;">
-    <div id="chart-header-container" style="display:flex">
+    <div id="chart-header-container">
         <div id="chart-header-left" class="chart-header-column">
             <h1 id="chartHeader" style="margin-bottom: 0px;">{% block chart_header %}{% endblock %}</h1>
             <div style="margin: 3px 0px;">
@@ -22,8 +22,8 @@ var itemData = {{ item_metadata | json_encode | raw }};
                 </button>
             </div>
         </div>
-        <div id="chart-header-right" class="chart-header-column" style="text-align: right; white-space: nowrap;">
-            <div id="chart-header-price" style="font-size: 1.7em; margin-top: 0.9em">--g</div>
+        <div id="chart-header-right" class="chart-header-column">
+            <div id="chart-header-price">--g</div>
             <div id="chart-header-change">-- (-- %)</div>
             <div id="chart-header-sb-index">-- SB</div>
         </div>
