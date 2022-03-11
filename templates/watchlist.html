@@ -297,11 +297,11 @@ const app = Vue.createApp({
         },
         formatPercent(num) {
             if (num > 0) {
-                return '+' + num.toFixed(0) + '%';
+                return '+' + num.toFixed(1) + '%';
             } else if (num < 0) {
-                return num.toFixed(0) + '%';
+                return num.toFixed(1) + '%';
             } else {
-                return '-';
+                return (0).toFixed(1) + '%';
             }
         },
         getColorClass(num) {

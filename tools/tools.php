@@ -77,16 +77,27 @@ function yesterdayAsISODate(): string
     return date_create()->modify('-1 day')->format('Y-m-d');
 }
 
-// Call this at each point of interest, passing a descriptive string
-function prof_flag($str)
+/**
+ * Creates a profiler measurement point
+ *
+ * @param string $tag Descriptive tag
+ * @return void
+ */
+function profilerTag(string $tag = '')
 {
     global $prof_timing, $prof_names;
     $prof_timing[] = microtime(true);
-    $prof_names[] = $str;
+    $prof_names[] = $tag;
 }
 
 // Call this when you're done and want to see the results
-function prof_print()
+
+/**
+ * Echoes the formatted profiler output in a <pre> block
+ *
+ * @return void
+ */
+function profilerPrint()
 {
     global $prof_timing, $prof_names;
     $size = count($prof_timing);
@@ -98,4 +109,14 @@ function prof_print()
         echo "   " . $diff . "ms   " . $total . "\n";
     }
     echo "{$prof_names[$size-1]}\n</pre>";
+}
+
+/**
+ * Get an item ID that is suitable for showing as the default item in the stock chart.
+ *
+ * @return integer
+ */
+function getDefaultItem(): int
+{
+    return 926;
 }

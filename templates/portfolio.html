@@ -76,7 +76,7 @@
                                         {{ formatPercent((getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
                                     </td>
                                     <td class="right-align">
-                                        {{ (getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(0) }}%
+                                        {{ (getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
                                     </td>
                                     <td v-if="debugMode"></td>
                                     <td></td>
@@ -99,7 +99,7 @@
                                 {{ formatPercent((appData.itemData[position.item_id].latest_price / position.mark - 1) * 100) }}
                             </td>
                             <td class="right-align">
-                                {{ (appData.itemData[position.item_id].latest_price * position.qty / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(0) }}%
+                                {{ (appData.itemData[position.item_id].latest_price * position.qty / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
                             </td>
                             <td v-if="debugMode">{{ idx }}</td>
                             <td class="right-align button-container">
@@ -325,11 +325,11 @@ const app = Vue.createApp({
         },
         formatPercent(num) {
             if (num > 0) {
-                return '+' + num.toFixed(0) + '%';
+                return '+' + num.toFixed(1) + '%';
             } else if (num < 0) {
-                return num.toFixed(0) + '%';
+                return num.toFixed(1) + '%';
             } else {
-                return '-';
+                return (0).toFixed(1) + '%';
             }
         },
         getColorClass(num) {

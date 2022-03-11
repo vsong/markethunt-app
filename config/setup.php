@@ -1,4 +1,5 @@
 <?php
+// defined in nginx
 define('APPENV', $_SERVER['APPENV'] ?? 'dev');
 
 if (APPENV === 'dev') {
