@@ -64,9 +64,9 @@
                             </td>
                             <td class="collapse-column-mobile comment-column">{{ item.comment }}</td>
                             <template v-if="item.mark !== null">
-                                <td class="right-align">{{ item.mark.toLocaleString("en-US") }}</td>
+                                <td class="right-align">{{ item.mark.toLocaleString() }}</td>
                                 <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                                    {{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}
+                                    {{ appData.itemData[item.item_id].latest_price.toLocaleString(") }}
                                 </td>
                                 <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
                                     {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
@@ -74,7 +74,7 @@
                             </template>
                             <template v-else>
                                 <td class="right-align"></td>
-                                <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString("en-US") }}</td>
+                                <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString() }}</td>
                                 <td class="right-align"></td>
                             </template>
                             <td v-if="debugMode">{{ selectedWatchlistIdx }}</td>

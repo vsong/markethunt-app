@@ -66,11 +66,11 @@
                             <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length > 1">
                                 <tr class="portfolio-summary-row">
                                     <td>Total {{ markType }} value</td>
-                                    <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString("en-US") }}</td>
-                                    <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString("en-US") }}</td>
-                                    <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString("en-US") }}</td>
-                                    <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                        {{ getPortfolioTotalMarketValue(portfolio, markType).toLocaleString("en-US") }}
+                                    <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
+                                    <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString() }}</td>
+                                    <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString() }}</td>
+                                    <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType, true) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                        {{ getPortfolioTotalMarketValue(portfolio, markType).toLocaleString() }}
                                     </td>
                                     <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
                                         {{ formatPercent((getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
@@ -83,24 +83,24 @@
                                 </tr>
                             </template>
                         </template>
-                        <tr v-for="(position, idx) in portfolioSorted">
+                        <tr v-for="(position, idx) in portfolioSorted" v-bind:key="position.uid">
                             <td class="">
                                 <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
                                     {{ appData.itemData[position.item_id].name }}
                                 </a>
                             </td>
-                            <td class="right-align hide-mobile">{{ position.qty.toLocaleString("en-US") }}</td>
-                            <td class="right-align hide-mobile">{{ position.mark.toLocaleString("en-US") }}</td>
+                            <td class="right-align hide-mobile">{{ position.qty.toLocaleString() }}</td>
+                            <td class="right-align hide-mobile">{{ position.mark.toLocaleString() }}</td>
                             <td class="right-align">
                                 <div>
-                                    {{ (position.mark * position.qty).toLocaleString("en-US") }}
+                                    {{ (position.mark * position.qty).toLocaleString() }}
                                 </div>
                                 <div class="book-value-mobile-hint">
-                                    {{ position.qty.toLocaleString("en-US") }} @ {{ position.mark.toLocaleString("en-US") }}
+                                    {{ position.qty.toLocaleString() }} @ {{ position.mark.toLocaleString() }}
                                 </div>
                             </td>
                             <td class="right-align" v-bind:class="getColorClass(appData.itemData[position.item_id].latest_price / position.mark - 1)">
-                                {{ (position.qty * appData.itemData[position.item_id].latest_price).toLocaleString("en-US") }}
+                                {{ (position.qty * appData.itemData[position.item_id].latest_price).toLocaleString() }}
                             </td>
                             <td class="right-align" v-bind:class="getColorClass(appData.itemData[position.item_id].latest_price / position.mark - 1)">
                                 {{ formatPercent((appData.itemData[position.item_id].latest_price / position.mark - 1) * 100) }}
@@ -118,7 +118,7 @@
                 </table>
                 <div v-if="portfolio.positions.length === 0" class="empty-watchlist-message">This portfolio is empty.</div>
                 <div class="hide-mobile" style="margin-top: 10px; text-align: right">
-                    <a href="/import_howto.php"><span class="material-icons">download</span>Import Mousehunt inventory</a>
+                    <a href="/import_howto.php"><span class="material-icons">download</span>Import inventory from Mousehunt</a>
                 </div>
             </div>
             <div id="newportfolio" class="watchlist-tab-content"></div>
@@ -267,6 +267,7 @@ const appData = reactive({
 
 const app = Vue.createApp({
     data() {
+        this.cache_totalMarketValue = {'gold': null, 'sb': null};
         return {
             appData,
             currentSort: 'item',
@@ -280,6 +281,7 @@ const app = Vue.createApp({
             if (this.selectedPortfolioIdx >= this.appData.portfolios.length) {
                 this.selectedPortfolioIdx = appData.portfolios.length - 1;
             }
+
             return this.appData.portfolios[this.selectedPortfolioIdx].positions.sort((a,b) => {
                 var order = (this.currentSortDir === 'asc') ? 1 : -1;
                 if (this.currentSort === 'item') {
@@ -384,19 +386,25 @@ const app = Vue.createApp({
                 return Math.round(avgPrice * 100) / 100;
             }
         },
-        getPortfolioTotalMarketValue(portfolio, markType) {
-            var value = portfolio.positions.reduce(function(totalMkt, position) {
-                if (position.mark_type === markType) {
-                    if (markType === "gold") {
-                        return totalMkt + position.qty * appData.itemData[position.item_id].latest_price;
-                    } else if (markType === "sb") {
-                        return totalMkt - 1; // not implemented yet
+        getPortfolioTotalMarketValue(portfolio, markType, updateCache = false) {
+            // return 91;
+            if (updateCache) {
+                var value = portfolio.positions.reduce(function(totalMkt, position) {
+                    if (position.mark_type === markType) {
+                        if (markType === "gold") {
+                            return totalMkt + position.qty * appData.itemData[position.item_id].latest_price;
+                        } else if (markType === "sb") {
+                            return totalMkt - 1; // not implemented yet
+                        }
+                    } else {
+                        return totalMkt;
                     }
-                } else {
-                    return totalMkt;
-                }
-            }, 0);
-            return value;
+                }, 0);
+
+                this.cache_totalMarketValue[markType] = value;
+            }
+
+            return this.cache_totalMarketValue[markType];
         },
         getPortfolioTotalMarketValueAllTypes(portfolio) {
             return this.getPortfolioTotalMarketValue(portfolio, "gold") + this.getPortfolioTotalMarketValue(portfolio, "sb")
