@@ -33,93 +33,95 @@
                 <li class="watchlist-tab"><a style="padding: 0px;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
             </ul>
             <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content">
-                <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
-                    <thead>
-                        <tr>
-                            <th class="sortable-header" @click="sort('item')">
-                                Item<i v-bind:class="getSortIconClass('item')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('qty')">
-                                Qty<i v-bind:class="getSortIconClass('qty')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('buy')">
-                                Buy Price<i v-bind:class="getSortIconClass('buy')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('book')">
-                                Book Value<i v-bind:class="getSortIconClass('book')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('market')">
-                                Market Value<i v-bind:class="getSortIconClass('market')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('chg')">
-                                Chg%<i v-bind:class="getSortIconClass('chg')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('fraction')">
-                                Portfolio%<i v-bind:class="getSortIconClass('fraction')"></i>
-                            </th>
-                            <th class="shrink-wrap" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
-                            <th class="button-container"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template v-for="markType in ['gold', 'sb']">
-                            <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length > 1">
-                                <tr class="portfolio-summary-row">
-                                    <td>Total {{ markType }} value</td>
-                                    <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
-                                    <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString() }}</td>
-                                    <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString() }}</td>
-                                    <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType, true) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                        {{ getPortfolioTotalMarketValue(portfolio, markType).toLocaleString() }}
-                                    </td>
-                                    <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                        {{ formatPercent((getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
-                                    </td>
-                                    <td class="right-align hide-mobile">
-                                        {{ (getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
-                                    </td>
-                                    <td v-if="isDebugEnabled()"></td>
-                                    <td></td>
-                                </tr>
+                <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid"></template>
+                    <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
+                        <thead>
+                            <tr>
+                                <th class="sortable-header" @click="sort('item')">
+                                    Item<i v-bind:class="getSortIconClass('item')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('qty')">
+                                    Qty<i v-bind:class="getSortIconClass('qty')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('buy')">
+                                    Buy Price<i v-bind:class="getSortIconClass('buy')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap" @click="sort('book')">
+                                    Book Value<i v-bind:class="getSortIconClass('book')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap" @click="sort('market')">
+                                    Market Value<i v-bind:class="getSortIconClass('market')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap" @click="sort('chg')">
+                                    Chg%<i v-bind:class="getSortIconClass('chg')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('fraction')">
+                                    Portfolio%<i v-bind:class="getSortIconClass('fraction')"></i>
+                                </th>
+                                <th class="shrink-wrap" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
+                                <th class="button-container"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-for="markType in ['gold', 'sb']">
+                                <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length > 1">
+                                    <tr class="portfolio-summary-row">
+                                        <td>Total {{ markType }} value</td>
+                                        <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
+                                        <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString() }}</td>
+                                        <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString() }}</td>
+                                        <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType, true) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                            {{ getPortfolioTotalMarketValue(portfolio, markType).toLocaleString() }}
+                                        </td>
+                                        <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                            {{ formatPercent((getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
+                                        </td>
+                                        <td class="right-align hide-mobile">
+                                            {{ (getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
+                                        </td>
+                                        <td v-if="isDebugEnabled()"></td>
+                                        <td></td>
+                                    </tr>
+                                </template>
                             </template>
-                        </template>
-                        <tr v-for="(position, idx) in portfolioSorted" v-bind:key="position.uid">
-                            <td class="">
-                                <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
-                                    {{ appData.itemData[position.item_id].name }}
-                                </a>
-                            </td>
-                            <td class="right-align hide-mobile">{{ position.qty.toLocaleString() }}</td>
-                            <td class="right-align hide-mobile">{{ position.mark.toLocaleString() }}</td>
-                            <td class="right-align">
-                                <div>
-                                    {{ (position.mark * position.qty).toLocaleString() }}
-                                </div>
-                                <div class="book-value-mobile-hint">
-                                    {{ position.qty.toLocaleString() }} @ {{ position.mark.toLocaleString() }}
-                                </div>
-                            </td>
-                            <td class="right-align" v-bind:class="getColorClass(appData.itemData[position.item_id].latest_price / position.mark - 1)">
-                                {{ (position.qty * appData.itemData[position.item_id].latest_price).toLocaleString() }}
-                            </td>
-                            <td class="right-align" v-bind:class="getColorClass(appData.itemData[position.item_id].latest_price / position.mark - 1)">
-                                {{ formatPercent((appData.itemData[position.item_id].latest_price / position.mark - 1) * 100) }}
-                            </td>
-                            <td class="right-align hide-mobile">
-                                {{ (appData.itemData[position.item_id].latest_price * position.qty / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
-                            </td>
-                            <td v-if="isDebugEnabled()">{{ idx }}</td>
-                            <td class="right-align button-container">
-                                <span @click="editPosition(pidx, idx)" class="material-icons">edit</span>
-                                <span @click="removePosition(pidx, idx)" class="material-icons">delete</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div v-if="portfolio.positions.length === 0" class="empty-watchlist-message">This portfolio is empty.</div>
-                <div class="hide-mobile" style="margin-top: 10px; text-align: right">
-                    <a href="/import_howto.php"><span class="material-icons">download</span>Import inventory from Mousehunt</a>
-                </div>
+                            <tr v-for="(position, idx) in portfolioSorted" v-bind:key="position.uid">
+                                <td class="">
+                                    <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
+                                        {{ appData.itemData[position.item_id].name }}
+                                    </a>
+                                </td>
+                                <td class="right-align hide-mobile">{{ position.qty.toLocaleString() }}</td>
+                                <td class="right-align hide-mobile">{{ position.mark.toLocaleString() }}</td>
+                                <td class="right-align">
+                                    <div>
+                                        {{ (position.mark * position.qty).toLocaleString() }}
+                                    </div>
+                                    <div class="book-value-mobile-hint">
+                                        {{ position.qty.toLocaleString() }} @ {{ position.mark.toLocaleString() }}
+                                    </div>
+                                </td>
+                                <td class="right-align" v-bind:class="getColorClass(appData.itemData[position.item_id].latest_price / position.mark - 1)">
+                                    {{ (position.qty * appData.itemData[position.item_id].latest_price).toLocaleString() }}
+                                </td>
+                                <td class="right-align" v-bind:class="getColorClass(appData.itemData[position.item_id].latest_price / position.mark - 1)">
+                                    {{ formatPercent((appData.itemData[position.item_id].latest_price / position.mark - 1) * 100) }}
+                                </td>
+                                <td class="right-align hide-mobile">
+                                    {{ (appData.itemData[position.item_id].latest_price * position.qty / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
+                                </td>
+                                <td v-if="isDebugEnabled()">{{ idx }}</td>
+                                <td class="right-align button-container">
+                                    <span @click="editPosition(pidx, idx)" class="material-icons">edit</span>
+                                    <span @click="removePosition(pidx, idx)" class="material-icons">delete</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div v-if="portfolio.positions.length === 0" class="empty-watchlist-message">This portfolio is empty.</div>
+                    <div class="hide-mobile" style="margin-top: 10px; text-align: right">
+                        <a href="/import_howto.php"><span class="material-icons">download</span>Import inventory from Mousehunt</a>
+                    </div>
+                </template>
             </div>
             <div id="newportfolio" class="watchlist-tab-content"></div>
             <div v-if="appData.portfolios.length === 0">

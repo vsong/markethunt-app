@@ -33,59 +33,61 @@
                 <li class="watchlist-tab"><a style="padding: 0px;" href="#newlist" @click="newWatchlist()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
             </ul>
             <div v-for="(watchlist, widx) in appData.watchlists" v-bind:id="watchlist.uid" class="watchlist-tab-content">
-                <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
-                    <thead>
-                        <tr>
-                            <th class="sortable-header collapse-column-mobile" @click="sort('item')">
-                                Item<i v-bind:class="getSortIconClass('item')"></i>
-                            </th>
-                            <th class="sortable-header collapse-column-mobile" @click="sort('comment')">
-                                Comment<i v-bind:class="getSortIconClass('comment')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('mark')">
-                                Mark<i v-bind:class="getSortIconClass('mark')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('price')">
-                                Price<i v-bind:class="getSortIconClass('price')"></i>
-                            </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('chg')">
-                                Chg%<i v-bind:class="getSortIconClass('chg')"></i>
-                            </th>
-                            <th style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
-                            <th class="button-container"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(item, idx) in watchlistSorted">
-                            <td class="collapse-column-mobile">
-                                <a @click="setChart(item.item_id, appData.itemData[item.item_id].name)">
-                                    {{ appData.itemData[item.item_id].name }}
-                                </a>
-                            </td>
-                            <td class="collapse-column-mobile comment-column">{{ item.comment }}</td>
-                            <template v-if="item.mark !== null">
-                                <td class="right-align">{{ item.mark.toLocaleString() }}</td>
-                                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                                    {{ appData.itemData[item.item_id].latest_price.toLocaleString() }}
+                <template v-if="watchlist.uid === appData.watchlists[selectedWatchlistIdx].uid">
+                    <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
+                        <thead>
+                            <tr>
+                                <th class="sortable-header collapse-column-mobile" @click="sort('item')">
+                                    Item<i v-bind:class="getSortIconClass('item')"></i>
+                                </th>
+                                <th class="sortable-header collapse-column-mobile" @click="sort('comment')">
+                                    Comment<i v-bind:class="getSortIconClass('comment')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap" @click="sort('mark')">
+                                    Mark<i v-bind:class="getSortIconClass('mark')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap" @click="sort('price')">
+                                    Price<i v-bind:class="getSortIconClass('price')"></i>
+                                </th>
+                                <th class="sortable-header right-align shrink-wrap" @click="sort('chg')">
+                                    Chg%<i v-bind:class="getSortIconClass('chg')"></i>
+                                </th>
+                                <th style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
+                                <th class="button-container"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, idx) in watchlistSorted">
+                                <td class="collapse-column-mobile">
+                                    <a @click="setChart(item.item_id, appData.itemData[item.item_id].name)">
+                                        {{ appData.itemData[item.item_id].name }}
+                                    </a>
                                 </td>
-                                <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
-                                    {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
+                                <td class="collapse-column-mobile comment-column">{{ item.comment }}</td>
+                                <template v-if="item.mark !== null">
+                                    <td class="right-align">{{ item.mark.toLocaleString() }}</td>
+                                    <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                                        {{ appData.itemData[item.item_id].latest_price.toLocaleString() }}
+                                    </td>
+                                    <td class="right-align" v-bind:class="getColorClass(appData.itemData[item.item_id].latest_price / item.mark - 1)">
+                                        {{ formatPercent((appData.itemData[item.item_id].latest_price / item.mark - 1) * 100) }}
+                                    </td>
+                                </template>
+                                <template v-else>
+                                    <td class="right-align"></td>
+                                    <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString() }}</td>
+                                    <td class="right-align"></td>
+                                </template>
+                                <td v-if="isDebugEnabled()">{{ selectedWatchlistIdx }}</td>
+                                <td class="right-align button-container">
+                                    <span @click="editWatchItem(widx, idx)" class="material-icons">edit</span>
+                                    <span @click="removeWatchItem(widx, idx)" class="material-icons">delete</span>
                                 </td>
-                            </template>
-                            <template v-else>
-                                <td class="right-align"></td>
-                                <td class="right-align">{{ appData.itemData[item.item_id].latest_price.toLocaleString() }}</td>
-                                <td class="right-align"></td>
-                            </template>
-                            <td v-if="isDebugEnabled()">{{ selectedWatchlistIdx }}</td>
-                            <td class="right-align button-container">
-                                <span @click="editWatchItem(widx, idx)" class="material-icons">edit</span>
-                                <span @click="removeWatchItem(widx, idx)" class="material-icons">delete</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div v-if="watchlist.watches.length === 0" class="empty-watchlist-message">This watchlist is empty.</div>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div v-if="watchlist.watches.length === 0" class="empty-watchlist-message">This watchlist is empty.</div>
+                </template>
             </div>
             <div id="newlist" class="watchlist-tab-content"></div>
             <div v-if="appData.watchlists.length === 0">
