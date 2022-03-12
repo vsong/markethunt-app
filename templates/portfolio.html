@@ -9,6 +9,7 @@
 {% else %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.js"></script>
 {% endif %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -36,26 +37,26 @@
                 <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
                     <thead>
                         <tr>
-                            <th class="sortable-header" @click="sort('item')">
-                                Item<i v-bind:class="getSortIconClass('item')"></i>
+                            <th class="sortable-header">
+                                Item
                             </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('qty')">
-                                Qty<i v-bind:class="getSortIconClass('qty')"></i>
+                            <th class="sortable-header right-align shrink-wrap hide-mobile">
+                                Qty
                             </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('buy')">
-                                Buy Price<i v-bind:class="getSortIconClass('buy')"></i>
+                            <th class="sortable-header right-align shrink-wrap hide-mobile">
+                                Buy Price
                             </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('book')">
-                                Book Value<i v-bind:class="getSortIconClass('book')"></i>
+                            <th class="sortable-header right-align shrink-wrap">
+                                Book Value
                             </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('market')">
-                                Market Value<i v-bind:class="getSortIconClass('market')"></i>
+                            <th class="sortable-header right-align shrink-wrap">
+                                Market Value
                             </th>
-                            <th class="sortable-header right-align shrink-wrap" @click="sort('chg')">
-                                Chg%<i v-bind:class="getSortIconClass('chg')"></i>
+                            <th class="sortable-header right-align shrink-wrap">
+                                Chg%
                             </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('fraction')">
-                                Portfolio%<i v-bind:class="getSortIconClass('fraction')"></i>
+                            <th class="sortable-header right-align shrink-wrap hide-mobile">
+                                Portfolio%
                             </th>
                             <th class="shrink-wrap" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
                             <th class="button-container"></th>
@@ -462,5 +463,18 @@ const app = Vue.createApp({
 });
 
 app.mount("#portfolio-container");
+
+$(function () {
+        $(".table-sortable").tablesorter({
+            headerTemplate: '{content}{icon}',
+            cssIcon: 'ui-icon light-ui',
+            cssIconNone: 'ui-icon-caret-2-n-s',
+            cssIconAsc: 'ui-icon-caret-1-n',
+            cssIconDesc: 'ui-icon-caret-1-s',
+            cssIconDisabled: 'ui-icon-blank',
+            //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
+            sortList: [[0,1]] // initial sort by first column desc
+        });
+    });
 </script>
 {% endblock %}
