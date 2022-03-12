@@ -16,7 +16,7 @@
     <div class="pure-u-1 pure-u-xl-11-24">
         {% include('chartContainer.html') %}
     </div>
-    <div id="portfolio-container" class="pure-u-1 pure-u-xl-13-24">
+    <div id="portfolio-container" class="pure-u-1 pure-u-xl-13-24 xl-vue-table-container">
         <div style="text-align: center">
             <h1>Portfolio</h1>
         </div>
@@ -117,6 +117,9 @@
                     </tbody>
                 </table>
                 <div v-if="portfolio.positions.length === 0" class="empty-watchlist-message">This portfolio is empty.</div>
+                <div class="hide-mobile" style="margin-top: 10px; text-align: right">
+                    <a href="/import_howto.php"><span class="material-icons">download</span>Import Mousehunt inventory</a>
+                </div>
             </div>
             <div id="newportfolio" class="watchlist-tab-content"></div>
             <div v-if="appData.portfolios.length === 0">
