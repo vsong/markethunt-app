@@ -34,6 +34,7 @@
                 <li class="watchlist-tab"><a style="padding: 0px;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
             </ul>
             <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content">
+                <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid"></template>
                 <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
                     <thead>
                         <tr>
@@ -121,12 +122,13 @@
                 <div class="hide-mobile" style="margin-top: 10px; text-align: right">
                     <a href="/import_howto.php"><span class="material-icons">download</span>Import inventory from Mousehunt</a>
                 </div>
-            </div>
-            <div id="newportfolio" class="watchlist-tab-content"></div>
-            <div v-if="appData.portfolios.length === 0">
-                <p>You deleted all your portfolios! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new portfolio. </p>
-                <img src="/assets/img/NotLikeDuck.png" />
-            </div>
+            </template>
+        </div>
+        <div id="newportfolio" class="watchlist-tab-content"></div>
+        <div v-if="appData.portfolios.length === 0">
+            <p>You deleted all your portfolios! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new portfolio. </p>
+            <img src="/assets/img/NotLikeDuck.png" />
+        </div>
         </div>
         {% endverbatim %}
     </div>
