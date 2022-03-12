@@ -10,7 +10,7 @@
 
 {% block body %}
 <div>
-    {% include 'chartContainer.html' with {'include_credits': true} %}
+    {% include 'chart/chartContainer.html' with {'include_credits': true} %}
 </div>
 <script>
     var initialJson = {{ initial_stock_data |raw }};

@@ -14,7 +14,7 @@
 {% block body %}
 <div class="pure-g">
     <div class="pure-u-1 pure-u-xl-11-24">
-        {% include('chartContainer.html') %}
+        {% include 'chart/chartContainer.html' %}
     </div>
     <div id="portfolio-container" class="pure-u-1 pure-u-xl-13-24 xl-vue-table-container">
         <div style="text-align: center">
@@ -57,7 +57,7 @@
                             <th class="sortable-header right-align shrink-wrap hide-mobile" @click="sort('fraction')">
                                 Portfolio%<i v-bind:class="getSortIconClass('fraction')"></i>
                             </th>
-                            <th class="shrink-wrap" style="background-color: rgb(216, 0, 0)" v-if="debugMode">Debug</th>
+                            <th class="shrink-wrap" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
                             <th class="button-container"></th>
                         </tr>
                     </thead>
@@ -78,7 +78,7 @@
                                     <td class="right-align hide-mobile">
                                         {{ (getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
                                     </td>
-                                    <td v-if="debugMode"></td>
+                                    <td v-if="isDebugEnabled()"></td>
                                     <td></td>
                                 </tr>
                             </template>
@@ -108,7 +108,7 @@
                             <td class="right-align hide-mobile">
                                 {{ (appData.itemData[position.item_id].latest_price * position.qty / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
                             </td>
-                            <td v-if="debugMode">{{ idx }}</td>
+                            <td v-if="isDebugEnabled()">{{ idx }}</td>
                             <td class="right-align button-container">
                                 <span @click="editPosition(pidx, idx)" class="material-icons">edit</span>
                                 <span @click="removePosition(pidx, idx)" class="material-icons">delete</span>
@@ -444,6 +444,13 @@ const app = Vue.createApp({
         },
         newPortfolio() {
             newPortfolioModal();
+        },
+        isDebugEnabled() {
+            if (this.debugMode && localStorage.enableDebug === 'true') {
+                return true;
+            } else {
+                return false;
+            }
         }
     },
     updated() {
