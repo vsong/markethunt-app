@@ -116,7 +116,9 @@
                     </table>
                     <div v-if="portfolio.positions.length === 0" class="empty-watchlist-message">This portfolio is empty.</div>
                     <div class="hide-mobile" style="margin-top: 10px; text-align: right">
-                        <a href="/import_howto.php"><span class="material-icons">download</span>Import inventory from Mousehunt</a>
+                        <a href="https://greasyfork.org/en/scripts/441382-mousehunt-markethunt-inventory-export">
+                            <span class="material-icons">download</span>Import inventory from Mousehunt
+                        </a>
                     </div>
                 </template>
             </div>
@@ -390,26 +392,15 @@ const app = Vue.createApp({
             $("#vue-container").tabs('refresh');
         }
         
-        /* Re-init tablesorter */
-        $(function () {
-            $(".table-sortable").tablesorter({
-                headerTemplate: '{content}{icon}',
-                cssIcon: 'ui-icon light-ui',
-                cssIconNone: 'ui-icon-caret-2-n-s',
-                cssIconAsc: 'ui-icon-caret-1-n',
-                cssIconDesc: 'ui-icon-caret-1-s',
-                cssIconDisabled: 'ui-icon-blank',
-                //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
-                sortList: [[0,0]] // initial sort by first column asc
-            });
-        });
+        /* Re-init tablesorter after every update */
+        initTablesorter();
     }
 });
 
 app.mount("#portfolio-container");
 
 /* Must init tablesorter here to make first portfolio immediately sortable */
-$(function () {
+function initTablesorter() {
     $(".table-sortable").tablesorter({
         headerTemplate: '{content}{icon}',
         cssIcon: 'ui-icon light-ui',
@@ -420,6 +411,8 @@ $(function () {
         //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
         sortList: [[0,0]] // initial sort by first column asc
     });
-});
+}
+
+initTablesorter();
 </script>
 {% endblock %}
