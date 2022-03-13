@@ -43,7 +43,7 @@ function eventBand(IsoStrFrom, IsoStrTo, labelText) {
 
 var volumeWarningLabelBand = {
     from: UtcIsoDateToMillis('2005-01-01'),
-    to: UtcIsoDateToMillis('2021-11-31'),
+    to: UtcIsoDateToMillis('2021-11-30'),
     color: 'rgba(0,0,0,0)',
     label: {
         text: 'Volume data not available before Dec 1, 2021',
@@ -80,13 +80,20 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     itemId = Number(itemId);
 
     // set up header elements
-    document.getElementById('chartHeader').innerHTML = chartHeaderText;
-    document.getElementById('chart-external-mh-link').href = 'https://www.mousehuntgame.com/i.php?id=' + itemId;
-    document.getElementById('chart-header-price').innerHTML = "-- g";
-    document.getElementById('chart-header-change').innerHTML = "-- (-- %)";
-    document.getElementById('chart-header-change').className = '';
-    document.getElementById('chart-header-sb-index').innerHTML = "-- SB";
-    document.getElementsByClassName('chart-loading')[0].style.display = "flex";
+    const chartTitleElem = document.getElementById('chartHeader');
+    const externalMhLinkElem = document.getElementById('chart-external-mh-link');
+    const priceElem = document.getElementById('chart-header-price');
+    const changeElem = document.getElementById('chart-header-change');
+    const sbPriceElem = document.getElementById('chart-header-sb-index');
+    const loadingElem = document.getElementsByClassName('chart-loading')[0];
+
+    chartTitleElem.innerHTML = chartHeaderText;
+    externalMhLinkElem.href = 'https://www.mousehuntgame.com/i.php?id=' + itemId;
+    priceElem.innerHTML = "-- g";
+    changeElem.innerHTML = "-- (-- %)";
+    changeElem.className = '';
+    sbPriceElem.innerHTML = "-- SB";
+    loadingElem.style.display = "flex";
 
     // get saved daterange preferences
     try {
@@ -424,14 +431,10 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             }
         });
 
-        document.getElementsByClassName('chart-loading')[0].style.display = "none";
+        loadingElem.style.display = "none";
 
         if (response.data.length > 0) {
-            const priceElem = document.getElementById('chart-header-price');
-            const changeElem = document.getElementById('chart-header-change');
-            const sbPriceElem = document.getElementById('chart-header-sb-index');
             var latest = response.data[response.data.length - 1];
-
             priceElem.innerHTML = latest.price.toLocaleString() + 'g';
             
             try {
