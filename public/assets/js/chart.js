@@ -424,11 +424,20 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
         });
 
         document.getElementsByClassName('chart-loading')[0].style.display = "none";
+
         if (response.data.length > 0) {
+            const priceElem = document.getElementById('chart-header-price');
+            const changeElem = document.getElementById('chart-header-change');
+            const sbPriceElem = document.getElementById('chart-header-sb-index');
             var latest = response.data[response.data.length - 1];
-            document.getElementById('chart-header-price').innerHTML = latest.price.toLocaleString() + 'g';
-            document.getElementById('chart-header-sb-index').innerHTML = latest.sb_index
-                .toLocaleString("en-US", {maximumFractionDigits: 2}) + ' SB';
+
+            priceElem.innerHTML = latest.price.toLocaleString() + 'g';
+            
+            try {
+                sbPriceElem.innerHTML = latest.sb_index.toLocaleString("en-US", {maximumFractionDigits: 2}) + ' SB';
+            } catch (e) {
+                sbPriceElem.innerHTML = 'SB price not available';
+            }
 
             if ((response.data.length > 1) && (Date.now() - UtcIsoDateToMillis(latest.date) < 2 * 86400 * 1000)) {
                 var secondLatest = response.data[response.data.length - 2];
@@ -444,12 +453,12 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                     diffClass = 'loss-text';
                 }
 
-                document.getElementById('chart-header-change').innerHTML = prefix 
+                changeElem.innerHTML = prefix 
                     + Math.abs(goldDiff).toLocaleString() + 'g'
                     + ' (' + Math.abs((latest.price / secondLatest.price - 1) * 100).toFixed(1) + '%)';
-                document.getElementById('chart-header-change').className = diffClass;
+                    changeElem.className = diffClass;
             } else {
-                document.getElementById('chart-header-change').innerHTML = "<i>No recent activity</i>";
+                changeElem.innerHTML = "<i>No recent activity</i>";
             }
         }
     }
