@@ -391,8 +391,10 @@ const app = Vue.createApp({
             $("#vue-container").tabs('refresh');
         }
         
-        /* Re-init tablesorter after every update */
+        // Re-init tablesorter after every update because we may have switched tabs and the tables got destroyed
+        // and update tablesorter tbody cache in case it's the same table, but with updated rows
         initTablesorter();
+        $(".table-sortable").trigger('update');
     }
 });
 
