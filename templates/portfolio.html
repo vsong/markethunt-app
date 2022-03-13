@@ -354,8 +354,7 @@ const app = Vue.createApp({
         },
         removePortfolio(pidx) {
             showUndeleteToast(getPortfolioObjKey());
-            if ((pidx < this.selectedPortfolioIdx && pidx > 0) || 
-                    (pidx === appData.portfolios.length - 1 && this.selectedPortfolioIdx === appData.portfolios.length - 1)) {
+            if (pidx < this.selectedPortfolioIdx || this.selectedPortfolioIdx === appData.portfolios.length - 1) {
                 this.selectedPortfolioIdx--;
                 $("#vue-container").tabs("option", "active", this.selectedPortfolioIdx);
             }
