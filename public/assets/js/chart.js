@@ -41,7 +41,26 @@ function eventBand(IsoStrFrom, IsoStrTo, labelText) {
     }
 }
 
+var volumeWarningLabelBand = {
+    from: UtcIsoDateToMillis('2005-01-01'),
+    to: UtcIsoDateToMillis('2021-11-31'),
+    color: 'rgba(0,0,0,0)',
+    label: {
+        text: 'Volume data not available before Dec 1, 2021',
+        textAlign: 'center',
+        verticalAlign: 'bottom',
+        y: 50,
+        x: 0,
+        style: {
+            color: eventBandFontColor,
+            fontSize: '12px',
+            fontFamily: 'Trebuchet MS',
+        },
+    },
+}
+
 var eventData = [
+    volumeWarningLabelBand, // keep this plotband at beginning of array
     eventBand('2020-08-18', '2020-09-08', 'Ronza 2020'),
     eventBand('2020-10-14', '2020-11-03', 'Halloween 2020'),
     eventBand('2020-12-08', '2021-01-06', 'GWH 2020'),
@@ -54,7 +73,7 @@ var eventData = [
     eventBand('2021-10-13', '2021-11-02', 'Halloween 2021'),
     eventBand('2021-12-07', '2022-01-05', 'GWH 2021'),
     eventBand('2022-01-31', '2022-02-15', 'LNY 2022'),
-    eventBand('2022-03-02', '2022-03-22', 'Birthday 2022'),
+    eventBand('2022-03-02', '2022-03-22', 'Birthday 2022')
 ]
 
 function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
@@ -330,39 +349,40 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                     },
                 },
             ],
-            yAxis: [{
-                height: '80%',
-                // lineWidth: 1,
-                plotLines: filteredEntries,
-                labels: {
-                    formatter: function() {
-                        return this.value.toLocaleString() + 'g';
-                    }
-                },
-                showLastLabel: true, // show label at top of chart
-                crosshair: {
-                    dashStyle: 'Dot',
-                    color: crosshairColor,
-                },
-                opposite: false,
-                alignTicks: false, // disabled, otherwise autoranger will create too large a Y-window
-            }, {
-                height: '80%',
-                gridLineWidth: 0,
-                labels: {
-                    formatter: function() {
-                        return this.value.toLocaleString() + ' SB';
-                    }
-                },
-                showLastLabel: true, // show label at top of chart
-                opposite: true,
-                alignTicks: false,
-            }, {
-                top: '82%',
-                height: '18%',
-                offset: 0,
-                opposite: false,
-                tickPixelInterval: 35,
+            yAxis: [
+                {
+                    height: '80%',
+                    // lineWidth: 1,
+                    plotLines: filteredEntries,
+                    labels: {
+                        formatter: function() {
+                            return this.value.toLocaleString() + 'g';
+                        }
+                    },
+                    showLastLabel: true, // show label at top of chart
+                    crosshair: {
+                        dashStyle: 'Dot',
+                        color: crosshairColor,
+                    },
+                    opposite: false,
+                    alignTicks: false, // disabled, otherwise autoranger will create too large a Y-window
+                }, {
+                    height: '80%',
+                    gridLineWidth: 0,
+                    labels: {
+                        formatter: function() {
+                            return this.value.toLocaleString() + ' SB';
+                        }
+                    },
+                    showLastLabel: true, // show label at top of chart
+                    opposite: true,
+                    alignTicks: false,
+                }, {
+                    top: '82%',
+                    height: '18%',
+                    offset: 0,
+                    opposite: false,
+                    tickPixelInterval: 35,
             }],
             xAxis: {
                 type: 'datetime',
@@ -381,9 +401,17 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 },
                 events: {
                     setExtremes: function(event) {
-                        var chartDateRanges = getChartDateRangesObj();
+                        // save navigator min range
+                        const chartDateRanges = getChartDateRangesObj();
                         chartDateRanges[itemId] = {'min': parseInt(event.min)};
                         setChartDateRangesObj(chartDateRanges);
+
+                        // hide/unhide volume data warning based on current plotband pixel width
+                        const volumeWarningBand = this.plotLinesAndBands[0];
+                        const from = Math.max(this.toPixels(volumeWarningBand.options.from), this.chart.plotLeft)
+                        const to = Math.min(this.toPixels(volumeWarningBand.options.to), this.chart.plotLeft + this.chart.plotWidth)
+                        const show = volumeWarningBand.label.getBBox().width < to - from
+                        volumeWarningBand.label.css({ opacity: (show ? 1 : 0) })
                     },
                 },
                 tickPixelInterval: 120,
