@@ -20,7 +20,12 @@
 </div>
 
 <script>
-// set up watchlist dialog
+// fill watchlist selector
+getWatchlistObj().forEach(function(watchlist, widx) {
+    $('#watchlist-select').append(`<option value="${widx}">${watchlist.name}</option>`);
+});
+
+// register watchlist selector listener
 $('#set-watch-price').change(function() {
     $('#watch-price').prop('disabled', !this.checked);
 });

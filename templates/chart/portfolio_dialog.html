@@ -18,7 +18,12 @@
 </div>
 
 <script>
-// set up portfolio dialog
+// fill portfolio selector
+getPortfolioObj().forEach(function(portfolio, pidx) {
+    $('#portfolio-select').append(`<option value="${pidx}">${portfolio.name}</option>`);
+});
+
+// register portfolio selector listener
 $('#portfolio-select').change(function() {
     if ($(this).val() === "newPortfolioOption") {
         $('#new-portfolio-name-addportfolio').prop('required', true);

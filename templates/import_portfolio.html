@@ -25,7 +25,6 @@
         importData.forEach(function(item) {
             let itemId = item[0];
             let itemQty = item[1];
-            let itemPrice = 1;
 
             if (!Number.isInteger(itemQty)) {
                 return;
@@ -33,7 +32,9 @@
 
             if (itemId in itemMetadata) {
                 if (itemMetadata[itemId].latest_price !== null) {
-                    itemPrice = itemMetadata[itemId].latest_price;
+                    var itemPrice = itemMetadata[itemId].latest_price;
+                } else {
+                    var itemPrice = 1;
                 }
                 importPortfolio.positions.push(newPortfolioPosition(itemId, itemQty, itemPrice));
             }

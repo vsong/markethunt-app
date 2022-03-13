@@ -347,13 +347,14 @@ const app = Vue.createApp({
         },
         removeWatchlist(widx) {
             showUndeleteToast(getWatchlistObjKey());
-            appData.watchlists.splice(widx, 1);
-            this.appData.redrawTabs = true;
-            setWatchlistObj(appData.watchlists);
-            if (widx < this.selectedWatchlistIdx && widx > 0) {
+            if ((widx < this.selectedWatchlistIdx && widx > 0) || 
+                    (widx === appData.watchlists.length - 1 && this.selectedWatchlistIdx === appData.watchlists.length - 1)) {
                 this.selectedWatchlistIdx--;
                 $("#vue-container").tabs("option", "active", this.selectedWatchlistIdx);
             }
+            appData.watchlists.splice(widx, 1);
+            this.appData.redrawTabs = true;
+            setWatchlistObj(appData.watchlists);
         },
         editWatchlist(widx) {
             newWatchlistModal(widx);
