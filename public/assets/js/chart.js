@@ -383,6 +383,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                     offset: 0,
                     opposite: false,
                     tickPixelInterval: 35,
+                    allowDecimals: false
             }],
             xAxis: {
                 type: 'datetime',
