@@ -85,8 +85,10 @@
                                 </tr>
                             </template>
                         </template>
+                    </tbody>
+                    <tbody>
                         <tr v-for="(position, idx) in portfolioSorted" v-bind:key="position.uid">
-                            <td class="">
+                            <td>
                                 <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
                                     {{ appData.itemData[position.item_id].name }}
                                 </a>
@@ -461,6 +463,7 @@ const app = Vue.createApp({
             this.appData.redrawTabs = false;
             $("#vue-container").tabs('refresh');
         }
+        $(".table-sortable").trigger('update');
     }
 });
 
