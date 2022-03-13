@@ -15,7 +15,7 @@ if (filter_input(INPUT_GET, 'item_id', FILTER_VALIDATE_INT)) {
 
 $current_item_name = getItemName($current_item_id);
 
-echo $twig->render('watchlist.html', [
+echo $twig->render('portfolio.html', [
     'current_item_id' => $current_item_id,
     'current_item_name' => $current_item_name,
     'item_metadata' => getAllItemNamesAndLatestPrice(),

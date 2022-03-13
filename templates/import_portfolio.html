@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Importing your inventory{% endblock %}
+
+{% block head %}
+{{ parent() }}
+{% endblock %}
+
+{% block body %}
+<div id="message-text">Importing your inventory...</div>
+<script>
+    function processImportData() {
+        var itemMetadata = {{ item_metadata | json_encode | raw }};
+        var importData = {{ import_data | json_encode | raw }};
+        var importPortfolioName = '{{ import_portfolio_name | e('js') | raw }}';
+
+        if (importPortfolioName.length < 1) {
+            $('#message-text').html('Portfolio name cannot be empty');
+            return;
+        }
+
+        var portfolios = getPortfolioObj();
+        portfolios.push(newPortfolioObject(importPortfolioName));
+        var importPortfolio = portfolios[portfolios.length - 1];
+
+        importData.forEach(function(item) {
+            let itemId = item[0];
+            let itemQty = item[1];
+
+            if (!Number.isInteger(itemQty)) {
+                return;
+            }
+
+            if (itemId in itemMetadata) {
+                if (itemMetadata[itemId].latest_price !== null) {
+                    var itemPrice = itemMetadata[itemId].latest_price;
+                } else {
+                    var itemPrice = 1;
+                }
+                importPortfolio.positions.push(newPortfolioPosition(itemId, itemQty, itemPrice));
+            }
+        });
+
+        setPortfolioObj(portfolios);
+        $('#message-text').html(`Inventory imported as '${importPortfolioName}'. <a href="/portfolio.php">Go to your portfolios</a> to view your imported data.`);
+    }
+    processImportData();
+</script>
+{% endblock %}

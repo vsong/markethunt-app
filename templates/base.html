@@ -14,16 +14,28 @@
 
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lzutf8/0.6.0/lzutf8.min.js"></script>
         <script type="text/javascript" src="/assets/js/userData.js"></script>
+
+        {% if constant('APPENV') == 'prod' %}
+            <script data-goatcounter="https://markethunt.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+        {% endif %}
         
         <title>{% block title %}{% endblock %} - Markethunt</title>
         {% endblock %}
     </head>
     <body>
+        {% if constant('APPENV') == 'prod' %}
+            <script>var debugMode = false;</script>
+        {% else %}
+            <script>var debugMode = true;</script>
+        {% endif %}
+        
         <div id="main-toolbar" class="toolbar highlight">
                 <div class="toolbar-left">
                     <b><a href=index.php>Main page</a></b>
                     | <b><a href="/watchlist.php">Watchlist</a></b>
+                    | <b><a href="/portfolio.php">Portfolio</a></b>
                     | <a href="/highestvolumes.php">Highest volume items</a>
                     | Top movers: <a href="/top.php?period=day">day</a>
                     <a href="/top.php?period=week">week</a>
@@ -36,7 +48,7 @@
                 </div>
                 <div class="toolbar-right">
                     <div style="height: 5px">
-                        <a href="https://github.com/vsong/markethunt"><img src="assets/img/GitHub-Mark-Light-32px.png" alt="GitHub"></a>
+                        <a href="https://github.com/vsong/markethunt"><img src="/assets/img/GitHub-Mark-Light-32px.png" alt="GitHub"></a>
                     </div>
                 </div>
         </div>
