@@ -2,7 +2,7 @@
 require_once($_SERVER['APPDIR'] . "/config/setup.php");
 require_once($_SERVER['APPDIR'] . "/model/ItemModel.php");
 
-$default_item_id = 114; //SUPER|brie+
+$default_item_id = getDefaultItem();
 
 if (filter_input(INPUT_GET, 'item_id', FILTER_VALIDATE_INT)) {
     $current_item_id = (int)$_GET['item_id'];

@@ -10,26 +10,10 @@
 
 {% block body %}
 <div>
-    {% include 'chartContainer.html' with {'include_credits': true} %}
+    {% include 'chart/chartContainer.html' with {'include_credits': true} %}
 </div>
 <script>
     var initialJson = {{ initial_stock_data |raw }};
-
-    function processNewWatchlistFormData(watchlistName) {
-        var watchlists = getWatchlistObj();
-        watchlists.push(newWatchlistObject(watchlistName));
-        setWatchlistObj(watchlists);
-    }
-
-    function processWatchlistFormData(price, comment, widx) {
-        var selector = document.getElementById('chartSelector');
-        var itemId = Number(selector.value);
-        var itemName = selector.options[selector.selectedIndex].text;
-        var watchlist = getWatchlistObj();
-        watchlist[widx].watches.push(newWatchlistItem(itemId, comment, (price == null) ? null : "gold", price));
-        setWatchlistObj(watchlist);
-        renderChartWithItemId(itemId, itemName);
-    }
 
     renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}", initialJson);
 

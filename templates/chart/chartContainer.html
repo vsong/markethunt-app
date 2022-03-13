@@ -1,0 +1,60 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/highstock.min.js"></script>
+<script>
+var itemData = {{ item_metadata | json_encode | raw }};
+</script>
+
+<div id="chartBundle" style="max-width:800px; width: 100%; margin:auto;">
+    <div id="chart-header-container">
+        <div id="chart-header-left" class="chart-header-column">
+            <h1 id="chartHeader" style="margin-bottom: 0px;">{% block chart_header %}{% endblock %}</h1>
+            <div style="margin: 3px 0px;">
+                <a id="chart-external-mh-link" href="#" target="_blank" rel="noopener noreferrer">
+                    Open in Mousehunt<span class="material-icons" style="font-size:12px; vertical-align:top; text-shadow: none;">launch</span>
+                </a>
+            </div>
+            <div style="margin: 10px 0px;">
+                <button id="add-to-watchlist" class="pure-button pure-button-primary" onclick="addToWatchlistModal(null)">
+                    Add to Watchlist
+                </button>
+                <button id="add-to-portfolio" class="pure-button pure-button-primary" onclick="addToPortfolioModal()">
+                    Add to Portfolio
+                </button>
+            </div>
+        </div>
+        <div id="chart-header-right" class="chart-header-column">
+            <div id="chart-header-price">--g</div>
+            <div id="chart-header-change">-- (-- %)</div>
+            <div id="chart-header-sb-index">-- SB</div>
+        </div>
+    </div>
+    <div class="chart-loading-container">
+        <div id="chartContainer" style="width:100%; height:550px; margin:auto;"></div>
+        <div class="chart-loading">
+            <!-- <img class="chart-loading-loader" src="/assets/img/ball.svg"> -->
+        </div>
+    </div>
+    <form id="chartForm" action="javascript:;" onsubmit="" class="pure-form" style="margin: 5px 10px 15px 10px; display: flex;">
+        <select id="chartSelector" name="item_id" onchange="handleChartSubmit()" style="width: 100%">
+            <option value="" disabled selected hidden>Select an item</option>
+            {% for item in item_metadata %}
+                <option value="{{ item.item_id }}" {% if item.item_id == current_item_id %} selected="selected"{% endif %}>
+                    {{- item.name -}}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    {% if include_credits %}
+        <div class="credits">
+            <p>Thanks to Chad and Coyu for their historical data.</p>
+            <p>
+                <a href="https://github.com/vsong/markethunt/issues">Leave feedback</a>
+                | <a href="https://github.com/vsong/markethunt">Contribute</a>
+            </p>
+        </div>
+    {% endif %}
+</div>
+
+<script src="/assets/js/chart.js"></script>
+
+{% include 'chart/watchlist_dialog.html' %}
+{% include 'chart/portfolio_dialog.html' %}
