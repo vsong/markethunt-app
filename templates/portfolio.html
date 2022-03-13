@@ -38,29 +38,29 @@
                 <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
                     <thead>
                         <tr>
-                            <th class="sortable-header">
+                            <th>
                                 Item
                             </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile">
+                            <th class="right-align shrink-wrap hide-mobile">
                                 Qty
                             </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile">
+                            <th class="right-align shrink-wrap hide-mobile">
                                 Buy Price
                             </th>
-                            <th class="sortable-header right-align shrink-wrap">
+                            <th class="right-align shrink-wrap">
                                 Book Value
                             </th>
-                            <th class="sortable-header right-align shrink-wrap">
+                            <th class="right-align shrink-wrap">
                                 Market Value
                             </th>
-                            <th class="sortable-header right-align shrink-wrap">
+                            <th class="right-align shrink-wrap">
                                 Chg%
                             </th>
-                            <th class="sortable-header right-align shrink-wrap hide-mobile">
+                            <th class="right-align shrink-wrap hide-mobile">
                                 Portfolio%
                             </th>
-                            <th class="shrink-wrap" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
-                            <th class="button-container"></th>
+                            <th class="shrink-wrap sorter-false" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
+                            <th class="button-container sorter-false"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,7 +87,7 @@
                         </template>
                     </tbody>
                     <tbody>
-                        <tr v-for="(position, idx) in portfolioSorted" v-bind:key="position.uid">
+                        <tr v-for="(position, idx) in portfolio.positions" v-bind:key="position.uid">
                             <td>
                                 <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
                                     {{ appData.itemData[position.item_id].name }}
@@ -96,9 +96,7 @@
                             <td class="right-align hide-mobile">{{ position.qty.toLocaleString() }}</td>
                             <td class="right-align hide-mobile">{{ position.mark.toLocaleString() }}</td>
                             <td class="right-align">
-                                <div>
-                                    {{ (position.mark * position.qty).toLocaleString() }}
-                                </div>
+                                {{ (position.mark * position.qty).toLocaleString() }}
                                 <div class="book-value-mobile-hint">
                                     {{ position.qty.toLocaleString() }} @ {{ position.mark.toLocaleString() }}
                                 </div>
@@ -275,71 +273,11 @@ const app = Vue.createApp({
         this.cache_totalMarketValue = {'gold': null, 'sb': null};
         return {
             appData,
-            currentSort: 'item',
-            currentSortDir: 'asc',
             selectedPortfolioIdx: 0,
             debugMode
         }
     },
-    computed: {
-        portfolioSorted() {
-            if (this.selectedPortfolioIdx >= this.appData.portfolios.length) {
-                this.selectedPortfolioIdx = appData.portfolios.length - 1;
-            }
-
-            return this.appData.portfolios[this.selectedPortfolioIdx].positions.sort((a,b) => {
-                var order = (this.currentSortDir === 'asc') ? 1 : -1;
-                if (this.currentSort === 'item') {
-                    var a_val = appData.itemData[a.item_id].name;
-                    var b_val = appData.itemData[b.item_id].name;
-                } else if (this.currentSort === 'qty') {
-                    var a_val = a.qty === "" ? null : a.qty;
-                    var b_val = b.qty === "" ? null : b.qty;
-                } else if (this.currentSort === 'buy') {
-                    var a_val = a.mark;
-                    var b_val = b.mark;
-                } else if (this.currentSort === 'book') {
-                    var a_val = a.mark * a.qty;
-                    var b_val = b.mark * b.qty;
-                } else if (this.currentSort === 'market' || this.currentSort === 'fraction') {
-                    var a_val = a.qty * appData.itemData[a.item_id].latest_price;
-                    var b_val = b.qty * appData.itemData[b.item_id].latest_price;
-                } else if (this.currentSort === 'chg') {
-                    var a_val = (a.mark == null) ? null : appData.itemData[a.item_id].latest_price / a.mark - 1;
-                    var b_val = (b.mark == null) ? null : appData.itemData[b.item_id].latest_price / b.mark - 1;
-                } else {
-                    throw new Error('Sort key not recognized: ' + this.currentSort);
-                }
-
-                if (a_val === b_val) {
-                    return 0;
-                } 
-                if (a_val === null) {
-                    return 1;
-                }
-                if (b_val === null) {
-                    return -1;
-                }
-
-                if (a_val > b_val) {
-                    return 1 * order;
-                } else if (a_val < b_val) {
-                    return -1 * order;
-                } else {
-                    return 0;
-                }
-            });
-        },
-    },
     methods: {
-        sort(sortKey) {
-            if(sortKey === this.currentSort) {
-                this.currentSortDir = (this.currentSortDir === 'asc') ? 'desc' : 'asc';
-            } else {
-                this.currentSortDir = 'asc';
-                this.currentSort = sortKey;
-            }
-        },
         formatPercent(num) {
             if (num > 0) {
                 return '+' + num.toFixed(1) + '%';
@@ -356,17 +294,6 @@ const app = Vue.createApp({
                 return {'loss-text' : true};
             } else {
                 return {};
-            }
-        },
-        getSortIconClass(columnKey) {
-            if (columnKey === this.currentSort){
-                if (this.currentSortDir === 'asc') {
-                    return ['ui-icon', 'light-ui', 'tablesorter-icon', 'ui-icon-caret-1-n'];
-                } else {
-                    return ['ui-icon', 'light-ui', 'tablesorter-icon', 'ui-icon-caret-1-s'];
-                }
-            } else {
-                return ['ui-icon', 'light-ui', 'tablesorter-icon', 'ui-icon-caret-2-n-s'];
             }
         },
         getPortfolioTotalQty(portfolio, markType) {
@@ -469,6 +396,7 @@ const app = Vue.createApp({
 
 app.mount("#portfolio-container");
 
+/* Init tablesorter */
 $(function () {
         $(".table-sortable").tablesorter({
             headerTemplate: '{content}{icon}',
@@ -478,7 +406,7 @@ $(function () {
             cssIconDesc: 'ui-icon-caret-1-s',
             cssIconDisabled: 'ui-icon-blank',
             //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
-            sortList: [[0,1]] // initial sort by first column desc
+            sortList: [[0,0]] // initial sort by first column asc
         });
     });
 </script>
