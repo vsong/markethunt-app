@@ -230,8 +230,6 @@ table.small-td-text td {
     display: none;
 }
 
-
-
 /* sortable table stuff */
 .table-sortable .ui-icon {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
