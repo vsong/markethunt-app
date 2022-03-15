@@ -26,6 +26,9 @@
             document.title = itemName + ' - Markethunt'; // change title after replaceState to preserve title of previous history entry 
         }
         renderChartWithItemId(itemId, itemName);
+        if (window.goatcounter !== undefined) {
+            window.goatcounter.count();
+        }
     }
 </script>
 {% endblock %}
