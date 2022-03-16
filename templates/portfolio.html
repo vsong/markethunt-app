@@ -413,7 +413,12 @@ function initTablesorter() {
         sortList: [[0,0]] // initial sort by first column asc
     });
 }
-
 initTablesorter();
+
+// process 'action' query param, if any
+var searchParams = new URLSearchParams(window.location.search);
+if (searchParams.get('action') === 'add_position') {
+    addToPortfolioModal();
+}
 </script>
 {% endblock %}
