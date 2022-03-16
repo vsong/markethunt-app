@@ -5,6 +5,7 @@ require_once($_SERVER['APPDIR'] . "/model/ItemModel.php");
 ob_start();
 
 header('Content-Type: application/json; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
 
 if (filter_input(INPUT_GET, 'item_id', FILTER_VALIDATE_INT)) {
     $current_item_id = (int)$_GET['item_id'];
