@@ -90,12 +90,15 @@ function addToPortfolioModal(editPositonObj = null, editPidx = null, editIdx = n
             $('#add-to-portfolio-cancel').removeClass().addClass("pure-button");
 
             // set up qty and buy price
-            if (editPositonObj === null) {
-                $('#position-qty').val(1);
-                $('#position-mark').val(itemData[itemId].latest_price);
-            } else {
+            if (editPositonObj !== null) {
                 $('#position-qty').val(editPositonObj.qty);
                 $('#position-mark').val(editPositonObj.mark);
+            } else if (searchParams.get('add_qty') !== null) {
+                $('#position-qty').val(searchParams.get('add_qty'));
+                $('#position-mark').val(searchParams.get('add_mark'));
+            } else {
+                $('#position-qty').val(1);
+                $('#position-mark').val(itemData[itemId].latest_price);
             }
 
             $('#new-portfolio-name-addportfolio').val('');
@@ -149,5 +152,11 @@ function processNewPositionFormData(qty, mark, pidx) {
     portfolios[pidx].positions.push(newPortfolioPosition(itemId, qty, mark));
     setPortfolioObj(portfolios);
     renderChartWithItemId(itemId, itemName);
+}
+
+// process 'action' query param, if any
+var searchParams = new URLSearchParams(window.location.search);
+if (searchParams.get('action') === 'add_position') {
+    addToPortfolioModal();
 }
 </script>

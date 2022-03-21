@@ -414,11 +414,5 @@ function initTablesorter() {
     });
 }
 initTablesorter();
-
-// process 'action' query param, if any
-var searchParams = new URLSearchParams(window.location.search);
-if (searchParams.get('action') === 'add_position') {
-    addToPortfolioModal();
-}
 </script>
 {% endblock %}
