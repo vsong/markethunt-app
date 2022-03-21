@@ -166,4 +166,10 @@ function processWatchlistFormData(price, comment, widx) {
     setWatchlistObj(watchlist);
     renderChartWithItemId(itemId, itemName);
 }
+
+// process 'action' query param, if any
+var searchParams = new URLSearchParams(window.location.search);
+if (searchParams.get('action') === 'add_watch_item') {
+    addToWatchlistModal(null);
+}
 </script>
