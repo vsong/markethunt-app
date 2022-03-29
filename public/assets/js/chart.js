@@ -7,7 +7,7 @@ var sbiLineColor = "#00c000"
 var volumeColor = "#51cda0";
 
 var eventBandColor = "#f2f2f2";
-var eventBandFontColor = "#888888"; // recommend to have same or close color as yGridLineColor for visual clarity
+var eventBandFontColor = "#999999"; // recommend to have same or close color as yGridLineColor for visual clarity
 var xGridLineColor = "#bbbbbb";
 var yGridLineColor = "#aaaaaa";
 var yGridLineColorLighter = "#dddddd";
@@ -59,22 +59,8 @@ var volumeWarningLabelBand = {
     },
 }
 
-var eventData = [
-    volumeWarningLabelBand, // keep this plotband at beginning of array
-    eventBand('2020-08-18', '2020-09-08', 'Ronza 2020'),
-    eventBand('2020-10-14', '2020-11-03', 'Halloween 2020'),
-    eventBand('2020-12-08', '2021-01-06', 'GWH 2020'),
-    eventBand('2021-02-09', '2021-02-23', 'LNY 2021'),
-    eventBand('2021-03-02', '2021-03-23', 'Birthday 2021'),
-    eventBand('2021-03-30', '2021-04-27', 'SEH 2021'),
-    eventBand('2021-05-25', '2021-06-08', 'KGA 2021'),
-    eventBand('2021-06-29', '2021-07-13', 'Jaq 2021'),
-    eventBand('2021-07-27', '2021-08-17', 'Ronza 2021'),
-    eventBand('2021-10-13', '2021-11-02', 'Halloween 2021'),
-    eventBand('2021-12-07', '2022-01-05', 'GWH 2021'),
-    eventBand('2022-01-31', '2022-02-15', 'LNY 2022'),
-    eventBand('2022-03-02', '2022-03-22', 'Birthday 2022')
-]
+var eventBands = [volumeWarningLabelBand]; // keep this plotband at beginning of array
+eventDates.forEach(event => eventBands.push(eventBand(event[0], event[1], event[2])));
 
 function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     itemId = Number(itemId);
@@ -395,7 +381,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             xAxis: {
                 type: 'datetime',
                 ordinal: false, // show continuous x axis if dates are missing
-                plotBands: eventData,
+                plotBands: eventBands,
                 range: Date.now() - currentDateMinimum,
                 crosshair: {
                     dashStyle: 'Dot',
