@@ -1,6 +1,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/highstock.min.js"></script>
 <script>
 var itemData = {{ item_metadata | json_encode | raw }};
+var eventDates = {% include 'chart/event_dates.json' %};
 </script>
 
 <div id="chartBundle" style="max-width:800px; width: 100%; margin:auto;">
@@ -45,11 +46,7 @@ var itemData = {{ item_metadata | json_encode | raw }};
     </form>
     {% if include_credits %}
         <div class="credits">
-            <p>Thanks to Chad and Coyu for their historical data.</p>
-            <p>
-                <a href="https://github.com/vsong/markethunt/issues">Leave feedback</a>
-                | <a href="https://github.com/vsong/markethunt">Contribute</a>
-            </p>
+            <p>Get the <a href="https://greasyfork.org/en/scripts/441382-markethunt-plugin-for-mousehunt">Markethunt userscript</a>!</p>
         </div>
     {% endif %}
 </div>
