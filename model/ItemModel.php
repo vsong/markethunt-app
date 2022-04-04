@@ -26,31 +26,51 @@ function getAllItemNamesAndLatestPrice(): array
 
     $statement = Db::getConnection()
         ->query("WITH
-        latest_prices AS (
+        latest_prices AS(
         SELECT
             item_id,
             DATE,
             price
-        FROM `daily_price` p
-        RIGHT JOIN (
+        FROM
+            `daily_price` p
+        RIGHT JOIN(
             SELECT
                 MAX(DATE) AS DATE,
                 item_id
-            FROM daily_price
-            GROUP BY item_id
+            FROM
+                daily_price
+            GROUP BY
+                item_id
         ) p2 USING(item_id, DATE)
+    ),
+    sb_prices AS(
+        SELECT
+            DATE,
+            price
+        FROM
+            `daily_price` p
+        WHERE
+            item_id = 114
     )
     SELECT
         m.item_id,
         m.name,
-        p.price
-    FROM item_meta m
+        p.price,
+        CAST(p.price / sbp.price AS DOUBLE) AS sb_price
+    FROM
+        item_meta m
     LEFT JOIN latest_prices p USING(item_id)
-    ORDER BY m.name ASC;");
+    LEFT JOIN sb_prices sbp USING(DATE)
+    ORDER BY
+        m.name ASC;");
 
     foreach ($statement as $row) {
-        // array_push($results, array("item_id" => $row['item_id'], "name" => $row['name'], "latest_price" => $row['price']));
-        $results[$row['item_id']] = array("item_id" => $row['item_id'], "name" => $row['name'], "latest_price" => $row['price'] ?? 0);
+        $results[$row['item_id']] = array(
+            "item_id" => $row['item_id'], 
+            "name" => $row['name'], 
+            "latest_price" => $row['price'] ?? 0,
+            "latest_sb_price" => $row['sb_price'] ?? 0,
+        );
     }
 
     return $results;

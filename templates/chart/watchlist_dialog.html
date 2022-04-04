@@ -1,6 +1,6 @@
 
 <div id="add-watchlist-dialog" style="display:none">
-    <form id="add-watchlist-form" name="add-watchlist-form" class="pure-form pure-form-stacked">
+    <form id="add-watchlist-form" name="add-watchlist-form" class="pure-form pure-form-stacked" onsubmit="return false">
         <fieldset>
             <label for="set-watch-price" class="pure-checkbox">
                 <input type="checkbox" id="set-watch-price" /> Set price benchmark
@@ -14,6 +14,7 @@
                 <label for="new-watchlist-name-addwatch">New watchlist name <span class="required-indicator">*</span></label>
                 <input type="text" id="new-watchlist-name-addwatch" pattern=".+" />
             </div>
+            <input type="submit" onclick="document.getElementById('add-to-watchlist-confirm').click()" style="display: none">
         </fieldset>
     </form>
     <p style="margin: 16px 0px 0px 0px;"><i>You can view your saved watches in the <a href="/watchlist.php">Watchlist</a> page.</i></p>

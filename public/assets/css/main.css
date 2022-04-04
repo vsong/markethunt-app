@@ -1,6 +1,7 @@
 :root {
     --highlight-color: #4f52aa;
     --highlight-color-active: #40438c;
+    --highlight-color-light: #e6eaff;
     --a-in-highlight: #dcf1ff;
 }
 
@@ -20,6 +21,12 @@ pre {
 #chart-header-price {
     font-size: 1.7em;
     margin-top: 0.9em;
+}
+
+
+/* form stuff */
+.pure-form-stacked label {
+    margin: 1.5em 0 .5em 0;
 }
 
 .param-form-container {
@@ -44,6 +51,16 @@ pre {
         display: block;
         margin: 5px 0px;
     }
+}
+
+.pure-radio.marktype-radio {
+    display: inline-block;
+    padding-right: 10px;
+}
+
+.pure-radio.marktype-radio input {
+    margin-right: 3px;
+    height: 1em;
 }
 
 .credits {
@@ -147,6 +164,10 @@ table.pure-table {
     background-color: #f2f2f2;
 }
 
+.pure-table-striped tr:nth-child(2n-1) td {
+    background-color: unset;
+}
+
 .pure-table th {
     background-color: var(--highlight-color);
     color: white;
@@ -154,7 +175,7 @@ table.pure-table {
     border: 0px solid red;
 }
 
-.pure-table th.shrink-wrap {
+.pure-table th.shrink-wrap, .pure-table td.shrink-wrap {
     width: 0px;
     white-space: nowrap;
 }
@@ -212,8 +233,9 @@ table.pure-table {
     text-align: right !important;
 }
 
-tr.portfolio-summary-row {
+.pure-table tr.portfolio-summary-row {
     font-weight: bold;
+    background-color: var(--highlight-color-light);
 }
 
 table.small-td-text td {
@@ -305,10 +327,6 @@ a, a:link, a:visited {
 .pure-button-primary:active {
     box-shadow: 2px 2px 2px 0px #aaaaaa;
     background-color: var(--highlight-color-active) !important;
-}
-
-.pure-form-stacked label {
-    margin: 1.5em 0 .5em 0;
 }
 
 /* jquery-ui theme overrides */
