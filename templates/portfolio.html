@@ -81,7 +81,7 @@
                                         <template v-if="markType === 'sb'">
                                             <td>Total SB value</td>
                                             <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
-                                            <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toFixed(2).toLocaleString() }} SB</td>
+                                            <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString(undefined, {maximumFractionDigits: 2}) }} SB</td>
                                             <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString(undefined, {maximumFractionDigits: 2}) }} SB</td>
                                             <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
                                                 {{ getPortfolioTotalMarketValue(portfolio, markType).toLocaleString(undefined, {maximumFractionDigits: 2}) }} SB
