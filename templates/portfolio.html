@@ -79,7 +79,7 @@
                                             </td>
                                         </template>
                                         <template v-if="markType === 'sb'">
-                                            <td>Total SB value</td>
+                                            <td class="sb-row-marker">Total SB value</td>
                                             <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
                                             <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString(undefined, {maximumFractionDigits: 2}) }} SB</td>
                                             <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString(undefined, {maximumFractionDigits: 2}) }} SB</td>
@@ -101,7 +101,7 @@
                         </tbody>
                         <tbody>
                             <tr v-for="(position, idx) in portfolio.positions" v-bind:key="position.uid">
-                                <td>
+                                <td v-bind:class="{'sb-row-marker' : position.mark_type === 'sb'}">
                                     <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
                                         {{ appData.itemData[position.item_id].name }}
                                     </a>
