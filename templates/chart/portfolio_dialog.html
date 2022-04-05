@@ -141,6 +141,7 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
             var initialGoldMark = itemData[itemId].latest_price;
             var initialSbMark = itemData[itemId].latest_sb_price;
             var initialRadioCheckedId = "radio-gold-mark";
+            var initialRadiosDisabled = false;
 
             if (editPositionObj !== null) {
                 initialQty = editPositionObj.qty;
@@ -150,6 +151,7 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
                     initialSbMark = editPositionObj.mark;
                     initialRadioCheckedId = "radio-sb-mark";
                 }
+                initialRadiosDisabled = true;
             } else if (searchParams.get('add_qty') !== null) {
                 initialQty = Number(searchParams.get('add_qty'));
                 if (searchParams.get('add_mark_type') === "sb") { // match sb first for legacy reasons
@@ -163,6 +165,8 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
             $('#position-mark').val(initialGoldMark);
             $('#position-mark-sb').val(initialSbMark.toFixed(2));
             $("#" + initialRadioCheckedId).prop("checked", true);
+            $('input[name=mark-type]').prop('disabled', initialRadiosDisabled);
+
             toggleMarkInputBoxes();
 
             $('#new-portfolio-name-addportfolio').val('');
