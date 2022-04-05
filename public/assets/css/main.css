@@ -25,6 +25,10 @@ pre {
 
 
 /* form stuff */
+::placeholder {
+    font-style: italic;
+}
+
 .pure-form-stacked label {
     margin: 1.5em 0 .5em 0;
 }
@@ -305,8 +309,12 @@ td.sb-row-marker {
 /* theming */
 a, a:link, a:visited {
     color: #06C;
-    text-decoration: underline;
+    text-decoration: none;
     cursor: pointer;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 .highlight {

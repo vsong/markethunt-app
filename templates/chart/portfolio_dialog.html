@@ -15,11 +15,11 @@
                 <input type="number" id="position-mark-sb" min=0.001 max=999999 step="0.001" required>
             </div>
 
-            <label for="radio-gold-mark" class="pure-radio marktype-radio">
-                <input type="radio" id="radio-gold-mark" name="mark-type" value="gold" />Gold
+            <label for="radio-gold-position-mark" class="pure-radio marktype-radio">
+                <input type="radio" id="radio-gold-position-mark" name="position-mark-type" value="gold" />Gold
             </label>
-            <label for="radio-sb-mark" class="pure-radio marktype-radio">
-                <input type="radio" id="radio-sb-mark" name="mark-type" value="sb" />SB
+            <label for="radio-sb-position-mark" class="pure-radio marktype-radio">
+                <input type="radio" id="radio-sb-position-mark" name="position-mark-type" value="sb" />SB
             </label>
 
             <label for="portfolio-select">Portfolio</label>
@@ -52,9 +52,9 @@ $('#portfolio-select').change(function() {
     }
 });
 
-function toggleMarkInputBoxes() {
+function togglePositionMarkInputBoxes() {
     // TODO: verify that changing input type works in Safari. If not, try using native JS. Works in Chrome and FF.
-    if ($("input[name=mark-type]:checked").val() === "gold") {
+    if ($("input[name=position-mark-type]:checked").val() === "gold") {
         $("#gold-mark-input-container").show();
         $("#position-mark").prop("type", "number");
         $("#position-mark").prop("required", true);
@@ -74,7 +74,7 @@ function toggleMarkInputBoxes() {
 }
 
 // register mark type selector listener
-$("input[name=mark-type]").change(toggleMarkInputBoxes);
+$("input[name=position-mark-type]").change(togglePositionMarkInputBoxes);
 
 function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = null) {
     var selector = document.getElementById('chartSelector');
@@ -93,7 +93,7 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
                 click: function() {
                     if (document.forms["add-portfolio-form"].reportValidity()) {
                         var inputQty = Number($('#position-qty').val());
-                        var inputPriceType = $("input[name=mark-type]:checked").val();
+                        var inputPriceType = $("input[name=position-mark-type]:checked").val();
                         if (inputPriceType === "gold") {
                             var inputPrice = Number($('#position-mark').val());
                         } else {
@@ -140,7 +140,7 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
             var initialQty = 1;
             var initialGoldMark = itemData[itemId].latest_price;
             var initialSbMark = itemData[itemId].latest_sb_price;
-            var initialRadioCheckedId = "radio-gold-mark";
+            var initialRadioCheckedId = "radio-gold-position-mark";
             var initialRadiosDisabled = false;
 
             if (editPositionObj !== null) {
@@ -149,14 +149,14 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
                     initialGoldMark = editPositionObj.mark;
                 } else {
                     initialSbMark = editPositionObj.mark;
-                    initialRadioCheckedId = "radio-sb-mark";
+                    initialRadioCheckedId = "radio-sb-position-mark";
                 }
                 initialRadiosDisabled = true;
             } else if (searchParams.get('add_qty') !== null) {
                 initialQty = Number(searchParams.get('add_qty'));
                 if (searchParams.get('add_mark_type') === "sb") { // match sb first for legacy reasons
                     initialSbMark = Number(searchParams.get('add_mark'));
-                    initialRadioCheckedId = "radio-sb-mark";
+                    initialRadioCheckedId = "radio-sb-position-mark";
                 } else {
                     initialGoldMark = Number(searchParams.get('add_mark'));
                 }
@@ -165,9 +165,9 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
             $('#position-mark').val(initialGoldMark);
             $('#position-mark-sb').val(initialSbMark.toFixed(2));
             $("#" + initialRadioCheckedId).prop("checked", true);
-            $('input[name=mark-type]').prop('disabled', initialRadiosDisabled);
+            $('input[name=position-mark-type]').prop('disabled', initialRadiosDisabled);
 
-            toggleMarkInputBoxes();
+            togglePositionMarkInputBoxes();
 
             $('#new-portfolio-name-addportfolio').val('');
 
