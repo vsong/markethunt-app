@@ -64,7 +64,7 @@
                                 <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length >= 1 && portfolio.positions.length >= 2">
                                     <tr class="portfolio-summary-row">
                                         <td v-if="markType === 'gold'">Total gold value</td>
-                                        <td v-if="markType === 'sb'" class="sb-row-marker">Total SB value</td>
+                                        <td v-if="markType === 'sb'" >Total SB value</td>
                                         <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
                                         <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
                                         <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
@@ -85,7 +85,7 @@
                         </tbody>
                         <tbody>
                             <tr v-for="(position, idx) in portfolio.positions" v-bind:key="position.uid">
-                                <td v-bind:class="{'sb-row-marker' : position.mark_type === 'sb'}">
+                                <td v-bind:class="{'sb-row-marker' : position.mark_type === 'sb'}" :data-text="appData.itemData[position.item_id].name + position.date_modified">
                                     <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
                                         {{ appData.itemData[position.item_id].name }}
                                     </a>
