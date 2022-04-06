@@ -100,7 +100,7 @@
                                     {{ position.mark.toLocaleString(undefined, {minimumFractionDigits: 2}) + getMarkTypeAppendText(position.mark_type)}}
                                 </td>
                                 <td class="right-align shrink-wrap">
-                                    {{ (position.mark * position.qty).toLocaleString() + getMarkTypeAppendText(position.mark_type) }}
+                                    {{ (position.mark * position.qty).toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
                                     <div class="book-value-mobile-hint">
                                         {{ position.qty.toLocaleString() }} @ {{ position.mark.toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
                                     </div>
