@@ -65,9 +65,9 @@
                                 </td>
                                 <td class="collapse-column-mobile comment-column">{{ item.comment }}</td>
                                 <template v-if="item.mark !== null">
-                                    <td class="right-align shrink-wrap">{{ item.mark.toLocaleString() + getMarkTypeAppendText(item.mark_type) }}</td>
+                                    <td class="right-align shrink-wrap">{{ item.mark.toLocaleString(...getLocaleStringOpts(item.mark_type)) + getMarkTypeAppendText(item.mark_type) }}</td>
                                     <td class="right-align  shrink-wrap" v-bind:class="getColorClass(getLatestPrice(item) / item.mark - 1)">
-                                        {{ getLatestPrice(item).toLocaleString(undefined, {maximumFractionDigits: 2}) + getMarkTypeAppendText(item.mark_type) }}
+                                        {{ getLatestPrice(item).toLocaleString(...getLocaleStringOpts(item.mark_type)) + getMarkTypeAppendText(item.mark_type) }}
                                     </td>
                                     <td class="right-align" v-bind:class="getColorClass(getLatestPrice(item) / item.mark - 1)">
                                         {{ formatPercent((getLatestPrice(item) / item.mark - 1) * 100) }}
@@ -322,6 +322,18 @@ const app = Vue.createApp({
             } else {
                 return appData.itemData[item.item_id].latest_price;
             }
+        },
+        getLocaleStringOpts(markType) {
+            const stringOpts = {
+                'gold': [],
+                'sb': [undefined, {maximumFractionDigits: 2, minimumFractionDigits: 2}]
+            };
+
+            if (markType == null) {
+                return stringOpts.gold;
+            }
+
+            return stringOpts[markType];
         },
         formatPercent(num) {
             if (num > 0) {
