@@ -4,110 +4,87 @@
     --highlight-color-light: #e6eaff;
     --a-in-highlight: #dcf1ff;
 }
-
 pre {
     white-space: pre-wrap;
 }
-
 #chart-header-container {
     display: flex;
 }
-
 #chart-header-right {
     text-align: right;
     white-space: nowrap;
 }
-
 #chart-header-price {
     font-size: 1.7em;
     margin-top: 0.9em;
 }
 
-
 /* form stuff */
 ::placeholder {
     font-style: italic;
 }
-
 .pure-form-stacked label {
     margin: 1.5em 0 .5em 0;
 }
-
 .param-form-container {
     text-align: center;
     margin: 20px;
 }
-
 .param-form-container form {
     display: inline-block;
 }
-
 .param-form-container input {
     margin-right: 10px;
 }
-
 .param-form div {
     display: inline-block;
 }
-
 @media (max-width: 900px) {
     .param-form div {
         display: block;
         margin: 5px 0px;
     }
 }
-
 .pure-radio.marktype-radio {
     display: inline-block;
     padding-right: 10px;
 }
-
 .pure-radio.marktype-radio input {
     margin-right: 3px;
     height: 1em;
 }
-
 .credits {
     text-align: left;
     margin-top: 50px;
     font-size: 14px;
     color: grey;
 }
-
 .credits p {
     margin: 2px;
 }
-
 .required-indicator {
     color: red;
 }
-
 .nowrap-label-input {
     white-space: nowrap;
 }
-
 .nowrap-label-input input {
     margin-bottom: 5px;
 }
-
 .material-icons {
     text-shadow: 1px 1px 1px #aaaaaa;
     vertical-align: middle;
 }
-
 #chart-header-container .pure-button {
     margin-bottom: 3px;
 }
-
 .chart-header-column {
     flex-grow: 1;
     padding: 0px 10px 10px 10px;
 }
-
 .chart-loading-container {
     position: relative;
 }
-
 .chart-loading {
 	position: absolute;
 	width: 100%;
@@ -120,7 +97,6 @@ pre {
 	pointer-events: none;
     z-index: 1000;
 }
-
 .chart-loading-loader {
     margin: auto;
 }
@@ -140,7 +116,6 @@ pre {
     z-index: 1;
     left: 50%;
 }
-
 #toast-undelete.show {
     visibility: visible;
     opacity: 1;
@@ -148,7 +123,6 @@ pre {
     transition-property: opacity, bottom;
     transition-duration: 0.5s;
 }
-
 #toast-undelete:not(.show) {
     bottom: 0px;
     opacity: 0;
@@ -162,100 +136,79 @@ table.pure-table {
     text-align: left;
     border-top: 0px;
 }
-
 /* fix Pure CSS Library bug */
 .pure-table-striped tr:nth-child(2n-1) {
     background-color: #f2f2f2;
 }
-
 .pure-table-striped tr:nth-child(2n-1) td {
     background-color: unset;
 }
-
 .pure-table th {
     background-color: var(--highlight-color);
     color: white;
     padding: 10px 7px;
     border: 0px solid red;
 }
-
 .pure-table th.shrink-wrap, .pure-table td.shrink-wrap {
     width: 0px;
     white-space: nowrap;
 }
-
 .pure-table th.shrink-wrap-wordwrap {
     width: 0px;
     white-space: normal;
 }
-
 .pure-table td {
     padding: 9px 7px;
     border: 0px solid red;
 }
-
 .pure-table th.button-container {
     width: 56px;
 }
-
 .pure-table td.button-container {
     padding: 5px 7px;
 }
-
 .pure-table td.button-container .material-icons {
     font-size: 24px;
     color: var(--highlight-color);
     cursor: pointer;
-    line-height: 1.2;
+    line-height: 1.1;
 }
-
 .pure-table td.button-container .material-icons:not(:first-child) {
     margin-left: 5px;
 }
-
 .pure-table td.button-container .material-icons:hover {
     background: var(--highlight-color);
     text-shadow: unset;
     box-shadow: 1px 1px 1px 0px #aaaaaa;
     color: white;
 }
-
-
 .pure-table td.button-container .material-icons:active {
     background: var(--highlight-color-active);
 }
-
 .gains-text {
     color: green;
 }
-
 .loss-text {
     color: red;
 }
-
 .right-align {
     text-align: right !important;
 }
-
 .pure-table tr.portfolio-summary-row {
     font-weight: bold;
     background-color: var(--highlight-color-light);
 }
-
 table.small-td-text td {
     font-size: 0.9em;
 }
-
 .no-comment {
     visibility: hidden;
 }
-
 .book-value-mobile-hint {
     white-space: nowrap;
     font-size: 0.8em;
     display: none;
 }
-
 td.sb-row-marker {
     background-image: url("/assets/img/sb_32px.png");
     background-repeat: no-repeat;
@@ -269,12 +222,10 @@ td.sb-row-marker {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
     width: 12px;
 }
-
 .table-sortable th.tablesorter-header, .table-sortable .sortable-header {
     cursor: pointer;
     user-select: none;
 }
-
 .table-sortable th.tablesorter-header:active, .table-sortable .sortable-header:active {
     background-color: var(--highlight-color-active);
 }
@@ -288,19 +239,16 @@ td.sb-row-marker {
     margin: 0px 0px 10px 0px;
     box-shadow: 0px 2px 3px 0px #aaaaaa;
 }
-
 .toolbar-left {
     display: inline-block;
     margin: 0px 0px 0px 5px;
     text-align:left;
 }
-
 .toolbar-right {
     display: inline-block;
     margin: 0px 4px;
     overflow: visible;
 }
-
 .toolbar-right img {
     width: 20px;
     height: auto;
@@ -312,34 +260,27 @@ a, a:link, a:visited {
     text-decoration: none;
     cursor: pointer;
 }
-
 a:hover {
     text-decoration: underline;
 }
-
 .highlight {
     background-color: var(--highlight-color);
     color: white;
 }
-
 .highlight a {
     color: var(--a-in-highlight);
 }
-
 .highlight a:link {
     color: var(--a-in-highlight);
 }
-
 .highlight a:visited {
     color: var(--a-in-highlight);
 }
-
 .pure-button-primary {
     background-color: var(--highlight-color) !important;
     border-radius: 2px;
     box-shadow: 2px 2px 2px 0px #aaaaaa;
 }
-
 .pure-button-primary:active {
     box-shadow: 2px 2px 2px 0px #aaaaaa;
     background-color: var(--highlight-color-active) !important;
@@ -351,50 +292,40 @@ a:hover {
     background: var(--highlight-color) !important;
     color: white;
 }
-
 .ui-widget-overlay {
     opacity: 0.4;
 }
-
 .ui-widget-content a {
     color: #06C;
 }
-
 /* dialog overrides */
 .themed-titlebar.ui-dialog {
     padding: 0px;
     border: 0px;
 }
-
 .themed-titlebar .ui-dialog-titlebar {
 	border: 0px;
 	background: var(--highlight-color);
 	color: #ffffff;
 	border-radius: 0px;
 }
-
 .themed-titlebar .ui-dialog-title {
     width: 100%;
     white-space: normal;
     font-size: 1.1em;
 }
-
 .themed-titlebar .ui-button {
     display: none;
 }
-
 .ui-dialog .pure-form fieldset > label:first-child {
     margin-top: .5em;
 }
-
 .ui-dialog input[type="number"] {
     width: 100%;
 }
-
 .ui-dialog input[type="text"] {
     width: 100%;
 }
-
 .ui-dialog select {
     width: 100%;
 }
@@ -404,11 +335,9 @@ a:hover {
     padding: 0px;
     border: 0px;
 }
-
 .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
     cursor: pointer;
 }
-
 .watchlist-tabs-container .ui-tabs-nav {
     padding: 0px;
     border: 0px;
@@ -417,12 +346,10 @@ a:hover {
     display: flex;
     flex-wrap: wrap-reverse;
 }
-
 .watchlist-tabs-container .ui-tabs-nav::after {
 	content: "";
 	flex-grow: 1000;
 }
-
 .watchlist-tabs-container .watchlist-tab.ui-tab {
     padding-bottom: 0px;
     margin: 0px;
@@ -434,45 +361,36 @@ a:hover {
     flex-grow: 1;
     display: flex;
 }
-
 .watchlist-tabs-container .watchlist-tab.ui-tab a {
     width: 100%;
     text-align: center;
     padding: 8px 6px 8px 12px;
 }
-
 .watchlist-tabs-container .watchlist-tab.ui-tab .tab-control-container {
     margin: auto 6px auto 0px;
 }
-
 .tab-control-container i {
     margin-left: 3px;
     cursor: pointer;
 }
-
 .watchlist-tab-content.ui-tabs-panel {
     padding: 0px;
 }
-
 .watchlist-tabs-container .watchlist-tab.ui-tab.ui-tabs-active {
     padding: 0px;
     margin: 0px;
 }
-
 .watchlist-tabs-container .ui-tabs-active .ui-icon:hover {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_444444_256x240.png");
     background-color: white;
 }
-
 .watchlist-tabs-container .ui-tabs-active .ui-icon:active {
     background-color: #ddd;
 }
-
 .watchlist-tabs-container .ui-tabs-tab:not(.ui-tabs-active) .ui-icon:hover {
     background-image: url("https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png");
     background-color: var(--highlight-color);
 }
-
 .watchlist-tabs-container .ui-tabs-tab:not(.ui-tabs-active) .ui-icon:active {
     background-color: var(--highlight-color-active);
 }
@@ -484,30 +402,25 @@ a:hover {
     padding: 0px 10px;
     box-sizing: border-box !important;
 }
-
 @media screen and (max-width: 80em) {
     .xl-vue-table-container {
         height: 100%;
     }
 }
-
 .backgroundText {
     text-align: center;
     color: grey;
     width: 100%
 }
-
 .empty-watchlist-message {
     text-align: center;
     color: dimgrey;
     padding: 10px;
     background-color: #f2f2f2;
 }
-
 [v-cloak] {
     display: none;
 }
-
 @media (max-width: 600px) {
     #chart-header-container {
         display: block;
