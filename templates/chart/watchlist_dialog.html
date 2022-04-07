@@ -1,12 +1,21 @@
 
 <div id="add-watchlist-dialog" style="display:none">
-    <form id="add-watchlist-form" name="add-watchlist-form" class="pure-form pure-form-stacked">
+    <form id="add-watchlist-form" name="add-watchlist-form" class="pure-form pure-form-stacked" onsubmit="return false">
         <fieldset>
             <label for="set-watch-price" class="pure-checkbox">
                 <input type="checkbox" id="set-watch-price" /> Set price benchmark
             </label>
             <input type="number" id="watch-price" min=1 max=9999999999>
-            <label for="comment">Comment</label>
+            <input type="number" id="watch-price-sb" min=0.001 max=999999 step="0.001">
+
+            <label for="radio-gold-watch-price" class="pure-radio marktype-radio">
+                <input type="radio" id="radio-gold-watch-price" name="watch-mark-type" value="gold" />Gold
+            </label>
+            <label for="radio-sb-watch-price" class="pure-radio marktype-radio">
+                <input type="radio" id="radio-sb-watch-price" name="watch-mark-type" value="sb" />SB
+            </label>
+
+            <label for="comment">Comment (optional)</label>
             <input type="text" id="comment" />
             <label for="watchlist-select">Watchlist</label>
             <select type="text" id="watchlist-select" required></select>
@@ -14,6 +23,7 @@
                 <label for="new-watchlist-name-addwatch">New watchlist name <span class="required-indicator">*</span></label>
                 <input type="text" id="new-watchlist-name-addwatch" pattern=".+" />
             </div>
+            <input type="submit" onclick="document.getElementById('add-to-watchlist-confirm').click()" style="display: none">
         </fieldset>
     </form>
     <p style="margin: 16px 0px 0px 0px;"><i>You can view your saved watches in the <a href="/watchlist.php">Watchlist</a> page.</i></p>
@@ -25,10 +35,15 @@ getWatchlistObj().forEach(function(watchlist, widx) {
     $('#watchlist-select').append(`<option value="${widx}">${watchlist.name}</option>`);
 });
 
+function toggleWatchMarkInputDisabled() {
+    var checked = $('#set-watch-price')[0].checked;
+    $('#watch-price').prop('disabled', !checked);
+    $('#watch-price-sb').prop('disabled', !checked);
+    $('input[name=watch-mark-type]').prop('disabled', !checked);
+}
+
 // register watchlist selector listener
-$('#set-watch-price').change(function() {
-    $('#watch-price').prop('disabled', !this.checked);
-});
+$('#set-watch-price').change(toggleWatchMarkInputDisabled);
 
 $('#watchlist-select').change(function() {
     if ($(this).val() === "newWatchlistOption") {
@@ -40,7 +55,27 @@ $('#watchlist-select').change(function() {
     }
 });
 
-function addToWatchlistModal(price, editMode = false, editItemId = null, editComment = null, editWidx = null, editIdx = null) {
+function toggleWatchMarkInputBoxes() {
+    // TODO: verify that changing input type works in Safari. If not, try using native JS. Works in Chrome and FF.
+    if ($("input[name=watch-mark-type]:checked").val() === "gold") {
+        $("#watch-price").show();
+        $("#watch-price").prop("type", "number");
+
+        $("#watch-price-sb").hide();
+        $("#watch-price-sb").prop("type", "text");
+    } else {
+        $("#watch-price").hide();
+        $("#watch-price").prop("type", "text");
+
+        $("#watch-price-sb").show();
+        $("#watch-price-sb").prop("type", "number");
+    }
+}
+
+// register mark type selector listener
+$("input[name=watch-mark-type]").change(toggleWatchMarkInputBoxes);
+
+function addToWatchlistModal(price, editMode = false, editItemId = null, editMarkType = null, editComment = null, editWidx = null, editIdx = null) {
     var selector = document.getElementById('chartSelector');
     var itemId = editMode ? editItemId : Number(selector.value);
 
@@ -57,9 +92,14 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
                     if (document.forms["add-watchlist-form"].reportValidity()) {
                         // get benchmark price, if any
                         if ($("#set-watch-price").is(':checked')) {
-                            var inputPrice = Number($('#watch-price').val());
-                            if (!Number.isInteger(inputPrice) || inputPrice < 1) {
-                                console.log("Parsed input price is not a positive integer: " + inputPrice);
+                            var inputPriceType = $("input[name=watch-mark-type]:checked").val();
+                            if (inputPriceType === "gold") {
+                                var inputPrice = Number($('#watch-price').val());
+                            } else {
+                                var inputPrice = Number($('#watch-price-sb').val());
+                            }
+                            if (Number.isNaN(inputPrice) || inputPrice < 0.001) {
+                                console.log("Parsed input price is not valid: " + inputPrice);
                                 inputPrice = null;
                             }
                         } else {
@@ -75,9 +115,9 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
                         }
 
                         if (editMode) {
-                            processWatchlistEdit(editItemId, inputPrice, $('#comment').val(), editWidx, editIdx, newWidx);
+                            processWatchlistEdit(editItemId, inputPrice, inputPriceType, $('#comment').val(), editWidx, editIdx, newWidx);
                         } else {
-                            processWatchlistFormData(inputPrice, $('#comment').val(), newWidx);
+                            processWatchlistFormData(inputPrice, inputPriceType, $('#comment').val(), newWidx);
                         }
 
                         dialog.dialog("close");
@@ -103,15 +143,23 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editCom
             $('#add-to-watchlist-cancel').removeClass().addClass("pure-button");
 
             // set up benchmark and comment and clear data from last use
-            if (price == null) {
-                $('#set-watch-price').prop("checked", false);
-                $('#watch-price').prop('disabled', true);
-                $('#watch-price').val('');
-            } else {
+            $('#set-watch-price').prop("checked", false);
+            $('#watch-price').val('');
+            $('#watch-price-sb').val('');
+            $('#radio-gold-watch-price').prop("checked", true);
+
+            if (price !== null) {
                 $('#set-watch-price').prop("checked", true);
-                $('#watch-price').prop('disabled', false);
-                $('#watch-price').val(price);
+                if (editMarkType === 'sb') {
+                    $('#watch-price-sb').val(price);
+                    $('#radio-sb-watch-price').prop("checked", true);
+                } else {
+                    $('#watch-price').val(price);
+                }
             }
+
+            toggleWatchMarkInputDisabled();
+            toggleWatchMarkInputBoxes();
 
             $('#comment').val(editMode ? editComment : '');
             $('#new-watchlist-name-addwatch').val('');
@@ -157,12 +205,12 @@ function processNewWatchlistFormData(watchlistName) {
     setWatchlistObj(watchlists);
 }
 
-function processWatchlistFormData(price, comment, widx) {
+function processWatchlistFormData(mark, markType, comment, widx) {
     var selector = document.getElementById('chartSelector');
     var itemId = Number(selector.value);
     var itemName = selector.options[selector.selectedIndex].text;
     var watchlist = getWatchlistObj();
-    watchlist[widx].watches.push(newWatchlistItem(itemId, comment, (price == null) ? null : "gold", price));
+    watchlist[widx].watches.push(newWatchlistItem(itemId, comment, markType, mark));
     setWatchlistObj(watchlist);
     renderChartWithItemId(itemId, itemName);
 }
