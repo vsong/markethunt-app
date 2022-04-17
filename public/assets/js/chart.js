@@ -204,6 +204,10 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                         count: 3,
                         text: '3M'
                     }, {
+                        type: 'month',
+                        count: 6,
+                        text: '6M'
+                    }, {
                         type: 'year',
                         count: 1,
                         text: '1Y'
@@ -402,10 +406,13 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
 
                         // hide/unhide volume data warning based on current plotband pixel width
                         const volumeWarningBand = this.plotLinesAndBands[0];
-                        const from = Math.max(this.toPixels(volumeWarningBand.options.from), this.chart.plotLeft)
-                        const to = Math.min(this.toPixels(volumeWarningBand.options.to), this.chart.plotLeft + this.chart.plotWidth)
-                        const show = volumeWarningBand.label.getBBox().width < to - from
-                        volumeWarningBand.label.css({ opacity: (show ? 1 : 0) })
+
+                        if (volumeWarningBand.label !== undefined) {
+                            const from = Math.max(this.toPixels(volumeWarningBand.options.from), this.chart.plotLeft);
+                            const to = Math.min(this.toPixels(volumeWarningBand.options.to), this.chart.plotLeft + this.chart.plotWidth);
+                            const show = volumeWarningBand.label.getBBox().width < to - from;
+                            volumeWarningBand.label.css({ opacity: (show ? 1 : 0) });
+                        }
                     },
                 },
                 tickPixelInterval: 120,
