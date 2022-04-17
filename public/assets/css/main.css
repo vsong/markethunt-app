@@ -7,17 +7,6 @@
 pre {
     white-space: pre-wrap;
 }
-#chart-header-container {
-    display: flex;
-}
-#chart-header-right {
-    text-align: right;
-    white-space: nowrap;
-}
-#chart-header-price {
-    font-size: 1.7em;
-    margin-top: 0.9em;
-}
 
 /* form stuff */
 ::placeholder {
@@ -75,12 +64,28 @@ pre {
     text-shadow: 1px 1px 1px #aaaaaa;
     vertical-align: middle;
 }
+
+/* chart stuff */
+#chart-header-container {
+    display: flex;
+}
+#chart-header-right {
+    text-align: right;
+    white-space: nowrap;
+}
+#chart-header-price {
+    font-size: 1.7em;
+    margin-top: 0.9em;
+}
+#chart-header-sb-index {
+    font-size: 1.2em;
+}
 #chart-header-container .pure-button {
     margin-bottom: 3px;
 }
 .chart-header-column {
     flex-grow: 1;
-    padding: 0px 10px 10px 10px;
+    padding: 0px 10px;
 }
 .chart-loading-container {
     position: relative;
@@ -99,6 +104,17 @@ pre {
 }
 .chart-loading-loader {
     margin: auto;
+}
+.chart-extra-info {
+    display: flex;
+    padding: 0px 10px;
+}
+.chart-extra-info .extra-info-column {
+    display: flex;
+    min-width: 300px;
+}
+.extra-info-column .extra-info-label-container {
+    margin-right: 5px;
 }
 
 /* toasts */
@@ -430,6 +446,9 @@ a:hover {
     }
     #chart-header-price {
         margin-top: 0;
+    }
+    .chart-extra-info {
+        display: block;
     }
     .collapse-column-mobile {
         display: flex;

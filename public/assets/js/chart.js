@@ -20,6 +20,16 @@ function UtcIsoDateToMillis(dateStr) {
     return (new Date(dateStr + UtcTimezone)).getTime();
 }
 
+function formatSISuffix(num, decimalPlaces) {
+    const suffixes = ["", "K", "M", "B"];
+    let order = Math.max(Math.floor(Math.log(num) / Math.log(1000)), 0);
+    if (order > suffixes.length - 1) {
+        order = suffixes.length - 1;
+    }
+    let significand = num / Math.pow(1000, order);
+    return significand.toFixed(decimalPlaces) + suffixes[order];
+}
+
 function eventBand(IsoStrFrom, IsoStrTo, labelText) {
     return {
         from: UtcIsoDateToMillis(IsoStrFrom),
@@ -71,6 +81,10 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     const priceElem = document.getElementById('chart-header-price');
     const changeElem = document.getElementById('chart-header-change');
     const sbPriceElem = document.getElementById('chart-header-sb-index');
+    const tradeVolumeElem = document.getElementById('extra-info-volume-display');
+    const goldVolumeElem = document.getElementById('extra-info-gold-volume-display');
+    const weekTradeVolumeElem = document.getElementById('extra-info-7d-volume-display');
+    const weekGoldVolumeElem = document.getElementById('extra-info-7d-gold-volume-display');
     const loadingElem = document.getElementsByClassName('chart-loading')[0];
 
     chartTitleElem.innerHTML = chartHeaderText;
@@ -79,6 +93,10 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     changeElem.innerHTML = "-- (-- %)";
     changeElem.className = '';
     sbPriceElem.innerHTML = "-- SB";
+    tradeVolumeElem.innerHTML = "--";
+    goldVolumeElem.innerHTML = "--";
+    weekTradeVolumeElem.innerHTML = "--";
+    weekGoldVolumeElem.innerHTML = "--";
     loadingElem.style.display = "flex";
 
     // get saved daterange preferences
@@ -139,6 +157,9 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 style: {
                     fontFamily: chartFont,
                 },
+            },
+            lang: {
+                rangeSelectorZoom :""
             },
             plotOptions: {
                 series: {
@@ -204,6 +225,10 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                         count: 3,
                         text: '3M'
                     }, {
+                        type: 'month',
+                        count: 6,
+                        text: '6M'
+                    }, {
                         type: 'year',
                         count: 1,
                         text: '1Y'
@@ -215,14 +240,18 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 inputEnabled: false,
                 labelStyle: {
                     color: axisLabelColor,
-                }
+                },
+                buttonPosition: {
+                    y: 5,
+                },
+                x: -5.5,
             },
             legend: {
                 enabled: true,
                 align: 'right',
                 verticalAlign: 'top',
                 width: '35%',
-                y: -28,
+                y: -23,
                 padding: 0,
                 itemStyle: {
                     color: '#000000',
@@ -288,13 +317,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                     tooltip: {
                         pointFormatter: function() {
                             if (this.y !== 0){
-                                var suffixes = ["", "K", "M", "B"];
-                                var order = Math.max(Math.floor(Math.log(this.y) / Math.log(1000)), 0);
-                                if (order > suffixes.length - 1) {
-                                    order = suffixes.length - 1;
-                                }
-                                var significand = this.y / Math.pow(1000, order);
-                                var volumeText = significand.toFixed(1).replace(/\.0+$/,'') + suffixes[order];
+                                var volumeText = this.y.toLocaleString();
                             } else {
                                 var volumeText = 'n/a';
                             }
@@ -350,7 +373,8 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                     labels: {
                         formatter: function() {
                             return this.value.toLocaleString() + 'g';
-                        }
+                        },
+                        x: -8,
                     },
                     showLastLabel: true, // show label at top of chart
                     crosshair: {
@@ -374,6 +398,9 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                     top: '82%',
                     height: '18%',
                     offset: 0,
+                    labels: {
+                        x: -8,
+                    },
                     opposite: false,
                     tickPixelInterval: 35,
                     allowDecimals: false
@@ -402,16 +429,19 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
 
                         // hide/unhide volume data warning based on current plotband pixel width
                         const volumeWarningBand = this.plotLinesAndBands[0];
-                        const from = Math.max(this.toPixels(volumeWarningBand.options.from), this.chart.plotLeft)
-                        const to = Math.min(this.toPixels(volumeWarningBand.options.to), this.chart.plotLeft + this.chart.plotWidth)
-                        const show = volumeWarningBand.label.getBBox().width < to - from
-                        volumeWarningBand.label.css({ opacity: (show ? 1 : 0) })
+
+                        if (volumeWarningBand.label !== undefined) {
+                            const from = Math.max(this.toPixels(volumeWarningBand.options.from), this.chart.plotLeft);
+                            const to = Math.min(this.toPixels(volumeWarningBand.options.to), this.chart.plotLeft + this.chart.plotWidth);
+                            const show = volumeWarningBand.label.getBBox().width < to - from;
+                            volumeWarningBand.label.css({ opacity: (show ? 1 : 0) });
+                        }
                     },
                 },
                 tickPixelInterval: 120,
             },
             navigator: {
-                height: 45,
+                height: 40,
                 margin: 5,
                 maskInside: false,
             }
@@ -423,12 +453,14 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             var latest = response.data[response.data.length - 1];
             priceElem.innerHTML = latest.price.toLocaleString() + 'g';
             
+            // set SB price
             try {
                 sbPriceElem.innerHTML = latest.sb_index.toLocaleString("en-US", {maximumFractionDigits: 2}) + ' SB';
             } catch (e) {
                 sbPriceElem.innerHTML = 'SB price not available';
             }
 
+            // set price gain/loss
             if ((response.data.length > 1) && (Date.now() - UtcIsoDateToMillis(latest.date) < 2 * 86400 * 1000)) {
                 var secondLatest = response.data[response.data.length - 2];
                 var goldDiff = latest.price - secondLatest.price;
@@ -450,6 +482,45 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             } else {
                 changeElem.innerHTML = "<i>No recent activity</i>";
             }
+
+            // set volume data
+            const utcTodayMillis = UtcIsoDateToMillis(new Date().toISOString().substring(0, 10));
+
+            let tradeVolumeText = "0";
+            if (utcTodayMillis - UtcIsoDateToMillis(latest.date) <= 86400 * 1000 && latest.volume !== null) {
+                tradeVolumeText = latest.volume.toLocaleString();
+            }
+            tradeVolumeElem.innerHTML = tradeVolumeText;
+
+            let goldVolumeText = "0";
+            if (utcTodayMillis - UtcIsoDateToMillis(latest.date) <= 86400 * 1000 && latest.volume !== null) {
+                goldVolumeText = formatSISuffix(latest.volume * latest.price, 2);
+            }
+            goldVolumeElem.innerHTML = goldVolumeText + " gold";
+
+            const weeklyVolText = response.data.reduce(
+                function(sum, dataPoint) {
+                    if (utcTodayMillis - UtcIsoDateToMillis(dataPoint.date) <= 7 * 86400 * 1000) {
+                        return sum + (dataPoint.volume !== null ? dataPoint.volume : 0);
+                    } else {
+                        return sum;
+                    }
+                },
+                0
+            );
+            weekTradeVolumeElem.innerHTML = weeklyVolText.toLocaleString();
+
+            const weeklyGoldVol = response.data.reduce(
+                function(sum, dataPoint) {
+                    if (utcTodayMillis - UtcIsoDateToMillis(dataPoint.date) <= 7 * 86400 * 1000) {
+                        return sum + (dataPoint.volume !== null ? dataPoint.volume * dataPoint.price : 0);
+                    } else {
+                        return sum;
+                    }
+                },
+                0
+            );
+            weekGoldVolumeElem.innerHTML = (weeklyGoldVol === 0 ? '0' : formatSISuffix(weeklyGoldVol, 2)) + " gold";
         }
     }
     
