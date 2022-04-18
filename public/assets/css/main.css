@@ -100,7 +100,7 @@ pre {
 	display: flex;
     align-content: center;
 	pointer-events: none;
-    z-index: 1000;
+    z-index: 50;
 }
 .chart-loading-loader {
     margin: auto;
