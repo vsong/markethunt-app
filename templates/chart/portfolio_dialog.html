@@ -1,5 +1,6 @@
 
 <div id="add-portfolio-dialog" style="display:none">
+    <div id="portfolio-action-message" style="font-weight: bold;"></div>
     <form id="add-portfolio-form" name="add-portfolio-form" class="pure-form pure-form-stacked" onsubmit="return false">
         <fieldset>
             <label for="position-qty">Quantity bought</label>
@@ -135,6 +136,12 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
             // override button classes
             $('#add-to-portfolio-confirm').removeClass().addClass("pure-button pure-button-primary");
             $('#add-to-portfolio-cancel').removeClass().addClass("pure-button");
+
+            // set up action message
+            $('#portfolio-action-message').html('');
+            if (searchParams.get('action_msg')) {
+                $('#portfolio-action-message').html(searchParams.get('action_msg'));
+            }
 
             // set up qty and buy price
             var initialQty = 1;
