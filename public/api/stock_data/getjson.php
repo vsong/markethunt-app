@@ -17,7 +17,11 @@ if (filter_input(INPUT_GET, 'item_id', FILTER_VALIDATE_INT)) {
     die();
 }
 
-$stock_data = '{"success":true, "data":' . json_encode(getItemChartData($current_item_id)) . '}';
-echo $stock_data;
+$stock_data = [
+    "success" => true,
+    "data" => getItemChartData($current_item_id),
+    "latest_sb_data" => getLatestItemPrice(114)[0],
+];
+echo json_encode($stock_data);
 
 ob_end_flush();

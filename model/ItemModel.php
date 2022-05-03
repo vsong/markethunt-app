@@ -107,6 +107,31 @@ function getItemChartData($item_id): array
     return $results;
 }
 
+function getLatestItemPrice($item_id): array
+{
+    $results = [];
+    $statement = Db::getConnection()
+        ->query("SELECT
+        dp.date,
+        dp.price
+    FROM
+        daily_price AS dp
+    WHERE
+        dp.item_id = $item_id
+    ORDER BY
+        DATE DESC
+    LIMIT 1");
+
+    foreach ($statement as $row) {
+        array_push($results, array(
+            "date" => $row['date'], 
+            "price" => $row['price']
+        ));
+    }
+
+    return $results;
+}
+
 function getAllItemVolumes($period = measurementPeriod::DAY): array
 {
     $results = Db::getConnection()
