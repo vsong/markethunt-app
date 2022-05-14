@@ -526,7 +526,11 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     
     if (jsonData == null) {
         $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function (response) {
-            renderChart(response);
+            var selector = document.getElementById('chartSelector');
+            var selectorItemId = Number(selector.value);
+            if (selectorItemId == itemId) {
+                renderChart(response);
+            }
         });
     } else {
         renderChart(jsonData);
