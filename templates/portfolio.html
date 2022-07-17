@@ -59,8 +59,6 @@
                         </thead>
                         <tbody class="tablesorter-infoOnly" style="border-bottom: 1px dashed grey">
                             <template v-for="markType in ['gold', 'sb']">
-                                <!-- Hack to invalidate mkt value cache -->
-                                <div v-if="clearTotalMktValueCache()"></div> 
                                 <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length >= 1 && portfolio.positions.length >= 2">
                                     <tr class="portfolio-summary-row">
                                         <td v-if="markType === 'gold'">Total gold value</td>
@@ -68,14 +66,14 @@
                                         <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
                                         <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
                                         <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
-                                        <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                            {{ getPortfolioTotalMarketValue(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}
+                                        <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                            {{ portfolioTotalMarketValues[markType].toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}
                                         </td>
-                                        <td class="right-align" v-bind:class="getColorClass(getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                            {{ formatPercent((getPortfolioTotalMarketValue(portfolio, markType) / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
+                                        <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                            {{ formatPercent((portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
                                         </td>
                                         <td class="right-align hide-mobile">
-                                            {{ (getPortfolioTotalMarketValue(portfolio, markType) * (markType === 'sb' ? appData.itemData[114].latest_price : 1) / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
+                                            {{ (portfolioTotalMarketValues[markType] * (markType === 'sb' ? appData.itemData[114].latest_price : 1) / portfolioTotalMarketValues.total * 100).toFixed(1) }}%
                                         </td>
                                         <td v-if="isDebugEnabled()"></td>
                                         <td></td>
@@ -112,7 +110,7 @@
                                     {{ formatPercent((getLatestPrice(position) / position.mark - 1) * 100) }}
                                 </td>
                                 <td class="right-align hide-mobile">
-                                    {{ (appData.itemData[position.item_id].latest_price * position.qty / getPortfolioTotalMarketValueAllTypes(portfolio) * 100).toFixed(1) }}%
+                                    {{ (appData.itemData[position.item_id].latest_price * position.qty / portfolioTotalMarketValues.total * 100).toFixed(1) }}%
                                 </td>
                                 <td v-if="isDebugEnabled()">{{ idx }}</td>
                                 <td class="right-align button-container">
@@ -276,11 +274,31 @@ const appData = reactive({
 
 const app = Vue.createApp({
     data() {
-        this.cache_totalMarketValue = {'gold': null, 'sb': null};
         return {
             appData,
             selectedPortfolioIdx: 0,
             debugMode
+        }
+    },
+    computed: {
+        portfolioTotalMarketValues() {
+            const portfolio = appData.portfolios[this.selectedPortfolioIdx];
+            let totalGoldValue = 0;
+            let totalSbValue = 0;
+
+            for (const position of portfolio.positions) {
+                if (position.mark_type === "gold") {
+                    totalGoldValue += position.qty * appData.itemData[position.item_id].latest_price;
+                } else if (position.mark_type === "sb") {
+                    totalSbValue += position.qty * appData.itemData[position.item_id].latest_sb_price;
+                }
+            }
+
+            return {
+                gold: totalGoldValue,
+                sb: totalSbValue,
+                total: totalGoldValue + totalSbValue * appData.itemData[114].latest_price
+            }
         }
     },
     methods: {
@@ -355,32 +373,6 @@ const app = Vue.createApp({
             } else {
                 return Math.round(avgPrice * 100) / 100;
             }
-        },
-        getPortfolioTotalMarketValue(portfolio, markType) {
-            if (this.cache_totalMarketValue[markType] === null) {
-                var value = portfolio.positions.reduce(function(totalMkt, position) {
-                    if (position.mark_type === markType) {
-                        if (markType === "gold") {
-                            return totalMkt + position.qty * appData.itemData[position.item_id].latest_price;
-                        } else if (markType === "sb") {
-                            return totalMkt + position.qty * appData.itemData[position.item_id].latest_sb_price;
-                        }
-                    } else {
-                        return totalMkt;
-                    }
-                }, 0);
-
-                this.cache_totalMarketValue[markType] = value;
-            }
-
-            return this.cache_totalMarketValue[markType];
-        },
-        getPortfolioTotalMarketValueAllTypes(portfolio) {
-            return this.getPortfolioTotalMarketValue(portfolio, "gold") 
-                + this.getPortfolioTotalMarketValue(portfolio, "sb") * appData.itemData[114].latest_price;
-        },
-        clearTotalMktValueCache() {
-            this.cache_totalMarketValue = {'gold': null, 'sb': null};
         },
         removePosition(pidx, idx) {
             var thisItemId =  appData.portfolios[pidx].positions[idx].item_id;
