@@ -106,33 +106,6 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
         var currentDateMinimum = 1;
     }
     
-    // get entries on watchlist that matches itemId
-    var filteredEntries = [];
-    try {
-        getWatchlistObj().forEach(function(watchlist) {
-            watchlist.watches.forEach(function(entry) {
-                if (entry.item_id === itemId && entry.mark_type === 'gold') {
-                    filteredEntries.push({
-                        value: entry.mark, 
-                        label: {
-                            text: watchlist.name + ": " + entry.comment,
-                            style: {
-                                color: 'red',
-                            },
-                            x: 0, // remove left padding
-                        },
-                        color: 'red', 
-                        dashStyle: 'dash',
-                        zIndex: 6,
-                    });
-                }
-            });
-        });
-    } catch (e) {
-        console.log(e.stack);
-        console.error('Failed to filter watchlist entries for item ' + itemId);
-    }
-    
     function renderChart(response) {
         var daily_prices = [];
         var daily_trade_volume = [];
@@ -369,7 +342,6 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 {
                     height: '80%',
                     // lineWidth: 1,
-                    plotLines: filteredEntries,
                     labels: {
                         formatter: function() {
                             return this.value.toLocaleString() + 'g';

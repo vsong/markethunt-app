@@ -210,10 +210,6 @@ function processWatchlistEdit(itemId, mark, markType, comment, widx, idx, newWid
 function addToWatchlist(widx, itemId, mark, markType, comment) {
     appData.watchlists[widx].watches.push(newWatchlistItem(itemId, comment, markType, mark));
     setWatchlistObj(appData.watchlists);
-
-    if (Number(itemId) === Number(document.getElementById('chartSelector').value)) {
-        renderChartWithItemId(itemId, appData.itemData[itemId].name);
-    }
 }
 
 // reload when other tab edits watchlist
