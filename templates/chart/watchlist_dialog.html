@@ -212,7 +212,6 @@ function processWatchlistFormData(mark, markType, comment, widx) {
     var watchlist = getWatchlistObj();
     watchlist[widx].watches.push(newWatchlistItem(itemId, comment, markType, mark));
     setWatchlistObj(watchlist);
-    renderChartWithItemId(itemId, itemName);
 }
 
 // process 'action' query param, if any
