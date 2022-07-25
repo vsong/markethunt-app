@@ -123,8 +123,8 @@
                                         </td>
                                         <td v-if="isDebugEnabled()">{{ idx }}</td>
                                         <td class="right-align button-container">
-                                            <span @click="editPosition(pidx, idx)" class="material-icons">edit</span>
-                                            <span @click="removePosition(pidx, idx)" class="material-icons">delete</span>
+                                            <span @click="editPosition(pidx, position.uid)" class="material-icons">edit</span>
+                                            <span @click="removePosition(pidx, position.uid)" class="material-icons">delete</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -393,16 +393,18 @@ const app = Vue.createApp({
                 return Math.round(avgPrice * 100) / 100;
             }
         },
-        removePosition(pidx, idx) {
-            var thisItemId =  appData.portfolios[pidx].positions[idx].item_id;
-            appData.portfolios[pidx].positions.splice(idx, 1);
+        removePosition(pidx, positionUid) {
+            const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
+            const thisItemId =  appData.portfolios[pidx].positions[positionIndex].item_id;
+            appData.portfolios[pidx].positions.splice(positionIndex, 1);
             setPortfolioObj(appData.portfolios);
             if (thisItemId === Number(document.getElementById('chartSelector').value)) {
                 renderChartWithItemId(thisItemId, appData.itemData[thisItemId].name);
             }
         },
-        editPosition(pidx, idx) {
-            addToPortfolioModal(appData.portfolios[pidx].positions[idx], pidx, idx);
+        editPosition(pidx, positionUid) {
+            const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
+            addToPortfolioModal(appData.portfolios[pidx].positions[positionIndex], pidx, positionIndex);
         },
         removePortfolio(pidx) {
             showUndeleteToast(getPortfolioObjKey());
