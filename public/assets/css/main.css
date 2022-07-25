@@ -318,12 +318,14 @@ a:hover {
 .themed-titlebar.ui-dialog {
     padding: 0px;
     border: 0px;
+    box-shadow: 0px 0px 10px 3px #aaaaaa;
+    border-radius: 3px;
 }
 .themed-titlebar .ui-dialog-titlebar {
 	border: 0px;
 	background: var(--highlight-color);
 	color: #ffffff;
-	border-radius: 0px;
+	border-radius: 3px 3px 0 0;
 }
 .themed-titlebar .ui-dialog-title {
     width: 100%;
@@ -344,6 +346,9 @@ a:hover {
 }
 .ui-dialog select {
     width: 100%;
+}
+.ui-dialog .ui-dialog-buttonpane {
+    border-radius: 0 0 3px 3px;
 }
 
 /* Tab UI overrides */
