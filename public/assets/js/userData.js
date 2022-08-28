@@ -73,16 +73,6 @@ function importWatchlistObjV1() {
 }
 
 /**
- * Generate a true random 48bit number represented as a 12 character hex string
- * @returns Cryptographically random 12 character hex string
- */
-function uid() {
-    return '000000000000'.replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    );
-}
-
-/**
  * Helper function to create a watchlist object in the correct format. Returns an object in the following format:
  *  {
  *      uid: <str>
@@ -141,8 +131,8 @@ function newWatchlistObject(name) {
  *      maturity_date: <Unix millis> or null
  *      maturity_price: <float> or null
  *  }
- * @param {int} item_id 
- * @param {string} comment
+ * @param {int} item_id
+ * @param {int} qty
  * @param {float} mark
  * @param {string} mark_type Must be "gold" (default) or "sb"
  * @param {int|null} maturity_date Must be a millisecond Unix timestamp or null

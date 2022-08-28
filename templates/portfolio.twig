@@ -3,515 +3,525 @@
 {% block title %}Portfolio{% endblock %}
 
 {% block head %}
-{{ parent() }}
-{% if constant('APPENV') == 'prod' %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.prod.min.js"></script>
-{% else %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.js"></script>
-{% endif %}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
+    {{ parent() }}
+    {% if constant('APPENV') == 'prod' %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.prod.min.js"></script>
+    {% else %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.js"></script>
+    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader@0.8.4/dist/vue3-sfc-loader.js"></script>
+    <script type="text/javascript" src="assets/js/setupVue.js"></script>
+    <script type="text/javascript" src="assets/js/stores/portfolio.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
 {% endblock %}
 
 {% block body %}
-<div class="pure-g">
-    <div class="pure-u-1 pure-u-xl-11-24">
-        {% include 'chart/chartContainer.twig' %}
-    </div>
-    <div id="portfolio-container" class="pure-u-1 pure-u-xl-13-24 xl-vue-table-container">
-        <div style="text-align: center">
-            <h1>Portfolio</h1>
+    <div class="pure-g">
+        <div class="pure-u-1 pure-u-xl-11-24">
+            {% include 'chart/chartContainer.twig' %}
         </div>
-        {% verbatim %}
-        <div v-cloak id="vue-container" class="watchlist-tabs-container">
-            <ul>
-                <li v-for="(portfolio, pidx) in appData.portfolios" class="watchlist-tab">
-                    <a v-bind:href="'#' + portfolio.uid" @click="setTabIndex(pidx)">{{ portfolio.name }}</a>
-                    <div class="tab-control-container">
-                        <i class="ui-icon light-ui tablesorter-icon ui-icon-pencil" @click="editPortfolio(pidx)"></i>
-                        <i class="ui-icon light-ui tablesorter-icon ui-icon-close" @click="removePortfolio(pidx)"></i>
-                    </div>
-                </li>
-                <li class="watchlist-tab"><a style="padding: 0px;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
-            </ul>
-            <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content">
-                <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid">
-                    <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
-                        <thead>
-                            <tr>
-                                <!-- Must close th on same line to prevent extra space between text and sort arrows -->
-                                <th>
-                                    Item<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-1-n"></i></th>
-                                <th class="right-align shrink-wrap hide-mobile">
-                                    Qty<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></th>
-                                <th class="right-align shrink-wrap hide-mobile">
-                                    Buy Price<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></th>
-                                <th class="right-align shrink-wrap">
-                                    Book Value<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></th>
-                                <th class="right-align shrink-wrap">
-                                    Market Value<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></th>
-                                <th class="right-align shrink-wrap">
-                                    Chg%<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></th>
-                                <th class="right-align shrink-wrap hide-mobile">
-                                    Portfolio%<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></th>
-                                <th class="shrink-wrap sorter-false" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
-                                <th class="button-container sorter-false"></th>
-                            </tr>
-                        </thead>
-                        <template v-for="markType in ['sb', 'gold']">
-                            <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length >= 1 && portfolio.positions.length >= 2">
-                                <tbody class="tablesorter-infoOnly" style="border-bottom: 1px dashed grey">
-                                    <tr class="portfolio-summary-row">
-                                        <td v-if="markType === 'gold'">Total gold value</td>
-                                        <td v-if="markType === 'sb'" >Total SB value</td>
-                                        <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
-                                        <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
-                                        <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
-                                        <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                            {{ portfolioTotalMarketValues[markType].toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}
-                                        </td>
-                                        <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                            {{ formatPercent((portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
-                                        </td>
-                                        <td class="right-align hide-mobile">
-                                            {{ (portfolioTotalMarketValues[markType] * (markType === 'sb' ? appData.itemData[114].latest_price : 1) / portfolioTotalMarketValues.total * 100).toFixed(1) }}%
-                                        </td>
-                                        <td v-if="isDebugEnabled()"></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr class="portfolio-summary-row" style="font-weight: normal" v-if="markType === 'gold' && portfolio.inventory_gold">
-                                        <td>Inventory gold</td>
-                                        <td class="right-align hide-mobile"></td>
-                                        <td class="right-align hide-mobile"></td>
-                                        <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...getLocaleStringOpts('gold')) }}</td>
-                                        <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...getLocaleStringOpts('gold')) }}</td>
-                                        <td class="right-align"></td>
-                                        <td class="right-align hide-mobile">{{ ((portfolio.inventory_gold ?? 0) / portfolioTotalMarketValues.total * 100).toFixed(1) }}%</td>
-                                        <td v-if="isDebugEnabled()"></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                                <tbody>
-                                    <tr v-for="(position, idx) in portfolio.positions.filter(position => position.mark_type === markType)" v-bind:key="position.uid">
-                                        <td v-bind:class="{'sb-row-marker' : position.mark_type === 'sb'}" :data-text="appData.itemData[position.item_id].name + position.date_modified">
-                                            <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
-                                                {{ appData.itemData[position.item_id].name }}
-                                            </a>
-                                        </td>
-                                        <td class="right-align hide-mobile">{{ position.qty.toLocaleString() }}</td>
-                                        <td v-if="position.mark_type === 'gold'" 
-                                            class="right-align hide-mobile shrink-wrap">
-                                            {{ position.mark.toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type)}}
-                                        </td>
-                                        <td v-if="position.mark_type === 'sb'"
-                                            class="right-align hide-mobile shrink-wrap">
-                                            {{ position.mark.toLocaleString(undefined, {minimumFractionDigits: 2}) + getMarkTypeAppendText(position.mark_type)}}
-                                        </td>
-                                        <td class="right-align shrink-wrap">
-                                            {{ (position.mark * position.qty).toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
-                                            <div class="book-value-mobile-hint">
-                                                {{ position.qty.toLocaleString() }} @ {{ position.mark.toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
-                                            </div>
-                                        </td>
-                                        <td class="right-align shrink-wrap" v-bind:class="getColorClass(getLatestPrice(position) / position.mark - 1)">
-                                            {{ (position.qty * getLatestPrice(position)).toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
-                                        </td>
-                                        <td class="right-align" v-bind:class="getColorClass(getLatestPrice(position) / position.mark - 1)">
-                                            {{ formatPercent((getLatestPrice(position) / position.mark - 1) * 100) }}
-                                        </td>
-                                        <td class="right-align hide-mobile">
-                                            {{ (appData.itemData[position.item_id].latest_price * position.qty / portfolioTotalMarketValues.total * 100).toFixed(1) }}%
-                                        </td>
-                                        <td v-if="isDebugEnabled()">{{ idx }}</td>
-                                        <td class="right-align button-container">
-                                            <span @click="editPosition(pidx, position.uid)" class="material-icons">edit</span>
-                                            <span @click="removePosition(pidx, position.uid)" class="material-icons">delete</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </template>
-                        </template>
-                    </table>
-                    <div v-if="portfolio.positions.length === 0" class="empty-watchlist-message">This portfolio is empty.</div>
-                    <div class="hide-mobile" style="margin-top: 10px; text-align: right">
-                        <a href="https://greasyfork.org/en/scripts/441382-mousehunt-markethunt-inventory-export">
-                            <span class="material-icons">download</span>Import inventory from Mousehunt
-                        </a>
-                    </div>
-                </template>
-            </div>
-            <div id="newportfolio" class="watchlist-tab-content"></div>
-            <div v-if="appData.portfolios.length === 0">
-                <p>You deleted all your portfolios! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new portfolio. </p>
-                <img src="/assets/img/NotLikeDuck.png" />
-            </div>
+        <div id="portfolio-container" class="pure-u-1 pure-u-xl-13-24 xl-vue-table-container">
         </div>
-        {% endverbatim %}
     </div>
-</div>
-<div id="new-portfolio-dialog" style="display:none">
-    <form id="new-portfolio-form" name="new-portfolio-form" class="pure-form pure-form-stacked">
-        <fieldset>
-            <label for="new-portfolio-name">Portfolio name <span class="required-indicator">*</span></label>
-            <input style="width: 100%" type="text" id="new-portfolio-name" required pattern=".+" />
-        </fieldset>
-    </form>
-</div>
-{% include('toasts.twig') %}
-<script>
-/* main script block */
-// initial jquery tabs update
-$( function() {
-    $("#vue-container").tabs({
-        beforeActivate: function(event, ui) {
-            if (ui.newPanel.attr('id') === 'newportfolio'){
-                event.preventDefault();
+    <div id="new-portfolio-dialog" style="display:none">
+        <form id="new-portfolio-form" name="new-portfolio-form" class="pure-form pure-form-stacked">
+            <fieldset>
+                <label for="new-portfolio-name">Portfolio name <span class="required-indicator">*</span></label>
+                <input style="width: 100%" type="text" id="new-portfolio-name" required pattern=".+" />
+            </fieldset>
+        </form>
+    </div>
+    {% include('toasts.twig') %}
+    <script>
+    /* main script block */
+    // initial jquery tabs update
+    $( function() {
+        $("#vue-container").tabs({
+            beforeActivate: function(event, ui) {
+                if (ui.newPanel.attr('id') === 'newportfolio'){
+                    event.preventDefault();
+                }
             }
-        }
+        });
     });
-});
 
-// set up new portfolio modal
-function newPortfolioModal(editPidx = null) {
-    var dialog = $("#new-portfolio-dialog").dialog({
-        dialogClass: 'themed-titlebar',
-        title: editPidx !== null ? 'Edit portfolio' : 'Add new portfolio',
-        draggable: false,
-        autoOpen: false,
-        // height: 280,
-        // width: 350,
-        modal: true,
-        buttons: [
-            {
-                text: editPidx !== null ? "Save changes" : "Create portfolio",
-                id: "new-portfolio-confirm",
-                click: function() {
-                    if (document.forms["new-portfolio-form"].reportValidity()) {
-                        var newPortfolioName = $('#new-portfolio-name').val();
-                        processNewPortfolioFormData(newPortfolioName, editPidx);
+    // set up new portfolio modal
+    function newPortfolioModal(editPidx = null) {
+        var dialog = $("#new-portfolio-dialog").dialog({
+            dialogClass: 'themed-titlebar',
+            title: editPidx !== null ? 'Edit portfolio' : 'Add new portfolio',
+            draggable: false,
+            autoOpen: false,
+            // height: 280,
+            // width: 350,
+            modal: true,
+            buttons: [
+                {
+                    text: editPidx !== null ? "Save changes" : "Create portfolio",
+                    id: "new-portfolio-confirm",
+                    click: function() {
+                        if (document.forms["new-portfolio-form"].reportValidity()) {
+                            var newPortfolioName = $('#new-portfolio-name').val();
+                            processNewPortfolioFormData(newPortfolioName, editPidx);
+                            dialog.dialog("close");
+                        }
+                    },
+                },
+                {
+                    text: "Cancel",
+                    id: "new-portfolio-cancel",
+                    click: function() {
                         dialog.dialog("close");
-                    }
+                    },
                 },
-            },
-            {
-                text: "Cancel",
-                id: "new-portfolio-cancel",
-                click: function() {
-                    dialog.dialog("close");
-                },
-            },
-        ],
-        open: function(event, ui) {
-            // click outside to close
-            $('.ui-widget-overlay').bind('click', function() { 
-                dialog.dialog('close'); 
-            });
+            ],
+            open: function(event, ui) {
+                // click outside to close
+                $('.ui-widget-overlay').bind('click', function() {
+                    dialog.dialog('close');
+                });
 
-            // override button classes
-            $('#new-portfolio-confirm').removeClass().addClass("pure-button pure-button-primary");
-            $('#new-portfolio-cancel').removeClass().addClass("pure-button");
+                // override button classes
+                $('#new-portfolio-confirm').removeClass().addClass("pure-button pure-button-primary");
+                $('#new-portfolio-cancel').removeClass().addClass("pure-button");
 
-            // set up form and clear data from last use
-            if (editPidx !== null) {
-                $('#new-portfolio-name').val(appData.portfolios[editPidx].name);
-            } else {
-                $('#new-portfolio-name').val('');
+                // set up form and clear data from last use
+                if (editPidx !== null) {
+                    $('#new-portfolio-name').val(appData.portfolios[editPidx].name);
+                } else {
+                    $('#new-portfolio-name').val('');
+                }
             }
+        });
+
+        dialog.dialog("open");
+    }
+    // chart handling
+    var initialJson = {{ initial_stock_data |raw }};
+    renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}", initialJson);
+
+    function handleChartSubmit(addToHistory = true) {
+        var selector = document.getElementById('chartSelector');
+        var itemId = selector.value;
+        var itemName = selector.options[selector.selectedIndex].text;
+        renderChartWithItemId(itemId, itemName);
+        if (addToHistory === true) {
+            window.history.replaceState({}, itemName, "/portfolio.php?item_id=" + itemId);
+        }
+    }
+
+    function processNewPortfolioFormData(portfolioName, editPidx = null) {
+        if (editPidx !== null) {
+            appData.portfolios[editPidx].name = portfolioName;
+        } else {
+            appData.portfolios.push(newPortfolioObject(portfolioName));
+            appData.redrawTabs = true; // set to true *after* modifying portfolio
+        }
+
+        setPortfolioObj(appData.portfolios);
+    }
+
+    function processNewPositionFormData(qty, mark, markType, pidx) {
+        addToPortfolio(pidx, document.getElementById('chartSelector').value, mark, markType, qty)
+    }
+
+    function processPositionEdit(qty, mark, markType, pidx, idx, newPidx = null) {
+        var itemId = appData.portfolios[pidx].positions[idx].item_id;
+        appData.portfolios[pidx].positions.splice(idx, 1);
+        setPortfolioObj(appData.portfolios);
+        addToPortfolio(newPidx === null ? pidx : newPidx, itemId, mark, markType, qty);
+    }
+
+    // Generic add to portfolio
+    function addToPortfolio(pidx, itemId, mark, markType, qty) {
+        appData.portfolios[pidx].positions.push(newPortfolioPosition(itemId, qty, mark, markType));
+        setPortfolioObj(appData.portfolios);
+
+        if (Number(itemId) === Number(document.getElementById('chartSelector').value)) {
+            renderChartWithItemId(itemId, appData.itemData[itemId].name);
+        }
+    }
+
+    // reload when other tab edits portfolio
+    window.addEventListener('storage', (e) => {
+        if (e.key == getPortfolioObjKey()) {
+            window.location.reload();
         }
     });
 
-    dialog.dialog("open");
-}
-// chart handling
-var initialJson = {{ initial_stock_data |raw }};
-renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}", initialJson);
+    /* vue script block */
+    var portfoliosRaw = getPortfolioObj();
 
-function handleChartSubmit(addToHistory = true) {
-    var selector = document.getElementById('chartSelector');
-    var itemId = selector.value;
-    var itemName = selector.options[selector.selectedIndex].text;
-    renderChartWithItemId(itemId, itemName);
-    if (addToHistory === true) {
-        window.history.replaceState({}, itemName, "/portfolio.php?item_id=" + itemId);
-    }
-}
+    const appData = reactive({
+        itemData: itemData,
+        portfolios: reactivePortfolio,
+        redrawTabs: false,
+    });
 
-function processNewPortfolioFormData(portfolioName, editPidx = null) {
-    if (editPidx !== null) {
-        appData.portfolios[editPidx].name = portfolioName;
-    } else {
-        appData.portfolios.push(newPortfolioObject(portfolioName));
-        appData.redrawTabs = true; // set to true *after* modifying portfolio
-    }
-
-    setPortfolioObj(appData.portfolios);
-}
-
-function processNewPositionFormData(qty, mark, markType, pidx) {
-    addToPortfolio(pidx, document.getElementById('chartSelector').value, mark, markType, qty)
-}
-
-function processPositionEdit(qty, mark, markType, pidx, idx, newPidx = null) {
-    var itemId = appData.portfolios[pidx].positions[idx].item_id;
-    appData.portfolios[pidx].positions.splice(idx, 1);
-    setPortfolioObj(appData.portfolios);
-    addToPortfolio(newPidx === null ? pidx : newPidx, itemId, mark, markType, qty);
-}
-
-// Generic add to portfolio
-function addToPortfolio(pidx, itemId, mark, markType, qty) {
-    appData.portfolios[pidx].positions.push(newPortfolioPosition(itemId, qty, mark, markType));
-    setPortfolioObj(appData.portfolios);
-
-    if (Number(itemId) === Number(document.getElementById('chartSelector').value)) {
-        renderChartWithItemId(itemId, appData.itemData[itemId].name);
-    }
-}
-
-// reload when other tab edits portfolio
-window.addEventListener('storage', (e) => {
-    if (e.key == getPortfolioObjKey()) {
-        window.location.reload();
-    }
-});
-
-/* vue script block */
-const { reactive } = Vue;
-var portfoliosRaw = getPortfolioObj();
-const appData = reactive({
-    itemData: itemData,
-    portfolios: portfoliosRaw,
-    redrawTabs: false,
-});
-
-const app = Vue.createApp({
-    data() {
-        return {
-            appData,
-            selectedPortfolioIdx: 0,
-            debugMode
-        }
-    },
-    computed: {
-        portfolioTotalMarketValues() {
-            const portfolio = appData.portfolios[this.selectedPortfolioIdx];
-            let totalGoldValue = 0;
-            let totalSbValue = 0;
-
-            for (const position of portfolio.positions) {
-                if (position.mark_type === "gold") {
-                    totalGoldValue += position.qty * appData.itemData[position.item_id].latest_price;
-                } else if (position.mark_type === "sb") {
-                    totalSbValue += position.qty * appData.itemData[position.item_id].latest_sb_price;
-                }
-            }
-
-            totalGoldValue += portfolio.inventory_gold ?? 0;
-
+    const app = Vue.createApp({
+        components: {
+            MyCheckbox: Vue.defineAsyncComponent(() => loadModule('assets/js/components/MyCheckbox.vue', sfcLoaderOpts))
+        },
+        template: `
+            <div style="text-align: center">
+                <h1>Portfolio</h1>
+            </div>
+            {% verbatim %}
+            <div v-cloak id="vue-container" class="watchlist-tabs-container">
+                <MyCheckbox></MyCheckbox>
+                <ul>
+                    <li v-for="(portfolio, pidx) in appData.portfolios" class="watchlist-tab">
+                        <a v-bind:href="'#' + portfolio.uid" @click="setTabIndex(pidx)">{{ portfolio.name }}</a>
+                        <div class="tab-control-container">
+                            <i class="ui-icon light-ui tablesorter-icon ui-icon-pencil" @click="editPortfolio(pidx)"></i>
+                            <i class="ui-icon light-ui tablesorter-icon ui-icon-close" @click="removePortfolio(pidx)"></i>
+                        </div>
+                    </li>
+                    <li class="watchlist-tab"><a style="padding: 0px;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
+                </ul>
+                <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content">
+                    <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid">
+                        <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
+                            <thead>
+                                <tr>
+                                    <!-- Must close th on same line to prevent extra space between text and sort arrows -->
+                                    <th>
+                                        Item<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-1-n"></i></th>
+                                    <th class="right-align shrink-wrap hide-mobile">
+                                        Qty<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
+                                    <th class="right-align shrink-wrap hide-mobile">
+                                        Buy Price<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
+                                    <th class="right-align shrink-wrap">
+                                        Book Value<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
+                                    <th class="right-align shrink-wrap">
+                                        Market Value<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
+                                    <th class="right-align shrink-wrap">
+                                        Chg%<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
+                                    <th class="right-align shrink-wrap hide-mobile">
+                                        Portfolio%<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
+                                    <th class="shrink-wrap sorter-false" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
+                                    <th class="button-container sorter-false"></th>
+                                </tr>
+                            </thead>
+                            <template v-for="markType in ['sb', 'gold']">
+                                <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length >= 1 && portfolio.positions.length >= 2">
+                                    <tbody class="tablesorter-infoOnly" style="border-bottom: 1px dashed grey">
+                                        <tr class="portfolio-summary-row">
+                                            <td v-if="markType === 'gold'">Total gold value</td>
+                                            <td v-if="markType === 'sb'" >Total SB value</td>
+                                            <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
+                                            <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
+                                            <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
+                                            <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                                {{ portfolioTotalMarketValues[markType].toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}
+                                            </td>
+                                            <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
+                                                {{ formatPercent((portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
+                                            </td>
+                                            <td class="right-align hide-mobile">
+                                                {{ (portfolioTotalMarketValues[markType] * (markType === 'sb' ? appData.itemData[114].latest_price : 1) / portfolioTotalMarketValues.total * 100).toFixed(1) }}%
+                                            </td>
+                                            <td v-if="isDebugEnabled()"></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr class="portfolio-summary-row" style="font-weight: normal" v-if="markType === 'gold' && portfolio.inventory_gold">
+                                            <td>Inventory gold</td>
+                                            <td class="right-align hide-mobile"></td>
+                                            <td class="right-align hide-mobile"></td>
+                                            <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...getLocaleStringOpts('gold')) }}</td>
+                                            <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...getLocaleStringOpts('gold')) }}</td>
+                                            <td class="right-align"></td>
+                                            <td class="right-align hide-mobile">{{ ((portfolio.inventory_gold ?? 0) / portfolioTotalMarketValues.total * 100).toFixed(1) }}%</td>
+                                            <td v-if="isDebugEnabled()"></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody>
+                                        <tr v-for="(position, idx) in portfolio.positions.filter(position => position.mark_type === markType)" v-bind:key="position.uid">
+                                            <td v-bind:class="{'sb-row-marker' : position.mark_type === 'sb'}" :data-text="appData.itemData[position.item_id].name + position.date_modified">
+                                                <a @click="setChart(position.item_id, appData.itemData[position.item_id].name)">
+                                                    {{ appData.itemData[position.item_id].name }}
+                                                </a>
+                                            </td>
+                                            <td class="right-align hide-mobile">{{ position.qty.toLocaleString() }}</td>
+                                            <td v-if="position.mark_type === 'gold'"
+                                                class="right-align hide-mobile shrink-wrap">
+                                                {{ position.mark.toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type)}}
+                                            </td>
+                                            <td v-if="position.mark_type === 'sb'"
+                                                class="right-align hide-mobile shrink-wrap">
+                                                {{ position.mark.toLocaleString(undefined, {minimumFractionDigits: 2}) + getMarkTypeAppendText(position.mark_type)}}
+                                            </td>
+                                            <td class="right-align shrink-wrap">
+                                                {{ (position.mark * position.qty).toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
+                                                <div class="book-value-mobile-hint">
+                                                    {{ position.qty.toLocaleString() }} @ {{ position.mark.toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
+                                                </div>
+                                            </td>
+                                            <td class="right-align shrink-wrap" v-bind:class="getColorClass(getLatestPrice(position) / position.mark - 1)">
+                                                {{ (position.qty * getLatestPrice(position)).toLocaleString(...getLocaleStringOpts(position.mark_type)) + getMarkTypeAppendText(position.mark_type) }}
+                                            </td>
+                                            <td class="right-align" v-bind:class="getColorClass(getLatestPrice(position) / position.mark - 1)">
+                                                {{ formatPercent((getLatestPrice(position) / position.mark - 1) * 100) }}
+                                            </td>
+                                            <td class="right-align hide-mobile">
+                                                {{ (appData.itemData[position.item_id].latest_price * position.qty / portfolioTotalMarketValues.total * 100).toFixed(1) }}%
+                                            </td>
+                                            <td v-if="isDebugEnabled()">{{ idx }}</td>
+                                            <td class="right-align button-container">
+                                                <span @click="editPosition(pidx, position.uid)" class="material-icons">edit</span>
+                                                <span @click="removePosition(pidx, position.uid)" class="material-icons">delete</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </template>
+                            </template>
+                        </table>
+                        <div v-if="portfolio.positions.length === 0" class="empty-watchlist-message">This portfolio is empty.</div>
+                        <div class="hide-mobile" style="margin-top: 10px; text-align: right">
+                            <a href="https://greasyfork.org/en/scripts/441382-mousehunt-markethunt-inventory-export">
+                                <span class="material-icons">download</span>Import inventory from Mousehunt
+                            </a>
+                        </div>
+                    </template>
+                </div>
+                <div id="newportfolio" class="watchlist-tab-content"></div>
+                <div v-if="appData.portfolios.length === 0">
+                    <p>You deleted all your portfolios! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new portfolio. </p>
+                    <img src="/assets/img/NotLikeDuck.png" />
+                </div>
+            </div>
+            {% endverbatim %}
+        `,
+        data() {
             return {
-                gold: totalGoldValue,
-                sb: totalSbValue,
-                total: totalGoldValue + totalSbValue * appData.itemData[114].latest_price
+                appData,
+                selectedPortfolioIdx: 0,
+                debugMode
             }
-        }
-    },
-    methods: {
-        getMarkTypeAppendText(markType) {
-            const appendTextLookup = {'gold': '', 'sb': ' SB'};
+        },
+        computed: {
+            portfolioTotalMarketValues() {
+                const portfolio = appData.portfolios[this.selectedPortfolioIdx];
+                let totalGoldValue = 0;
+                let totalSbValue = 0;
 
-            if (markType == null) {
-                return '';
-            }
-
-            return appendTextLookup[markType];
-        },
-        getLatestPrice(position) {
-            if (position.mark_type === 'sb') {
-                return appData.itemData[position.item_id].latest_sb_price;
-            } else {
-                return appData.itemData[position.item_id].latest_price;
-            }
-        },
-        getLocaleStringOpts(markType) {
-            const stringOpts = {
-                'gold': [], 
-                'sb': [undefined, {maximumFractionDigits: 2, minimumFractionDigits: 2}]
-            };
-
-            if (markType == null) {
-                return stringOpts.gold;
-            }
-
-            return stringOpts[markType];
-        },
-        formatPercent(num) {
-            if (num > 0) {
-                return '+' + num.toFixed(1) + '%';
-            } else if (num < 0) {
-                return num.toFixed(1) + '%';
-            } else {
-                return (0).toFixed(1) + '%';
-            }
-        },
-        getColorClass(num) {
-            if (num > 0) {
-                return {'gains-text' : true};
-            } else if (num < 0) {
-                return {'loss-text' : true};
-            } else {
-                return {};
-            }
-        },
-        getPortfolioTotalQty(portfolio, markType) {
-            return portfolio.positions.reduce(function(totalQty, position) {
-                if (position.mark_type === markType) {
-                    return totalQty + position.qty;
-                } else {
-                    return totalQty;
+                for (const position of portfolio.positions) {
+                    if (position.mark_type === "gold") {
+                        totalGoldValue += position.qty * appData.itemData[position.item_id].latest_price;
+                    } else if (position.mark_type === "sb") {
+                        totalSbValue += position.qty * appData.itemData[position.item_id].latest_sb_price;
+                    }
                 }
-            }, 0);
-        },
-        getPortfolioTotalBookValue(portfolio, markType) {
-            let totalBookValue = portfolio.positions.reduce(function(totalBook, position) {
-                if (position.mark_type === markType) {
-                    return totalBook + position.qty * position.mark;
-                } else {
-                    return totalBook;
+
+                totalGoldValue += portfolio.inventory_gold ?? 0;
+
+                return {
+                    gold: totalGoldValue,
+                    sb: totalSbValue,
+                    total: totalGoldValue + totalSbValue * appData.itemData[114].latest_price
                 }
-            }, 0);
-
-            if (markType === 'gold') {
-                totalBookValue += (portfolio.inventory_gold ?? 0);
-            }
-
-            return totalBookValue;
-        },
-        getPortfolioAvgBuyPrice(portfolio, markType) {
-            var avgPrice = this.getPortfolioTotalBookValue(portfolio, markType) / this.getPortfolioTotalQty(portfolio, markType);
-            if (markType == "gold") {
-                return Math.round(avgPrice);
-            } else {
-                return Math.round(avgPrice * 100) / 100;
             }
         },
-        removePosition(pidx, positionUid) {
-            const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
-            const thisItemId =  appData.portfolios[pidx].positions[positionIndex].item_id;
-            appData.portfolios[pidx].positions.splice(positionIndex, 1);
-            setPortfolioObj(appData.portfolios);
-            if (thisItemId === Number(document.getElementById('chartSelector').value)) {
-                renderChartWithItemId(thisItemId, appData.itemData[thisItemId].name);
-            }
-        },
-        editPosition(pidx, positionUid) {
-            const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
-            addToPortfolioModal(appData.portfolios[pidx].positions[positionIndex], pidx, positionIndex);
-        },
-        removePortfolio(pidx) {
-            showUndeleteToast(getPortfolioObjKey());
-            if (pidx < this.selectedPortfolioIdx || this.selectedPortfolioIdx === appData.portfolios.length - 1) {
-                this.selectedPortfolioIdx--;
-                $("#vue-container").tabs("option", "active", this.selectedPortfolioIdx);
-            }
-            appData.portfolios.splice(pidx, 1);
-            this.appData.redrawTabs = true;
-            setPortfolioObj(appData.portfolios);
-        },
-        editPortfolio(pidx) {
-            newPortfolioModal(pidx);
-        },
-        setChart(itemId, headerText) {
-            document.getElementById('chartSelector').value = itemId;
-            renderChartWithItemId(itemId, headerText);
-            window.history.replaceState({}, headerText, "/portfolio.php?item_id=" + itemId);
-        },
-        setTabIndex(pidx) {
-            this.selectedPortfolioIdx = pidx;
-            $('#portfolio-select').val(pidx);
-        },
-        newPortfolio() {
-            newPortfolioModal();
-        },
-        isDebugEnabled() {
-            if (this.debugMode && localStorage.enableDebug === 'true') {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    },
-    updated() {
-        if (this.appData.redrawTabs) {
-            this.appData.redrawTabs = false;
-            $("#vue-container").tabs('refresh');
-        }
-        
-        // Re-init tablesorter after every update because we may have switched tabs and the tables got destroyed
-        // and update tablesorter tbody cache in case it's the same table, but with updated rows
-        initTablesorter();
-        $(".table-sortable").trigger('update');
-    }
-});
+        methods: {
+            getMarkTypeAppendText(markType) {
+                const appendTextLookup = {'gold': '', 'sb': ' SB'};
 
-app.mount("#portfolio-container");
+                if (markType == null) {
+                    return '';
+                }
 
-$.tablesorter.addParser({
-    // set a unique id
-    id: 'mixedMarkTypeParser',
-    format: function(s, table, cell, cellIndex) {
-        return cell.innerText;
-    },
-    // flag for filter widget (true = ALWAYS search parsed values; false = search cell text)
-    parsed: false,
-    // set type, either numeric or text
-    type: 'text'
-});
-
-function mixedMarkTypeSorter(a, b, direction, column, table) {
-    const a_val = Number(a.replace(/[^0-9.]/g, ''));
-    const b_val = Number(b.replace(/[^0-9.]/g, ''));
-    const a_type = a.includes('sb') ? 'sb' : 'gold';
-    const b_type = b.includes('sb') ? 'sb' : 'gold';
-    const sort_multiplier = direction ? 1 : -1;
-
-    if (a_type === b_type) {
-        return a_val - b_val;
-    } else if (a_type === 'sb') {
-        return -1 * sort_multiplier;
-    } else {
-        return 1 * sort_multiplier;
-    }
-}
-
-function initTablesorter() {
-    $(".table-sortable").tablesorter({
-        headerTemplate: '{content}{icon}',
-        cssIcon: 'ui-icon light-ui',
-        cssIconNone: 'ui-icon-caret-2-n-s',
-        cssIconAsc: 'ui-icon-caret-1-n',
-        cssIconDesc: 'ui-icon-caret-1-s',
-        cssIconDisabled: 'ui-icon-blank',
-        //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
-        sortList: [[0,0]], // initial sort by first column asc
-        headers: {
-            2: {
-                sorter: 'mixedMarkTypeParser'
+                return appendTextLookup[markType];
             },
-            3: {
-                sorter: 'mixedMarkTypeParser'
+            getLatestPrice(position) {
+                if (position.mark_type === 'sb') {
+                    return appData.itemData[position.item_id].latest_sb_price;
+                } else {
+                    return appData.itemData[position.item_id].latest_price;
+                }
             },
-            4: {
-                sorter: 'mixedMarkTypeParser'
+            getLocaleStringOpts(markType) {
+                const stringOpts = {
+                    'gold': [],
+                    'sb': [undefined, {maximumFractionDigits: 2, minimumFractionDigits: 2}]
+                };
+
+                if (markType == null) {
+                    return stringOpts.gold;
+                }
+
+                return stringOpts[markType];
             },
+            formatPercent(num) {
+                if (num > 0) {
+                    return '+' + num.toFixed(1) + '%';
+                } else if (num < 0) {
+                    return num.toFixed(1) + '%';
+                } else {
+                    return (0).toFixed(1) + '%';
+                }
+            },
+            getColorClass(num) {
+                if (num > 0) {
+                    return {'gains-text' : true};
+                } else if (num < 0) {
+                    return {'loss-text' : true};
+                } else {
+                    return {};
+                }
+            },
+            getPortfolioTotalQty(portfolio, markType) {
+                return portfolio.positions.reduce(function(totalQty, position) {
+                    if (position.mark_type === markType) {
+                        return totalQty + position.qty;
+                    } else {
+                        return totalQty;
+                    }
+                }, 0);
+            },
+            getPortfolioTotalBookValue(portfolio, markType) {
+                let totalBookValue = portfolio.positions.reduce(function(totalBook, position) {
+                    if (position.mark_type === markType) {
+                        return totalBook + position.qty * position.mark;
+                    } else {
+                        return totalBook;
+                    }
+                }, 0);
+
+                if (markType === 'gold') {
+                    totalBookValue += (portfolio.inventory_gold ?? 0);
+                }
+
+                return totalBookValue;
+            },
+            getPortfolioAvgBuyPrice(portfolio, markType) {
+                var avgPrice = this.getPortfolioTotalBookValue(portfolio, markType) / this.getPortfolioTotalQty(portfolio, markType);
+                if (markType == "gold") {
+                    return Math.round(avgPrice);
+                } else {
+                    return Math.round(avgPrice * 100) / 100;
+                }
+            },
+            removePosition(pidx, positionUid) {
+                const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
+                const thisItemId =  appData.portfolios[pidx].positions[positionIndex].item_id;
+                appData.portfolios[pidx].positions.splice(positionIndex, 1);
+                setPortfolioObj(appData.portfolios);
+                if (thisItemId === Number(document.getElementById('chartSelector').value)) {
+                    renderChartWithItemId(thisItemId, appData.itemData[thisItemId].name);
+                }
+            },
+            editPosition(pidx, positionUid) {
+                const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
+                addToPortfolioModal(appData.portfolios[pidx].positions[positionIndex], pidx, positionIndex);
+            },
+            removePortfolio(pidx) {
+                showUndeleteToast(getPortfolioObjKey());
+                if (pidx < this.selectedPortfolioIdx || this.selectedPortfolioIdx === appData.portfolios.length - 1) {
+                    this.selectedPortfolioIdx--;
+                    $("#vue-container").tabs("option", "active", this.selectedPortfolioIdx);
+                }
+                appData.portfolios.splice(pidx, 1);
+                this.appData.redrawTabs = true;
+                setPortfolioObj(appData.portfolios);
+            },
+            editPortfolio(pidx) {
+                newPortfolioModal(pidx);
+            },
+            setChart(itemId, headerText) {
+                document.getElementById('chartSelector').value = itemId;
+                renderChartWithItemId(itemId, headerText);
+                window.history.replaceState({}, headerText, "/portfolio.php?item_id=" + itemId);
+            },
+            setTabIndex(pidx) {
+                this.selectedPortfolioIdx = pidx;
+                $('#portfolio-select').val(pidx);
+            },
+            newPortfolio() {
+                newPortfolioModal();
+            },
+            isDebugEnabled() {
+                if (this.debugMode && localStorage.enableDebug === 'true') {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         },
-        textSorter: {
-            2: mixedMarkTypeSorter,
-            3: mixedMarkTypeSorter,
-            4: mixedMarkTypeSorter,
+        updated() {
+            if (this.appData.redrawTabs) {
+                this.appData.redrawTabs = false;
+                $("#vue-container").tabs('refresh');
+            }
+
+            // Re-init tablesorter after every update because we may have switched tabs and the tables got destroyed
+            // and update tablesorter tbody cache in case it's the same table, but with updated rows
+            initTablesorter();
+            $(".table-sortable").trigger('update');
         }
     });
-}
 
-/* Must init tablesorter here to make first portfolio immediately sortable */
-initTablesorter();
-</script>
+    app.mount("#portfolio-container");
+
+    $.tablesorter.addParser({
+        // set a unique id
+        id: 'mixedMarkTypeParser',
+        format: function(s, table, cell, cellIndex) {
+            return cell.innerText;
+        },
+        // flag for filter widget (true = ALWAYS search parsed values; false = search cell text)
+        parsed: false,
+        // set type, either numeric or text
+        type: 'text'
+    });
+
+    function mixedMarkTypeSorter(a, b, direction, column, table) {
+        const a_val = Number(a.replace(/[^0-9.]/g, ''));
+        const b_val = Number(b.replace(/[^0-9.]/g, ''));
+        const a_type = a.includes('sb') ? 'sb' : 'gold';
+        const b_type = b.includes('sb') ? 'sb' : 'gold';
+        const sort_multiplier = direction ? 1 : -1;
+
+        if (a_type === b_type) {
+            return a_val - b_val;
+        } else if (a_type === 'sb') {
+            return -1 * sort_multiplier;
+        } else {
+            return 1 * sort_multiplier;
+        }
+    }
+
+    function initTablesorter() {
+        $(".table-sortable").tablesorter({
+            headerTemplate: '{content}{icon}',
+            cssIcon: 'ui-icon light-ui',
+            cssIconNone: 'ui-icon-caret-2-n-s',
+            cssIconAsc: 'ui-icon-caret-1-n',
+            cssIconDesc: 'ui-icon-caret-1-s',
+            cssIconDisabled: 'ui-icon-blank',
+            //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
+            sortList: [[0,0]], // initial sort by first column asc
+            headers: {
+                2: {
+                    sorter: 'mixedMarkTypeParser'
+                },
+                3: {
+                    sorter: 'mixedMarkTypeParser'
+                },
+                4: {
+                    sorter: 'mixedMarkTypeParser'
+                },
+            },
+            textSorter: {
+                2: mixedMarkTypeSorter,
+                3: mixedMarkTypeSorter,
+                4: mixedMarkTypeSorter,
+            }
+        });
+    }
+
+    /* Must init tablesorter here to make first portfolio immediately sortable */
+    initTablesorter();
+    </script>
 {% endblock %}
