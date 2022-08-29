@@ -35,7 +35,10 @@ export default {
             movePosition(reactivePortfolio[0].uid, reactivePortfolio[0].positions[0].uid, reactivePortfolio[1].uid);
         },
         editp() {
-            editPosition(reactivePortfolio[0].uid, reactivePortfolio[0].positions[0].uid, reactivePortfolio[0].positions[0].qty + 1, reactivePortfolio[0].positions[0].mark + 1)
+            editPosition(reactivePortfolio[0].uid,
+                reactivePortfolio[0].positions[0].uid,
+                reactivePortfolio[0].positions[0].qty + 1,
+                reactivePortfolio[0].positions[0].mark + 1)
         }
     }
 }

@@ -81,12 +81,12 @@ function removePosition(portfolioId, positionId) {
 
 function editPosition(portfolioId, positionId, qty, mark, maturity_date = null, maturity_price = null) {
     const portfolio = reactivePortfolio.find(portfolio => portfolio.uid === portfolioId);
-    const positionIndex = portfolio.positions.findIndex(position => position.uid === positionId);
+    const position = portfolio.positions.find(position => position.uid === positionId);
 
-    portfolio.positions[positionIndex].qty = qty;
-    portfolio.positions[positionIndex].mark = mark;
-    portfolio.positions[positionIndex].maturity_date = maturity_date;
-    portfolio.positions[positionIndex].maturity_price = maturity_price;
+    position.qty = qty;
+    position.mark = mark;
+    position.maturity_date = maturity_date;
+    position.maturity_price = maturity_price;
 }
 
 function movePosition(portfolioId, positionId, newPortfolioId) {
