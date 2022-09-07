@@ -1,4 +1,7 @@
 <template>
+<!--    edit sell delete-->
+<!--    sell delete-->
+
     <div style="text-align: center">
         <h1>Portfolio</h1>
     </div>
@@ -13,7 +16,7 @@
             </li>
             <li class="watchlist-tab"><a style="padding: 0px;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
         </ul>
-        <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content">
+        <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content" :key="portfolio.uid">
             <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid">
                 <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
                     <thead>
@@ -119,7 +122,7 @@ export default {
     },
     computed: {
         portfolioTotalMarketValues() {
-            const portfolio = appData.portfolios[this.selectedPortfolioIdx];
+            const portfolio = this.selectedPortfolio;
             let totalGoldValue = 0;
             let totalSbValue = 0;
 
@@ -138,6 +141,25 @@ export default {
                 sb: totalSbValue,
                 total: totalGoldValue + totalSbValue * appData.itemData[114].latest_price
             }
+        },
+        selectedPortfolio() {
+            return appData.portfolios[this.selectedPortfolioIdx];
+        },
+        mappedPositions() {
+            const map = {
+                gold: {},
+                sb: {}
+            }
+
+            this.selectedPortfolio.positions.forEach(position => {
+                if (map[position.mark_type][position.item_id]) {
+                    map[position.mark_type][position.item_id].push(position);
+                } else {
+                    map[position.mark_type][position.item_id] = [position];
+                }
+            });
+
+            return map;
         }
     },
     methods: {
@@ -145,7 +167,7 @@ export default {
             return getMarkTypeAppendText(markType);
         },
         itemIdsInSelectedPortfolio(markType) {
-            const itemIds = appData.portfolios[this.selectedPortfolioIdx].positions
+            const itemIds = this.selectedPortfolio.positions
                 .filter(position => position.mark_type === markType)
                 .map(position => {
                     return position.item_id;
@@ -230,8 +252,8 @@ export default {
 
         // Re-init tablesorter after every update because we may have switched tabs and the tables got destroyed
         // and update tablesorter tbody cache in case it's the same table, but with updated rows
-        initTablesorter();
-        $(".table-sortable").trigger('update');
+        // initTablesorter();
+        // $(".table-sortable").trigger('update');
     },
     mounted() {
         // initial jquery tabs update
