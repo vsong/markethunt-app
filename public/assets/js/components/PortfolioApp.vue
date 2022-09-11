@@ -23,7 +23,7 @@
                         <tr>
                             <!-- Must close th on same line to prevent extra space between text and sort arrows -->
                             <th>
-                                Item<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-1-n"></i></th>
+                                Item<i class="ui-icon light-ui" :class="sortIconClass('name')"></i></th>
                             <th class="right-align shrink-wrap hide-mobile">
                                 Qty<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
                             <th class="right-align shrink-wrap hide-mobile">
@@ -42,47 +42,13 @@
                     </thead>
                     <template v-for="markType in ['sb', 'gold']">
                         <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length >= 1 && portfolio.positions.length >= 2">
-                            <tbody class="tablesorter-infoOnly" style="border-bottom: 1px dashed grey">
-                                <tr class="portfolio-summary-row">
-                                    <td v-if="markType === 'gold'">Total gold value</td>
-                                    <td v-if="markType === 'sb'" >Total SB value</td>
-                                    <td class="right-align hide-mobile">{{ getPortfolioTotalQty(portfolio, markType).toLocaleString() }}</td>
-                                    <td class="right-align hide-mobile">{{ getPortfolioAvgBuyPrice(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
-                                    <td class="right-align">{{ getPortfolioTotalBookValue(portfolio, markType).toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}</td>
-                                    <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                        {{ portfolioTotalMarketValues[markType].toLocaleString(...getLocaleStringOpts(markType)) + getMarkTypeAppendText(markType) }}
-                                    </td>
-                                    <td class="right-align" v-bind:class="getColorClass(portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1)">
-                                        {{ formatPercent((portfolioTotalMarketValues[markType] / getPortfolioTotalBookValue(portfolio, markType) - 1) * 100) }}
-                                    </td>
-                                    <td class="right-align hide-mobile">
-                                        {{ (portfolioTotalMarketValues[markType] * (markType === 'sb' ? appData.itemData[114].latest_price : 1) / portfolioTotalMarketValues.total * 100).toFixed(1) }}%
-                                    </td>
-                                    <td v-if="isDebugEnabled()"></td>
-                                    <td></td>
-                                </tr>
-                                <tr class="portfolio-summary-row" style="font-weight: normal" v-if="markType === 'gold' && portfolio.inventory_gold">
-                                    <td>Inventory gold</td>
-                                    <td class="right-align hide-mobile"></td>
-                                    <td class="right-align hide-mobile"></td>
-                                    <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...getLocaleStringOpts('gold')) }}</td>
-                                    <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...getLocaleStringOpts('gold')) }}</td>
-                                    <td class="right-align"></td>
-                                    <td class="right-align hide-mobile">{{ ((portfolio.inventory_gold ?? 0) / portfolioTotalMarketValues.total * 100).toFixed(1) }}%</td>
-                                    <td v-if="isDebugEnabled()"></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                            <tbody>
-                                <PortfolioItemRow
-                                    v-for="itemId in itemIdsInSelectedPortfolio(markType)"
-                                    :key="itemId"
-                                    :portfolio="portfolio"
-                                    :markType="markType"
-                                    :item="appData.itemData[itemId]"
-                                    :portfolioTotals="portfolioTotalMarketValues"
-                                ></PortfolioItemRow>
-                            </tbody>
+                            <PortfolioMarktypeSubtable
+                                :mark-type="markType"
+                                :portfolio="selectedPortfolio"
+                                :totalMarketValues="portfolioTotalMarketValues"
+                                :itemMarketData="appData.itemData"
+                                :debug-enabled="isDebugEnabled()"
+                            ></PortfolioMarktypeSubtable>
                         </template>
                     </template>
                 </table>
@@ -99,25 +65,27 @@
             <p>You deleted all your portfolios! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new portfolio. </p>
             <img src="/assets/img/NotLikeDuck.png"  alt="SB position indicator"/>
         </div>
-        <MyCheckbox v-if="isDebugEnabled()"></MyCheckbox>
+        <PortfolioDebugger v-if="isDebugEnabled()"></PortfolioDebugger>
     </div>
 </template>
 
 <script>
-import MyCheckbox from './PortfolioDebugger.vue';
-import PortfolioItemRow from "./PortfolioItemRow.vue";
+import PortfolioDebugger from './PortfolioDebugger.vue';
+import PortfolioMarktypeSubtable from "./PortfolioMarktypeSubtable.vue";
 
 export default {
     name: "PortfolioApp.vue",
     components: {
-        MyCheckbox,
-        PortfolioItemRow
+        PortfolioMarktypeSubtable,
+        PortfolioDebugger
     },
     data() {
         return {
             appData,
             selectedPortfolioIdx: 0,
-            debugMode
+            debugMode,
+            sortAscending: true,
+            sortKey: 'name',
         }
     },
     computed: {
@@ -144,78 +112,9 @@ export default {
         },
         selectedPortfolio() {
             return appData.portfolios[this.selectedPortfolioIdx];
-        },
-        mappedPositions() {
-            const map = {
-                gold: {},
-                sb: {}
-            }
-
-            this.selectedPortfolio.positions.forEach(position => {
-                if (map[position.mark_type][position.item_id]) {
-                    map[position.mark_type][position.item_id].push(position);
-                } else {
-                    map[position.mark_type][position.item_id] = [position];
-                }
-            });
-
-            return map;
         }
     },
     methods: {
-        getMarkTypeAppendText(markType) {
-            return getMarkTypeAppendText(markType);
-        },
-        itemIdsInSelectedPortfolio(markType) {
-            const itemIds = this.selectedPortfolio.positions
-                .filter(position => position.mark_type === markType)
-                .map(position => {
-                    return position.item_id;
-                });
-
-            return new Set(itemIds);
-        },
-        getLocaleStringOpts(markType) {
-            return getMarkTypeLocaleStringOpts(markType);
-        },
-        formatPercent(num) {
-            return formatPercent(num);
-        },
-        getColorClass(num) {
-            return getVueColorClassBinding(num);
-        },
-        getPortfolioTotalQty(portfolio, markType) {
-            return portfolio.positions.reduce(function(totalQty, position) {
-                if (position.mark_type === markType) {
-                    return totalQty + position.qty;
-                } else {
-                    return totalQty;
-                }
-            }, 0);
-        },
-        getPortfolioTotalBookValue(portfolio, markType) {
-            let totalBookValue = portfolio.positions.reduce(function(totalBook, position) {
-                if (position.mark_type === markType) {
-                    return totalBook + position.qty * position.mark;
-                } else {
-                    return totalBook;
-                }
-            }, 0);
-
-            if (markType === 'gold') {
-                totalBookValue += (portfolio.inventory_gold ?? 0);
-            }
-
-            return totalBookValue;
-        },
-        getPortfolioAvgBuyPrice(portfolio, markType) {
-            var avgPrice = this.getPortfolioTotalBookValue(portfolio, markType) / this.getPortfolioTotalQty(portfolio, markType);
-            if (markType == "gold") {
-                return Math.round(avgPrice);
-            } else {
-                return Math.round(avgPrice * 100) / 100;
-            }
-        },
         removePortfolio(pidx) {
             showUndeleteToast(getPortfolioObjKey());
             if (pidx < this.selectedPortfolioIdx || this.selectedPortfolioIdx === appData.portfolios.length - 1) {
@@ -232,6 +131,17 @@ export default {
         setTabIndex(pidx) {
             this.selectedPortfolioIdx = pidx;
             $('#portfolio-select').val(pidx);
+        },
+        sortIconClass(sortKey) {
+            if (this.sortKey !== sortKey) {
+                return ['ui-icon-caret-2-n-s'];
+            }
+
+            if (this.sortAscending) {
+                return ['ui-icon-caret-1-n'];
+            } else {
+                return ['ui-icon-caret-1-s'];
+            }
         },
         newPortfolio() {
             newPortfolioModal();
@@ -265,7 +175,7 @@ export default {
             }
         });
 
-        initTablesorter();
+        // initTablesorter();
     }
 }
 </script>
