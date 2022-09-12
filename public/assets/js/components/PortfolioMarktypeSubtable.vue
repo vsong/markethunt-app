@@ -39,7 +39,7 @@
     <tbody>
         <template v-for="(item, idx) in sortedGroupedItemData">
             <PortfolioItemRow
-                v-if="idx < 100"
+                v-if="idx < 80"
                 :key="item.itemId"
                 :portfolio="portfolio"
                 :markType="markType"
@@ -65,13 +65,7 @@ export default {
     components: {
         PortfolioItemRow
     },
-    props: ['markType', 'portfolio', 'totalMarketValues', 'itemMarketData', 'debugEnabled'],
-    data() {
-        return {
-            sortAscending: true,
-            sortKey: 'name',
-        }
-    },
+    props: ['markType', 'portfolio', 'totalMarketValues', 'itemMarketData', 'debugEnabled', 'sortAscending', 'sortKey'],
     computed: {
         mappedPositions() {
             const map = {
@@ -90,13 +84,7 @@ export default {
             return map;
         },
         subPortfolioUniqueItemIds() {
-            const itemIds = this.portfolio.positions
-                .filter(position => position.mark_type === this.markType)
-                .map(position => {
-                    return position.item_id;
-                });
-
-            return new Set(itemIds);
+            return Object.keys(this.mappedPositions[this.markType]);
         },
         subPortfolioTotalQty() {
             return this.portfolio.positions.reduce((totalQty, position) => {
@@ -143,7 +131,8 @@ export default {
                     bookValue: this.itemBookValue(itemId),
                     marketValue: this.itemMarketValue(itemId),
                     changePercent: this.itemChangePercent(itemId),
-                    portfolioPercent: this.itemPortfolioPercent(itemId)
+                    portfolioPercent: this.itemPortfolioPercent(itemId),
+                    positions: this.mappedPositions[this.markType][itemId]
                 });
             });
             console.log('group end')

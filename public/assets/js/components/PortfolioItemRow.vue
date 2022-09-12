@@ -1,13 +1,12 @@
 <template>
-    <tr class="portfolio-item-row tablesorter-hasChildRow" @click="expanded = !expanded">
+    <tr :class="{'clickable': item.positions.length > 1}" @click="expand">
         <td v-bind:class="{'sb-row-marker' : markType === 'sb'}" :data-text="item.name">
-            <span class="material-icons row-expand-icon">{{ expanded ? 'expand_more' : 'chevron_right' }}</span>
+            <span class="material-icons row-expand-icon" :class="{'invisible': item.positions.length <= 1}">
+                {{ expanded ? 'expand_more' : 'chevron_right' }}
+            </span>
             <a @click.stop="setChart(item.itemId.toString(), item.name)">
                 {{ item.name }}
             </a>
-            <span v-if="relevantPositions.length > 1">
-                ({{ relevantPositions.length }})
-            </span>
         </td>
         <td class="right-align hide-mobile">{{ item.qty.toLocaleString() }}</td>
         <td class="right-align hide-mobile shrink-wrap">
@@ -30,14 +29,17 @@
         </td>
         <td v-if="isDebugEnabled()">{{ item.itemId }}</td>
         <td class="right-align button-container">
-            <span class="material-icons" v-if="relevantPositions.length === 1">edit</span>
-            <span class="material-icons" v-if="relevantPositions.length > 1">add</span>
+            <!--    edit sell delete-->
+            <!--    qty badge sell delete-->
+
+            <div class="qty-badge" v-if="item.positions.length > 1">{{ item.positions.length }}</div>
+            <span class="material-icons" v-if="item.positions.length === 1">edit</span>
             <span class="material-icons">sell</span>
             <span class="material-icons">delete</span>
         </td>
     </tr>
     <template v-if="expanded">
-        <PortfolioPositionRow v-for="position in relevantPositions" :key="position.uid"
+        <PortfolioPositionRow v-for="position in item.positions" :key="position.uid"
             class="tablesorter-childRow"
             :position="position"
             :itemData="item"
@@ -60,11 +62,6 @@ export default {
         }
     },
     computed: {
-        relevantPositions() {
-            return this.portfolio.positions.filter(position => {
-                return position.item_id === this.item.itemId && position.mark_type === this.markType;
-            });
-        },
         currentItemPrice() {
             return this.markType === 'gold' ? this.item.latest_price : this.item.latest_sb_price;
         },
@@ -76,6 +73,11 @@ export default {
         }
     },
     methods: {
+        expand() {
+            if (this.item.positions.length > 1) {
+                this.expanded = !this.expanded;
+            }
+        },
         formatPercent(num) {
             return formatPercent(num);
         },
@@ -95,9 +97,12 @@ export default {
 </script>
 
 <style scoped>
-.portfolio-item-row {
+.clickable {
     cursor: pointer;
-    user-select: none;
+}
+
+.clickable:hover {
+    background-color: var(--highlight-color-light);
 }
 
 .row-expand-icon {
@@ -105,5 +110,23 @@ export default {
     margin-right: 4px;
     vertical-align: top;
     color: var(--highlight-color);
+}
+
+.invisible {
+    opacity: 0;
+}
+
+.qty-badge {
+    display: inline-block;
+    font-size: 0.8em;
+    color: white;
+    background-color: var(--highlight-color);
+    padding: 0.3em;
+    border-radius: 99em;
+    width: 12px;
+    height: 12px;
+    text-align: center;
+    box-shadow: 1px 1px 1px #aaaaaa;
+    margin-right: 2px;
 }
 </style>

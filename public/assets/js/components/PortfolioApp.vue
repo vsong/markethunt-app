@@ -1,7 +1,4 @@
 <template>
-<!--    edit sell delete-->
-<!--    sell delete-->
-
     <div style="text-align: center">
         <h1>Portfolio</h1>
     </div>
@@ -14,7 +11,7 @@
                     <i class="ui-icon light-ui tablesorter-icon ui-icon-close" @click="removePortfolio(pidx)"></i>
                 </div>
             </li>
-            <li class="watchlist-tab"><a style="padding: 0px;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
+            <li class="watchlist-tab"><a style="padding: 0;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
         </ul>
         <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content" :key="portfolio.uid">
             <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid">
@@ -22,20 +19,27 @@
                     <thead>
                         <tr>
                             <!-- Must close th on same line to prevent extra space between text and sort arrows -->
-                            <th>
-                                Item<i class="ui-icon light-ui" :class="sortIconClass('name')"></i></th>
-                            <th class="right-align shrink-wrap hide-mobile">
-                                Qty<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
-                            <th class="right-align shrink-wrap hide-mobile">
-                                Buy Price<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
-                            <th class="right-align shrink-wrap">
-                                Book Value<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
-                            <th class="right-align shrink-wrap">
-                                Market Value<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
-                            <th class="right-align shrink-wrap">
-                                Chg%<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
-                            <th class="right-align shrink-wrap hide-mobile">
-                                Portfolio%<i class="ui-icon light-ui tablesorter-icon ui-icon-caret-2-n-s"></i></th>
+                            <th class="sortable-header" @click="setSort('name')">
+                                Item<i class="sortable-header ui-icon light-ui" :class="sortIconClass('name')"></i>
+                            </th>
+                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="setSort('qty')">
+                                Qty<i class="ui-icon light-ui" :class="sortIconClass('qty')"></i>
+                            </th>
+                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="setSort('avgBuyPrice')">
+                                Buy Price<i class="ui-icon light-ui" :class="sortIconClass('avgBuyPrice')"></i>
+                            </th>
+                            <th class="sortable-header right-align shrink-wrap" @click="setSort('bookValue')">
+                                Book Value<i class="ui-icon light-ui" :class="sortIconClass('bookValue')"></i>
+                            </th>
+                            <th class="sortable-header right-align shrink-wrap" @click="setSort('marketValue')">
+                                Market Value<i class="ui-icon light-ui" :class="sortIconClass('marketValue')"></i>
+                            </th>
+                            <th class="sortable-header right-align shrink-wrap" @click="setSort('changePercent')">
+                                Chg%<i class="ui-icon light-ui " :class="sortIconClass('changePercent')"></i>
+                            </th>
+                            <th class="sortable-header right-align shrink-wrap hide-mobile" @click="setSort('portfolioPercent')">
+                                Portfolio%<i class="ui-icon light-ui " :class="sortIconClass('portfolioPercent')"></i>
+                            </th>
                             <th class="shrink-wrap sorter-false" style="background-color: rgb(216, 0, 0)" v-if="isDebugEnabled()">Debug</th>
                             <th class="button-container sorter-false"></th>
                         </tr>
@@ -48,6 +52,8 @@
                                 :totalMarketValues="portfolioTotalMarketValues"
                                 :itemMarketData="appData.itemData"
                                 :debug-enabled="isDebugEnabled()"
+                                :sort-ascending="sortAscending"
+                                :sort-key="sortKey"
                             ></PortfolioMarktypeSubtable>
                         </template>
                     </template>
@@ -148,6 +154,14 @@ export default {
         },
         isDebugEnabled() {
             return isDebugModeEnabled();
+        },
+        setSort(sortKey) {
+            if (this.sortKey === sortKey) {
+                this.sortAscending = !this.sortAscending;
+            } else {
+                this.sortAscending = true;
+                this.sortKey = sortKey;
+            }
         }
     },
     updated() {
