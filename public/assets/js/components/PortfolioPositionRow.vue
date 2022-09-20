@@ -2,7 +2,7 @@
     <tr class="portfolio-position-row" @click="expanded = !expanded">
         <td :data-text="position.date_modified">
             <span class="spacer"></span>
-            {{ unixTimeToIsoString(position.date_modified) }}
+            {{ formatDate(new Date(position.date_modified)) }}
         </td>
         <td class="right-align hide-mobile">{{ position.qty.toLocaleString() }}</td>
         <td class="right-align hide-mobile shrink-wrap">
@@ -37,7 +37,7 @@ export default {
     props: ['position', 'itemData', 'portfolioTotals'],
     computed: {
         currentItemPrice() {
-            return this.position.mark_type === 'gold' ? this.itemData.latest_price : this.itemData.latest_sb_price;
+            return this.position.mark_type === 'gold' ? this.itemData.latestPrice : this.itemData.latestSbPrice;
         },
         positionBookValue() {
             return this.position.qty * this.position.mark;
@@ -92,6 +92,9 @@ export default {
 
             const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
             addToPortfolioModal(appData.portfolios[pidx].positions[positionIndex], pidx, positionIndex);
+        },
+        formatDate(date) {
+            return date.toLocaleString();
         },
         unixTimeToIsoString(timestamp) {
             return unixTimeToIsoString(timestamp);

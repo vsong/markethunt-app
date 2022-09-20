@@ -40,6 +40,7 @@
         <template v-for="(item, idx) in sortedGroupedItemData">
             <PortfolioItemRow
                 v-if="idx < 80"
+                :zebraStriped="idx % 2 === 1"
                 :key="item.itemId"
                 :portfolio="portfolio"
                 :markType="markType"
@@ -47,13 +48,6 @@
                 :portfolioTotals="totalMarketValues"
             ></PortfolioItemRow>
         </template>
-        <tr>
-            <td colspan="8">
-                <pre>
-                    {{ sortedGroupedItemData }}
-                </pre>
-            </td>
-        </tr>
     </tbody>
 </template>
 
@@ -119,7 +113,6 @@ export default {
             }
         },
         groupedItemData() {
-            console.log('group start')
             const groupedItemData = [];
 
             this.subPortfolioUniqueItemIds.forEach(itemId => {
@@ -127,6 +120,8 @@ export default {
                     itemId,
                     qty: this.itemQty(itemId),
                     name: this.itemMarketData[itemId].name,
+                    latestPrice: this.itemMarketData[itemId].latest_price,
+                    latestSbPrice: this.itemMarketData[itemId].latest_sb_price,
                     avgBuyPrice: this.itemAverageBuyPrice(itemId),
                     bookValue: this.itemBookValue(itemId),
                     marketValue: this.itemMarketValue(itemId),
@@ -135,12 +130,10 @@ export default {
                     positions: this.mappedPositions[this.markType][itemId]
                 });
             });
-            console.log('group end')
 
             return groupedItemData;
         },
         sortedGroupedItemData() {
-            console.log('sort start')
 
             const sorted = [...this.groupedItemData];
 
@@ -163,7 +156,6 @@ export default {
                     return b[this.sortKey] - a[this.sortKey];
                 }
             });
-            console.log('sort end')
 
             return sorted;
         },

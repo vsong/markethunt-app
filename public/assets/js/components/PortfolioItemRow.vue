@@ -1,6 +1,6 @@
 <template>
-    <tr :class="{'clickable': item.positions.length > 1}" @click="expand">
-        <td v-bind:class="{'sb-row-marker' : markType === 'sb'}" :data-text="item.name">
+    <tr :class="{'clickable': item.positions.length > 1, 'zebra-striped': zebraStriped}" @click="expand">
+        <td :class="{'sb-row-marker' : markType === 'sb'}" :data-text="item.name" style="padding-left: 0px">
             <span class="material-icons row-expand-icon" :class="{'invisible': item.positions.length <= 1}">
                 {{ expanded ? 'expand_more' : 'chevron_right' }}
             </span>
@@ -29,18 +29,29 @@
         </td>
         <td v-if="isDebugEnabled()">{{ item.itemId }}</td>
         <td class="right-align button-container">
-            <!--    edit sell delete-->
-            <!--    qty badge sell delete-->
-
             <div class="qty-badge" v-if="item.positions.length > 1">{{ item.positions.length }}</div>
-            <span class="material-icons" v-if="item.positions.length === 1">edit</span>
-            <span class="material-icons">sell</span>
-            <span class="material-icons">delete</span>
+            <span class="material-icons" v-if="item.positions.length === 1" @click.stop="editPosition">edit</span>
+            <span class="material-icons" @click.stop="showSellItemModal = true">sell</span>
+            <span class="material-icons" @click.stop="deleteItem">delete</span>
         </td>
     </tr>
-    <template v-if="expanded">
-        <PortfolioPositionRow v-for="position in item.positions" :key="position.uid"
-            class="tablesorter-childRow"
+    <DeletePortfolioItemWarning
+        v-if="showDeleteItemWarning"
+        :portfolio="portfolio"
+        :item="item"
+        @closed="showDeleteItemWarning = false"
+    ></DeletePortfolioItemWarning>
+    <SellPortfolioItemModal
+        v-if="showSellItemModal"
+        :portfolio="portfolio"
+        :item="item"
+        @closed="showSellItemModal = false"
+    ></SellPortfolioItemModal>
+    <template v-if="expanded && item.positions.length > 1">
+        <PortfolioPositionRow
+            v-for="position in item.positions"
+            :key="position.uid"
+            :class="{'zebra-striped': zebraStriped}"
             :position="position"
             :itemData="item"
             :portfolioTotals="portfolioTotals"
@@ -50,21 +61,25 @@
 
 <script>
 import PortfolioPositionRow from "./PortfolioPositionRow.vue";
+import DeletePortfolioItemWarning from "./Portfolio/DeletePortfolioItemWarning.vue";
+import SellPortfolioItemModal from "./Portfolio/SellPortfolioItemModal.vue";
+
 export default {
     name: "PortfolioItemRow",
     components: {
+        SellPortfolioItemModal,
+        DeletePortfolioItemWarning,
         PortfolioPositionRow
     },
-    props: ['portfolio', 'markType', 'item', 'portfolioTotals'],
+    props: ['portfolio', 'markType', 'item', 'portfolioTotals', 'zebraStriped'],
     data() {
         return {
             expanded: false,
+            showDeleteItemWarning: false,
+            showSellItemModal: false,
         }
     },
     computed: {
-        currentItemPrice() {
-            return this.markType === 'gold' ? this.item.latest_price : this.item.latest_sb_price;
-        },
         localeStringOpts() {
             return getMarkTypeLocaleStringOpts(this.markType);
         },
@@ -91,6 +106,19 @@ export default {
             document.getElementById('chartSelector').value = itemId;
             renderChartWithItemId(itemId, headerText);
             window.history.replaceState({}, headerText, "/portfolio.php?item_id=" + itemId);
+        },
+        editPosition() {
+            let pidx = appData.portfolios.findIndex(portfolio => portfolio.uid === this.portfolio.uid);
+            let positionIdx = this.portfolio.positions.findIndex(position => position.uid === this.item.positions[0].uid);
+
+            addToPortfolioModal(appData.portfolios[pidx].positions[positionIdx], pidx, positionIdx);
+        },
+        deleteItem() {
+            if (this.item.positions.length > 1) {
+                this.showDeleteItemWarning = true;
+            } else {
+                removePosition(this.portfolio.uid, this.item.positions[0].uid)
+            }
         }
     }
 }
@@ -107,13 +135,16 @@ export default {
 
 .row-expand-icon {
     font-size: 18px;
-    margin-right: 4px;
     vertical-align: top;
     color: var(--highlight-color);
 }
 
 .invisible {
     opacity: 0;
+}
+
+.zebra-striped {
+    background-color: #f2f2f2;
 }
 
 .qty-badge {

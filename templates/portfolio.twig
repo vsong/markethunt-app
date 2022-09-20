@@ -120,6 +120,10 @@
             const portfolio = appData.portfolios[pidx];
             const position = portfolio.positions[idx];
             editPosition(portfolio.uid, position.uid, qty, mark);
+
+            if (newPidx !== null && newPidx !== pidx) {
+                movePosition(portfolio.uid, position.uid, appData.portfolios[newPidx].uid);
+            }
         }
 
         // Generic add to portfolio

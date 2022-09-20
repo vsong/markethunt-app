@@ -15,7 +15,7 @@
         </ul>
         <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content" :key="portfolio.uid">
             <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid">
-                <table class="pure-table pure-table-striped small-td-text table-sortable" style="width:100%; background-color: white;">
+                <table class="pure-table small-td-text table-sortable" style="width:100%; background-color: white;">
                     <thead>
                         <tr>
                             <!-- Must close th on same line to prevent extra space between text and sort arrows -->
@@ -45,7 +45,7 @@
                         </tr>
                     </thead>
                     <template v-for="markType in ['sb', 'gold']">
-                        <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length >= 1 && portfolio.positions.length >= 2">
+                        <template v-if="portfolio.positions.filter(position => position.mark_type === markType).length >= 1">
                             <PortfolioMarktypeSubtable
                                 :mark-type="markType"
                                 :portfolio="selectedPortfolio"
