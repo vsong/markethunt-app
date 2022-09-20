@@ -174,3 +174,34 @@ function newPortfolioObject(name) {
         'positions': [],
     }
 }
+
+function exportPortfolio() {
+    return JSON.stringify(getPortfolioObj());
+}
+
+function importPortfolio(string) {
+    let object = JSON.parse(string);
+
+    if (!object[0].uid.includes('portfolio')) {
+        console.error('Invalid input. Import aborted');
+        return;
+    }
+
+    setPortfolioObj(object);
+    console.log(`imported ${getPortfolioObj().length} portfolios`);
+}
+
+function exportWatchlist() {
+    return JSON.stringify(getWatchlistObj());
+}
+
+function importWatchlist(string) {
+    let object = JSON.parse(string);
+    if (!object[0].uid.includes('watchlist')) {
+        console.error('Invalid input. Import aborted');
+        return;
+    }
+
+    setWatchlistObj(object);
+    console.log(`imported ${getWatchlistObj().length} watchlists`)
+}
