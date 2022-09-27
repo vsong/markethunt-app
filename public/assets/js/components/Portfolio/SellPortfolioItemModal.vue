@@ -94,6 +94,7 @@
 
 <script>
 import ModalTemplate from "../ModalTemplate.vue";
+
 export default {
     name: "SellPortfolioItemModal",
     components: {ModalTemplate},
@@ -189,17 +190,21 @@ export default {
 
             return positionChanges;
         },
+        totalCost() {
+            return Object.keys(this.positionChanges).reduce((sum, positionUid) => {
+                return sum += this.positionChanges[positionUid].cost;
+            }, 0);
+        },
         totalProfit() {
             return Object.keys(this.positionChanges).reduce((sum, positionUid) => {
                 return sum += this.positionChanges[positionUid].profit;
             }, 0);
         },
         totalProfitPercent() {
-            const totalCost = Object.keys(this.positionChanges).reduce((sum, positionUid) => {
-                return sum += this.positionChanges[positionUid].cost;
-            }, 0);
-
-            return this.totalProfit / totalCost * 100;
+            return this.totalProfit / this.totalCost * 100;
+        },
+        averageCost() {
+            return this.totalCost / this.sellAmount;
         },
         currencySuffix() {
             return getMarkTypeAppendText(this.markType);
@@ -213,6 +218,18 @@ export default {
             if (!document.forms['sell-item-form'].reportValidity()) {
                 return;
             }
+
+            this.sortedPositions.forEach(position => {
+                const positionChange = this.positionChanges[position.uid];
+
+                if (positionChange.newQty === 0) {
+                    removePosition(this.portfolio.uid, position.uid);
+                } else if (positionChange.newQty < position.qty) {
+                    editPosition(this.portfolio.uid, position.uid, positionChange.newQty, position.mark)
+                }
+            })
+
+            appendSellHistory(this.portfolio.uid, this.item.itemId, this.sellAmount, this.averageCost, this.sellPrice, this.markType);
 
             this.$refs.modal.closeModal();
         },

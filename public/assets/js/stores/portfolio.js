@@ -7,6 +7,12 @@ function loadReactivePortfolio() {
         portfolio = JSON.parse(LZUTF8.decompress(localStorage.portfoliov1, {"inputEncoding":"StorageBinaryString"}));
     }
 
+    portfolio.forEach(p => {
+        if (p.history === undefined) {
+            p.sell_history = [];
+        }
+    });
+
     return portfolio;
 }
 
@@ -100,6 +106,33 @@ function movePosition(portfolioId, positionId, newPortfolioId) {
 
     const position = oldPortfolio.positions.splice(positionIndex, 1)[0];
     newPortfolio.positions.push(position);
+}
+
+/**
+ *
+ * @param {string} portfolioId
+ * @param {int} itemId
+ * @param {int} qty
+ * @param {int|float} avgCost
+ * @param {int|float} sellPrice
+ * @param {String} markType
+ */
+function appendSellHistory(portfolioId, itemId, qty, avgCost, sellPrice, markType) {
+    if (markType !== 'gold' && markType !== 'sb') {
+        throw 'Invalid mark type.';
+    }
+
+    const portfolio = reactivePortfolio.find(portfolio => portfolio.uid === portfolioId);
+
+    portfolio.sell_history.push({
+        uid: "hist-" + uid(),
+        date: Date.now(),
+        item_id: Number(itemId),
+        qty: Number(qty),
+        avg_cost: Number(avgCost),
+        sell_price: Number(sellPrice),
+        mark_type: markType
+    })
 }
 
 watch(reactivePortfolio, (oldVal, newVal) => {
