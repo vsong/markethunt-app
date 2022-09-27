@@ -187,7 +187,8 @@ export default {
                 positionChanges[position.uid].profitPercent = (this.sellPrice / position.mark - 1) * 100;
                 positionChanges[position.uid].cost = position.mark * sellAmount;
             })
-
+            console.log('positionChanges');
+            console.log(positionChanges);
             return positionChanges;
         },
         totalCost() {
@@ -219,8 +220,11 @@ export default {
                 return;
             }
 
+            // clone to prevent reactivity loop
+            const positionChanges = Object.assign({}, this.positionChanges);
+
             this.sortedPositions.forEach(position => {
-                const positionChange = this.positionChanges[position.uid];
+                const positionChange = positionChanges[position.uid];
 
                 if (positionChange.newQty === 0) {
                     removePosition(this.portfolio.uid, position.uid);
@@ -230,7 +234,6 @@ export default {
             })
 
             appendSellHistory(this.portfolio.uid, this.item.itemId, this.sellAmount, this.averageCost, this.sellPrice, this.markType);
-
             this.$refs.modal.closeModal();
         },
         unixTimeToIsoString(timestamp) {
@@ -244,7 +247,7 @@ export default {
         }
     },
     created() {
-        this.sellPrice = this.markType === 'gold' ? this.item.latestPrice : Math.round(this.item.latestSbPrice * 100) / 100
+        this.sellPrice = this.markType === 'gold' ? this.item.latestPrice : Math.round(this.item.latestSbPrice * 100) / 100;
     }
 }
 </script>
