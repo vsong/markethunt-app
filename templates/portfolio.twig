@@ -142,63 +142,6 @@
             }
         });
 
-        $.tablesorter.addParser({
-            // set a unique id
-            id: 'mixedMarkTypeParser',
-            format: function(s, table, cell, cellIndex) {
-                return cell.innerText;
-            },
-            // flag for filter widget (true = ALWAYS search parsed values; false = search cell text)
-            parsed: false,
-            // set type, either numeric or text
-            type: 'text'
-        });
-
-        function mixedMarkTypeSorter(a, b, direction, column, table) {
-            const a_val = Number(a.replace(/[^0-9.]/g, ''));
-            const b_val = Number(b.replace(/[^0-9.]/g, ''));
-            const a_type = a.includes('sb') ? 'sb' : 'gold';
-            const b_type = b.includes('sb') ? 'sb' : 'gold';
-            const sort_multiplier = direction ? 1 : -1;
-
-            if (a_type === b_type) {
-                return a_val - b_val;
-            } else if (a_type === 'sb') {
-                return -1 * sort_multiplier;
-            } else {
-                return 1 * sort_multiplier;
-            }
-        }
-
-        function initTablesorter() {
-            $(".table-sortable").tablesorter({
-                headerTemplate: '{content}{icon}',
-                cssIcon: 'ui-icon light-ui',
-                cssIconNone: 'ui-icon-caret-2-n-s',
-                cssIconAsc: 'ui-icon-caret-1-n',
-                cssIconDesc: 'ui-icon-caret-1-s',
-                cssIconDisabled: 'ui-icon-blank',
-                //sortInitialOrder: 'desc', // not intuitive and causes confusion - do not enable
-                sortList: [[0,0]], // initial sort by first column asc
-                headers: {
-                    2: {
-                        sorter: 'mixedMarkTypeParser'
-                    },
-                    3: {
-                        sorter: 'mixedMarkTypeParser'
-                    },
-                    4: {
-                        sorter: 'mixedMarkTypeParser'
-                    },
-                },
-                textSorter: {
-                    2: mixedMarkTypeSorter,
-                    3: mixedMarkTypeSorter,
-                    4: mixedMarkTypeSorter,
-                }
-            });
-        }
-
         /* vue script block */
         var portfoliosRaw = getPortfolioObj();
 
@@ -210,7 +153,7 @@
 
         const app = Vue.createApp({
             components: {
-                PortfolioApp: Vue.defineAsyncComponent(() => loadModule('assets/js/components/PortfolioApp.vue', sfcLoaderOpts))
+                PortfolioApp: Vue.defineAsyncComponent(() => loadModule('assets/js/components/Portfolio/PortfolioApp.vue', sfcLoaderOpts))
             },
             template: `<PortfolioApp></PortfolioApp>`,
         });

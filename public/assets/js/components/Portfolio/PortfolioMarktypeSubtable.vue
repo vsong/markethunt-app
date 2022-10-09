@@ -1,45 +1,45 @@
 <template>
     <tbody class="tablesorter-infoOnly" style="border-bottom: 1px dashed grey">
-    <tr class="portfolio-summary-row">
-        <td v-if="markType === 'gold'">Total gold value</td>
-        <td v-if="markType === 'sb'" >Total SB value</td>
-        <td class="right-align hide-mobile">{{ subPortfolioTotalQty.toLocaleString() }}</td>
-        <td class="right-align hide-mobile">{{
-                subPortfolioAvgBuyPrice.toLocaleString(...localeStringOpts) + markTypeAppendText
-            }}</td>
-        <td class="right-align">{{
-                subPortfolioTotalBookValue.toLocaleString(...localeStringOpts) + markTypeAppendText
-            }}</td>
-        <td class="right-align" v-bind:class="getColorClass(totalMarketValues[markType] / subPortfolioTotalBookValue - 1)">
-            {{ totalMarketValues[markType].toLocaleString(...localeStringOpts) + markTypeAppendText }}
-        </td>
-        <td class="right-align" v-bind:class="getColorClass(totalMarketValues[markType] / subPortfolioTotalBookValue - 1)">
-            {{
-                formatPercent((totalMarketValues[markType] / subPortfolioTotalBookValue - 1) * 100)
-            }}
-        </td>
-        <td class="right-align hide-mobile">
-            {{ (totalMarketValues[markType] * (markType === 'sb' ? itemMarketData[114].latest_price : 1) / totalMarketValues.total * 100).toFixed(1) }}%
-        </td>
-        <td v-if="debugEnabled"></td>
-        <td></td>
-    </tr>
-    <tr class="portfolio-summary-row" style="font-weight: normal" v-if="markType === 'gold' && portfolio.inventory_gold">
-        <td>Inventory gold</td>
-        <td class="right-align hide-mobile"></td>
-        <td class="right-align hide-mobile"></td>
-        <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...localeStringOpts) }}</td>
-        <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...localeStringOpts) }}</td>
-        <td class="right-align"></td>
-        <td class="right-align hide-mobile">{{ ((portfolio.inventory_gold ?? 0) / totalMarketValues.total * 100).toFixed(1) }}%</td>
-        <td v-if="debugEnabled"></td>
-        <td></td>
-    </tr>
+        <tr class="portfolio-summary-row">
+            <td v-if="markType === 'gold'">Total gold value</td>
+            <td v-if="markType === 'sb'" >Total SB value</td>
+            <td class="right-align hide-mobile">{{ subPortfolioTotalQty.toLocaleString() }}</td>
+            <td class="right-align hide-mobile">{{
+                    subPortfolioAvgBuyPrice.toLocaleString(...localeStringOpts) + markTypeAppendText
+                }}</td>
+            <td class="right-align">{{
+                    subPortfolioTotalBookValue.toLocaleString(...localeStringOpts) + markTypeAppendText
+                }}</td>
+            <td class="right-align" v-bind:class="getColorClass(totalMarketValues[markType] / subPortfolioTotalBookValue - 1)">
+                {{ totalMarketValues[markType].toLocaleString(...localeStringOpts) + markTypeAppendText }}
+            </td>
+            <td class="right-align" v-bind:class="getColorClass(totalMarketValues[markType] / subPortfolioTotalBookValue - 1)">
+                {{
+                    formatPercent((totalMarketValues[markType] / subPortfolioTotalBookValue - 1) * 100)
+                }}
+            </td>
+            <td class="right-align hide-mobile">
+                {{ (totalMarketValues[markType] * (markType === 'sb' ? itemMarketData[114].latest_price : 1) / totalMarketValues.total * 100).toFixed(1) }}%
+            </td>
+            <td v-if="debugEnabled"></td>
+            <td></td>
+        </tr>
+        <tr class="portfolio-summary-row" style="font-weight: normal" v-if="markType === 'gold' && portfolio.inventory_gold">
+            <td>Inventory gold</td>
+            <td class="right-align hide-mobile"></td>
+            <td class="right-align hide-mobile"></td>
+            <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...localeStringOpts) }}</td>
+            <td class="right-align">{{ portfolio.inventory_gold.toLocaleString(...localeStringOpts) }}</td>
+            <td class="right-align"></td>
+            <td class="right-align hide-mobile">{{ ((portfolio.inventory_gold ?? 0) / totalMarketValues.total * 100).toFixed(1) }}%</td>
+            <td v-if="debugEnabled"></td>
+            <td></td>
+        </tr>
     </tbody>
     <tbody>
         <template v-for="(item, idx) in sortedGroupedItemData">
             <PortfolioItemRow
-                v-if="idx < 80"
+                v-if="maxVisibleRows == null || idx < maxVisibleRows"
                 :zebraStriped="idx % 2 === 1"
                 :key="item.itemId"
                 :portfolio="portfolio"
@@ -48,6 +48,11 @@
                 :portfolioTotals="totalMarketValues"
             ></PortfolioItemRow>
         </template>
+        <tr v-if="maxVisibleRows !== null && maxVisibleRows < sortedGroupedItemData.length">
+            <td colspan="8" style="text-align: center">
+                <a href="#" @click="showAllRows">Show all entries ({{ sortedGroupedItemData.length - maxVisibleRows }} hidden)</a>
+            </td>
+        </tr>
     </tbody>
 </template>
 
@@ -60,6 +65,11 @@ export default {
         PortfolioItemRow
     },
     props: ['markType', 'portfolio', 'totalMarketValues', 'itemMarketData', 'debugEnabled', 'sortAscending', 'sortKey'],
+    data() {
+        return {
+            maxVisibleRows: 100
+        }
+    },
     computed: {
         mappedPositions() {
             const map = {
@@ -203,6 +213,9 @@ export default {
         },
         getColorClass(num) {
             return getVueColorClassBinding(num);
+        },
+        showAllRows() {
+            this.maxVisibleRows = null;
         }
     }
 }

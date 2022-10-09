@@ -69,7 +69,7 @@
         <div id="newportfolio" class="watchlist-tab-content"></div>
         <div v-if="appData.portfolios.length === 0">
             <p>You deleted all your portfolios! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new portfolio. </p>
-            <img src="/assets/img/NotLikeDuck.png"  alt="SB position indicator"/>
+            <img src="/assets/img/NotLikeDuck.png" alt="SB position indicator"/>
         </div>
         <PortfolioDebugger v-if="isDebugEnabled()"></PortfolioDebugger>
     </div>

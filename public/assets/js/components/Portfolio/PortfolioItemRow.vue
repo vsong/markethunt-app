@@ -61,8 +61,8 @@
 
 <script>
 import PortfolioPositionRow from "./PortfolioPositionRow.vue";
-import DeletePortfolioItemWarning from "./Portfolio/DeletePortfolioItemWarning.vue";
-import SellPortfolioItemModal from "./Portfolio/SellPortfolioItemModal.vue";
+import DeletePortfolioItemWarning from "./DeletePortfolioItemWarning.vue";
+import SellPortfolioItemModal from "./SellPortfolioItemModal.vue";
 
 export default {
     name: "PortfolioItemRow",
