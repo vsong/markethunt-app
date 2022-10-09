@@ -123,6 +123,9 @@ export default {
             return [...this.item.positions].sort((a, b) => b.qty - a.qty);
         },
         positionChanges() {
+            // WARNING: positionChanges computed property is invalid while sell() method is running! Please make an
+            // immutable copy first before performing any data mutations based on positionChanges.
+
             const positionChanges = {};
 
             if (this.costingMethod === 'fifo') {
@@ -149,7 +152,7 @@ export default {
                     positionChanges[position.uid] = {newQty: position.qty};
                 });
 
-                while (amountSold < this.sellAmount) {
+                while (amountSold < this.sellAmount && amountSold < this.itemQty ) {
                     this.sortedPositionsByQtyDesc.forEach((position, i) => {
                         if (amountLeftToSell <= 0 || positionChanges[position.uid].newQty <= 0) {
                             return;
@@ -162,7 +165,6 @@ export default {
                         positionChanges[position.uid].newQty -= positionSellAmount;
                     });
                 }
-
             } else { // lifo
                 let amountSold = 0;
 
@@ -187,8 +189,7 @@ export default {
                 positionChanges[position.uid].profitPercent = (this.sellPrice / position.mark - 1) * 100;
                 positionChanges[position.uid].cost = position.mark * sellAmount;
             })
-            console.log('positionChanges');
-            console.log(positionChanges);
+
             return positionChanges;
         },
         totalCost() {
@@ -220,10 +221,10 @@ export default {
                 return;
             }
 
-            // clone to prevent reactivity loop
+            // clone to prevent positionChanges computed property from changing mid-loop
             const positionChanges = Object.assign({}, this.positionChanges);
 
-            this.sortedPositions.forEach(position => {
+            [...this.sortedPositions].forEach(position => {
                 const positionChange = positionChanges[position.uid];
 
                 if (positionChange.newQty === 0) {
@@ -231,7 +232,7 @@ export default {
                 } else if (positionChange.newQty < position.qty) {
                     editPosition(this.portfolio.uid, position.uid, positionChange.newQty, position.mark)
                 }
-            })
+            });
 
             appendSellHistory(this.portfolio.uid, this.item.itemId, this.sellAmount, this.averageCost, this.sellPrice, this.markType);
             this.$refs.modal.closeModal();
