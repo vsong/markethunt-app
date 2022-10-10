@@ -4,7 +4,7 @@
     </div>
     <div v-cloak id="vue-container" class="watchlist-tabs-container">
         <ul>
-            <li v-for="(portfolio, pidx) in appData.portfolios" class="watchlist-tab">
+            <li v-for="(portfolio, pidx) in portfolios" class="watchlist-tab">
                 <a v-bind:href="'#' + portfolio.uid" @click="setTabIndex(pidx)">{{ portfolio.name }}</a>
                 <div class="tab-control-container">
                     <i class="ui-icon light-ui tablesorter-icon ui-icon-pencil" @click="editPortfolio(pidx)"></i>
@@ -13,8 +13,8 @@
             </li>
             <li class="watchlist-tab"><a style="padding: 0;" href="#newportfolio" @click="newPortfolio()"><span style="margin: 4px 1px;" class="material-icons">add</span></a></li>
         </ul>
-        <div v-for="(portfolio, pidx) in appData.portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content" :key="portfolio.uid">
-            <template v-if="portfolio.uid === appData.portfolios[selectedPortfolioIdx].uid">
+        <div v-for="(portfolio, pidx) in portfolios" v-bind:id="portfolio.uid" class="watchlist-tab-content" :key="portfolio.uid">
+            <template v-if="portfolio.uid === portfolios[selectedPortfolioIdx].uid">
                 <table class="pure-table small-td-text table-sortable" style="width:100%; background-color: white;">
                     <thead>
                         <tr>
@@ -67,7 +67,7 @@
             </template>
         </div>
         <div id="newportfolio" class="watchlist-tab-content"></div>
-        <div v-if="appData.portfolios.length === 0">
+        <div v-if="portfolios.length === 0">
             <p>You deleted all your portfolios! Click the <span style="font-size: 16px" class="material-icons">add</span> icon above to create a new portfolio. </p>
             <img src="/assets/img/NotLikeDuck.png" alt="SB position indicator"/>
         </div>
@@ -87,7 +87,11 @@ export default {
     },
     data() {
         return {
-            appData,
+            appData: {
+                itemData,
+            },
+            portfolios: JSON.parse(JSON.stringify(reactivePortfolio)),
+            redrawTabs: false,
             selectedPortfolioIdx: 0,
             debugMode,
             sortAscending: true,
@@ -117,7 +121,7 @@ export default {
             }
         },
         selectedPortfolio() {
-            return appData.portfolios[this.selectedPortfolioIdx];
+            return this.portfolios[this.selectedPortfolioIdx];
         }
     },
     methods: {
@@ -128,7 +132,7 @@ export default {
                 $("#vue-container").tabs("option", "active", this.selectedPortfolioIdx);
             }
             appData.portfolios.splice(pidx, 1);
-            this.appData.redrawTabs = true;
+            this.redrawTabs = true;
             setPortfolioObj(appData.portfolios);
         },
         editPortfolio(pidx) {
@@ -151,6 +155,7 @@ export default {
         },
         newPortfolio() {
             newPortfolioModal();
+            this.redrawTabs = true;
         },
         isDebugEnabled() {
             return isDebugModeEnabled();
@@ -164,20 +169,21 @@ export default {
             }
         }
     },
+    created() {
+        // hack to link non-esm reactive vue portfolio with esm vue app
+        document.addEventListener('portfolioSavedNonEsm', (e) => {
+            this.portfolios = JSON.parse(JSON.stringify(reactivePortfolio));
+        });
+    },
     updated() {
-        if (this.appData.redrawTabs) {
-            this.appData.redrawTabs = false;
+        if (this.redrawTabs) {
+            this.redrawTabs = false;
             try {
                 $("#vue-container").tabs('refresh');
             } catch (e) {
                 // do nothing
             }
         }
-
-        // Re-init tablesorter after every update because we may have switched tabs and the tables got destroyed
-        // and update tablesorter tbody cache in case it's the same table, but with updated rows
-        // initTablesorter();
-        // $(".table-sortable").trigger('update');
     },
     mounted() {
         // initial jquery tabs update
@@ -188,8 +194,9 @@ export default {
                 }
             }
         });
-
-        // initTablesorter();
+    },
+    unmounted() {
+        document.removeEventListener('portfolioSavedNonEsm');
     }
 }
 </script>

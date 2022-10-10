@@ -27,6 +27,8 @@ function portfolioFactory(name) {
 
 function savePortfolio() {
     localStorage.portfoliov1 = LZUTF8.compress(JSON.stringify(reactivePortfolio), {"outputEncoding":"StorageBinaryString"});
+    const event = new CustomEvent('portfolioSavedNonEsm', {detail: reactivePortfolio});
+    document.dispatchEvent(event);
 }
 
 function addPortfolio(name) {

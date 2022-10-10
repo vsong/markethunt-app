@@ -9,11 +9,8 @@
     {% else %}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.29/vue.global.js"></script>
     {% endif %}
-    <script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader@0.8.4/dist/vue3-sfc-loader.js"></script>
     <script type="text/javascript" src="assets/js/setupVue.js"></script>
     <script type="text/javascript" src="assets/js/stores/portfolio.js"></script>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -137,7 +134,7 @@
 
         // reload when other tab edits portfolio
         window.addEventListener('storage', (e) => {
-            if (e.key == getPortfolioObjKey()) {
+            if (e.key === getPortfolioObjKey()) {
                 window.location.reload();
             }
         });
@@ -150,14 +147,7 @@
             portfolios: reactivePortfolio,
             redrawTabs: false,
         });
-
-        const app = Vue.createApp({
-            components: {
-                PortfolioApp: Vue.defineAsyncComponent(() => loadModule('assets/js/components/Portfolio/PortfolioApp.vue', sfcLoaderOpts))
-            },
-            template: `<PortfolioApp></PortfolioApp>`,
-        });
-
-        app.mount("#portfolio-container");
     </script>
+    <script type="text/javascript" src="assets/js/build/portfolio_app.js"></script>
+    <script type="text/javascript" src="assets/js/build/vendor.js"></script>
 {% endblock %}
