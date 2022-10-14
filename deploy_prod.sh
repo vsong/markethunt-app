@@ -1,3 +1,5 @@
+source ~/.bashrc
+
 composer install
 
 cd www-src
