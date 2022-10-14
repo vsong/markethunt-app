@@ -1,4 +1,7 @@
-source ~/.bashrc
+echo $HOME
+whoami
+
+source $HOME/.bashrc
 
 composer install
 
