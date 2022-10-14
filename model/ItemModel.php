@@ -240,9 +240,9 @@ function getTopMovers(string $from, int $volume_limit, bool $get_winners = true)
             RIGHT JOIN (
                 SELECT
                     item_id,
-                    MIN(DATE) AS DATE
+                    MAX(DATE) AS DATE
                 FROM daily_price
-                    WHERE DATE >= '$from'
+                    WHERE DATE <= '$from'
                 GROUP BY item_id
             ) p2 USING(item_id, DATE)
         ),
