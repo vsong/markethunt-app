@@ -15,4 +15,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         port: ${{ secrets.PORT }}
         key: ${{ secrets.SSHKEY }}
-        script: cd "${{ secrets.APPPATH }}" && bash deploy_prod.sh
+        script: cd "${{ secrets.APPPATH }}" && git checkout production && git pull && bash deploy_prod.sh
