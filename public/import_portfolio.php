@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || strpos($_SERVER['HTTP_REFERER'], 'h
     exit();
 }
 
-echo $twig->render('import_portfolio.html', [
+echo $twig->render('import_portfolio.twig', [
     'item_metadata' => getAllItemNamesAndLatestPrice(),
     'import_data' => json_decode($_POST['import-data']),
     'import_portfolio_name' => $_POST['import-portfolio-name']

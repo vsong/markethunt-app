@@ -44,7 +44,7 @@ if ($period === 'day') {
     $date_range = createISODateRangeYesterday('-7 day');
 }
 
-echo $twig->render('topmovers.html', [
+echo $twig->render('topmovers.twig', [
     'date_range' => $date_range,
     'volume_limit' => $volume_limit,
     'from' => $date_range['from'],
