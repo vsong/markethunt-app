@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.twig" %}
 {% block meta_description %}Marketplace price history for {{ current_item_name }}{% endblock %}
 {% block title %}{{ current_item_name }}{% endblock %}
 
@@ -10,7 +10,7 @@
 
 {% block body %}
 <div>
-    {% include 'chart/chartContainer.html' with {'include_credits': true} %}
+    {% include 'chart/chartContainer.twig' with {'include_credits': true} %}
 </div>
 <script>
     var initialJson = {{ initial_stock_data |raw }};
