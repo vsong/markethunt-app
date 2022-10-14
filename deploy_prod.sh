@@ -1,7 +1,4 @@
-echo $HOME
-whoami
-
-source $HOME/.bashrc
+bash $HOME/.nvm/nvm.sh
 
 composer install
 
