@@ -1,5 +1,3 @@
-bash $HOME/.nvm/nvm.sh
-
 composer install
 
 cd www-src
