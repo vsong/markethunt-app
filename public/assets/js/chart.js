@@ -8,7 +8,8 @@ var volumeColor = "#51cda0";
 
 var eventBandColor = "#f2f2f2";
 var eventBandFontColor = "#999999"; // recommend to have same or close color as yGridLineColor for visual clarity
-var xGridLineColor = "#bbbbbb";
+var xTickColor = "#bbbbbb";
+var xGridLineColor = "#cccccc";
 var yGridLineColor = "#aaaaaa";
 var yGridLineColorLighter = "#dddddd";
 var axisLabelColor = "#444444";
@@ -51,26 +52,22 @@ function eventBand(IsoStrFrom, IsoStrTo, labelText) {
     }
 }
 
-var volumeWarningLabelBand = {
-    from: UtcIsoDateToMillis('2005-01-01'),
-    to: UtcIsoDateToMillis('2021-11-30'),
-    color: 'rgba(0,0,0,0)',
-    label: {
-        text: 'Volume data not available before Dec 1, 2021',
-        textAlign: 'center',
-        verticalAlign: 'bottom',
-        y: 50,
-        x: 0,
-        style: {
-            color: eventBandFontColor,
-            fontSize: '12px',
-            fontFamily: 'Trebuchet MS',
-        },
-    },
+function yearLine(year) {
+    return {
+        value: UtcIsoDateToMillis(`${year}-01-01`),
+        color: xGridLineColor,
+        width: 1,
+        zIndex: 2,
+    }
 }
 
-var eventBands = [volumeWarningLabelBand]; // keep this plotband at beginning of array
+var eventBands = [];
 eventDates.forEach(event => eventBands.push(eventBand(event[0], event[1], event[2])));
+
+var yearLines = [];
+for (let year = 2008; year < 2099; year++) {
+    yearLines.push(yearLine(year));
+}
 
 function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     itemId = Number(itemId);
@@ -98,13 +95,6 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
     weekTradeVolumeElem.innerHTML = "--";
     weekGoldVolumeElem.innerHTML = "--";
     loadingElem.style.display = "flex";
-
-    // get saved daterange preferences
-    try {
-        var currentDateMinimum = getChartDateRangesObj()[itemId]['min'];
-    } catch (e) {
-        var currentDateMinimum = 1;
-    }
     
     function renderChart(response) {
         var daily_prices = [];
@@ -138,7 +128,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 series: {
                     animation: false,
                     dataGrouping: {
-                        enabled: (itemId == 114) ? true : false,
+                        enabled: itemId === 114,
                         units: [['day', [1]], ['week', [1]]],
                         groupPixelWidth: 3,
                     },
@@ -147,9 +137,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             },
             xAxis: {
                 // lineColor: '#555',
-                tickColor: xGridLineColor,
-                // gridLineWidth: 1,
-                gridLineColor: xGridLineColor,
+                tickColor: xTickColor,
                 labels: {
                     style: {
                         color: axisLabelColor,
@@ -206,10 +194,15 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                         count: 1,
                         text: '1Y'
                     }, {
+                        type: 'year',
+                        count: 2,
+                        text: '2Y'
+                    }, {
                         type: 'all',
                         text: 'All'
                     },
                 ],
+                selected: 4,
                 inputEnabled: false,
                 labelStyle: {
                     color: axisLabelColor,
@@ -381,7 +374,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                 type: 'datetime',
                 ordinal: false, // show continuous x axis if dates are missing
                 plotBands: eventBands,
-                range: Date.now() - currentDateMinimum,
+                plotLines: yearLines,
                 crosshair: {
                     dashStyle: 'Dot',
                     color: crosshairColor,
@@ -391,24 +384,6 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
                     week: '%b %e, \'%y',
                     month: '%b %Y',
                     year: '%Y'
-                },
-                events: {
-                    setExtremes: function(event) {
-                        // save navigator min range
-                        const chartDateRanges = getChartDateRangesObj();
-                        chartDateRanges[itemId] = {'min': parseInt(event.min)};
-                        setChartDateRangesObj(chartDateRanges);
-
-                        // hide/unhide volume data warning based on current plotband pixel width
-                        const volumeWarningBand = this.plotLinesAndBands[0];
-
-                        if (volumeWarningBand.label !== undefined) {
-                            const from = Math.max(this.toPixels(volumeWarningBand.options.from), this.chart.plotLeft);
-                            const to = Math.min(this.toPixels(volumeWarningBand.options.to), this.chart.plotLeft + this.chart.plotWidth);
-                            const show = volumeWarningBand.label.getBBox().width < to - from;
-                            volumeWarningBand.label.css({ opacity: (show ? 1 : 0) });
-                        }
-                    },
                 },
                 tickPixelInterval: 120,
             },
