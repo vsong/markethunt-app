@@ -35,20 +35,6 @@ function setPortfolioObj(portfolioObj) {
     localStorage.portfoliov1 = LZUTF8.compress(JSON.stringify(portfolioObj), {"outputEncoding":"StorageBinaryString"});
 }
 
-// gets saved date ranges of stock chart
-function getChartDateRangesObj() {
-    if (localStorage.chartDateRanges === undefined) {
-        var chartDateRanges = {};
-    } else {
-        var chartDateRanges = JSON.parse(localStorage.chartDateRanges);
-    }
-    return chartDateRanges;
-}
-
-function setChartDateRangesObj(dateRangesObj) {
-    localStorage.chartDateRanges = JSON.stringify(dateRangesObj);
-}
-
 // import function for legacy watchlists
 function importWatchlistObjV1() {
     if (localStorage.watchlistv1 === undefined) {
