@@ -69,7 +69,7 @@ for (let year = 2008; year < 2099; year++) {
     yearLines.push(yearLine(year));
 }
 
-function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
+function renderChartWithItemId(itemId, chartHeaderText) {
     itemId = Number(itemId);
 
     // set up header elements
@@ -100,18 +100,18 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
         var daily_prices = [];
         var daily_trade_volume = [];
         var sbi = [];
-        for (var i = 0; i < response.data.length; i++) {
+        for (var i = 0; i < response.market_data.length; i++) {
             daily_prices.push([
-                UtcIsoDateToMillis(response.data[i].date),
-                Number(response.data[i].price)
+                UtcIsoDateToMillis(response.market_data[i].date),
+                Number(response.market_data[i].price)
             ]);
             daily_trade_volume.push([
-                UtcIsoDateToMillis(response.data[i].date),
-                Number(response.data[i].volume)
+                UtcIsoDateToMillis(response.market_data[i].date),
+                Number(response.market_data[i].volume)
             ]);
             sbi.push([
-                UtcIsoDateToMillis(response.data[i].date),
-                Number(response.data[i].sb_index)
+                UtcIsoDateToMillis(response.market_data[i].date),
+                Number(response.market_data[i].sb_price)
             ]);
         }
 
@@ -396,20 +396,20 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
 
         loadingElem.style.display = "none";
 
-        if (response.data.length > 0) {
-            var latest = response.data[response.data.length - 1];
+        if (response.market_data.length > 0) {
+            var latest = response.market_data[response.market_data.length - 1];
             priceElem.innerHTML = latest.price.toLocaleString() + 'g';
             
             // set SB price
             try {
-                sbPriceElem.innerHTML = latest.sb_index.toLocaleString("en-US", {maximumFractionDigits: 2}) + ' SB';
+                sbPriceElem.innerHTML = latest.sb_price.toLocaleString("en-US", {maximumFractionDigits: 2}) + ' SB';
             } catch (e) {
                 sbPriceElem.innerHTML = 'SB price not available';
             }
 
             // set price gain/loss
-            if ((response.data.length > 1) && (Date.now() - UtcIsoDateToMillis(latest.date) < 2 * 86400 * 1000)) {
-                var secondLatest = response.data[response.data.length - 2];
+            if ((response.market_data.length > 1) && (Date.now() - UtcIsoDateToMillis(latest.date) < 2 * 86400 * 1000)) {
+                var secondLatest = response.market_data[response.market_data.length - 2];
                 var goldDiff = latest.price - secondLatest.price;
                 var diffClass = "";
                 var prefix = "";
@@ -445,7 +445,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             }
             goldVolumeElem.innerHTML = goldVolumeText + " gold";
 
-            const weeklyVolText = response.data.reduce(
+            const weeklyVolText = response.market_data.reduce(
                 function(sum, dataPoint) {
                     if (utcTodayMillis - UtcIsoDateToMillis(dataPoint.date) <= 7 * 86400 * 1000) {
                         return sum + (dataPoint.volume !== null ? dataPoint.volume : 0);
@@ -457,7 +457,7 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             );
             weekTradeVolumeElem.innerHTML = weeklyVolText.toLocaleString();
 
-            const weeklyGoldVol = response.data.reduce(
+            const weeklyGoldVol = response.market_data.reduce(
                 function(sum, dataPoint) {
                     if (utcTodayMillis - UtcIsoDateToMillis(dataPoint.date) <= 7 * 86400 * 1000) {
                         return sum + (dataPoint.volume !== null ? dataPoint.volume * dataPoint.price : 0);
@@ -470,16 +470,12 @@ function renderChartWithItemId(itemId, chartHeaderText, jsonData = null) {
             weekGoldVolumeElem.innerHTML = (weeklyGoldVol === 0 ? '0' : formatSISuffix(weeklyGoldVol, 2)) + " gold";
         }
     }
-    
-    if (jsonData == null) {
-        $.getJSON("api/stock_data/getjson.php?item_id=" + itemId, function (response) {
-            var selector = document.getElementById('chartSelector');
-            var selectorItemId = Number(selector.value);
-            if (selectorItemId == itemId) {
-                renderChart(response);
-            }
-        });
-    } else {
-        renderChart(jsonData);
-    }
+
+    $.getJSON(`https://${env.apiHost}/items/${itemId}`, function (response) {
+        var selector = document.getElementById('chartSelector');
+        var selectorItemId = Number(selector.value);
+        if (selectorItemId == itemId) {
+            renderChart(response);
+        }
+    });
 }

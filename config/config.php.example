@@ -3,3 +3,8 @@ $DB_USER = 'appdbuser';
 $DB_PASSWORD = 'password';
 $DB_HOST = '127.0.0.1';
 $DB_DATABASE = 'markethunt';
+
+$CURRENT_HOST = 'markethunt.vsong.ca';
+$OLD_HOST = 'markethunt.vsong.ca';
+$NEW_HOST = 'markethunt.win';
+$API_HOST = 'api.markethunt.win';
