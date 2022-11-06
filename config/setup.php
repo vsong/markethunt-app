@@ -1,4 +1,6 @@
 <?php
+require_once("$_SERVER[DOCUMENT_ROOT]/../config/config.php");
+
 // defined in nginx
 define('APPENV', $_SERVER['APPENV'] ?? 'dev');
 
@@ -21,3 +23,7 @@ use Twig\Environment;
 
 $loader = new FilesystemLoader($_SERVER['APPDIR'] . '/templates');
 $twig = new Environment($loader, ['cache' => false]);
+$twig->addGlobal('api_host', $API_HOST);
+$twig->addGlobal('current_host', $CURRENT_HOST);
+$twig->addGlobal('old_host', $OLD_HOST);
+$twig->addGlobal('new_host', $NEW_HOST);

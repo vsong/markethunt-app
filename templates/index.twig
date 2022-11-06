@@ -13,9 +13,7 @@
     {% include 'chart/chartContainer.twig' with {'include_credits': true} %}
 </div>
 <script>
-    var initialJson = {{ initial_stock_data |raw }};
-
-    renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}", initialJson);
+    renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
     function handleChartSubmit(addToHistory = true) {
         var selector = document.getElementById('chartSelector');

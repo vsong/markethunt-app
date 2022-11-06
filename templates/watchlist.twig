@@ -172,8 +172,7 @@ function newWatchlistModal(editWidx = null) {
     dialog.dialog("open");
 }
 // chart handling
-var initialJson = {{ initial_stock_data |raw }};
-renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}", initialJson);
+renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
 function handleChartSubmit(addToHistory = true) {
     var selector = document.getElementById('chartSelector');
