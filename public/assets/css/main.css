@@ -481,3 +481,26 @@ a:hover {
         display: block;
     }
 }
+
+/* Status banner */
+.status-banner {
+    padding: 1em 0.5em;
+    text-align: center;
+    font-weight: bold;
+}
+.status-banner-neutral {
+    background: #eeeeee;
+    border: 1px solid #aaaaaa;
+}
+.status-banner-info {
+    background: #e6eaff;
+    border: 1px solid #c1cbfd;
+}
+.status-banner-success {
+    background: #e1ffe1;
+    border: 1px solid #b4e0b4;
+}
+.status-banner-error {
+    background: #ffe1e1;
+    border: 1px solid #e0b4b4;
+}

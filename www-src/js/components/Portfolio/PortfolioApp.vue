@@ -1,6 +1,10 @@
 <template>
     <div style="text-align: center">
         <h1>Portfolio</h1>
+        <div style="margin-bottom: 2em" class="status-banner status-banner-info">
+            Markethunt has recently moved domains to <i>markethunt.win</i>.
+            If you had previously saved portfolios or watchlists, please use the <a href="import_userdata.php">import tool</a> to migrate your data from the old domain.
+        </div>
     </div>
     <div v-cloak id="vue-container" class="watchlist-tabs-container">
         <ul>
@@ -141,6 +145,7 @@ export default {
         setTabIndex(pidx) {
             this.selectedPortfolioIdx = pidx;
             $('#portfolio-select').val(pidx);
+            window.location.hash = this.portfolios[pidx].uid;
         },
         sortIconClass(sortKey) {
             if (this.sortKey !== sortKey) {
@@ -194,6 +199,12 @@ export default {
                 }
             }
         });
+
+        const portfolio_uid = decodeURI(window.location.hash.substring(1));
+        if (portfolio_uid) {
+            const index = this.portfolios.findIndex(portfolio => portfolio.uid === portfolio_uid);
+            this.selectedPortfolioIdx = index >= 0 ? index : 0;
+        }
     },
     unmounted() {
         document.removeEventListener('portfolioSavedNonEsm');

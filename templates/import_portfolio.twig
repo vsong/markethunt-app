@@ -6,6 +6,14 @@
 {% endblock %}
 
 {% block body %}
+<style>
+    #message-text {
+        max-width: 800px;
+        text-align: center;
+        padding: 2em 0.5em;
+        margin: auto;
+    }
+</style>
 <div id="message-text">Importing your inventory...</div>
 <script>
     function processImportData() {
@@ -49,7 +57,9 @@
         portfolios.push(importPortfolio);
         setPortfolioObj(portfolios);
 
-        $('#message-text').html(`Inventory imported as '${importPortfolioName}'. <a href="/portfolio.php">Go to your portfolios</a> to view your imported data.`);
+        $('#message-text').html(`Inventory imported as '${importPortfolioName}'. <a href="/portfolio.php#${importPortfolio.uid}">Go to your portfolios</a> to view your imported data, or wait to be redirected automatically.`);
+
+        setTimeout(() => window.location.href = '/portfolio.php#' + importPortfolio.uid, 4000);
     }
     processImportData();
 </script>

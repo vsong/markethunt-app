@@ -6,7 +6,7 @@
             <meta name="viewport" content="width=device-width, initial-scale=0.8" />
             <meta name="description" content="{% block meta_description %}{% endblock %}">
 
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.6/pure-min.css" / >
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.6/pure-min.css" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.6/grids-responsive.min.css" />
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
@@ -26,7 +26,7 @@
             <script>
                 function redirectProd() {
                     const currURL = window.location.href;
-                    window.location.href = window.location.href.replace('markethunt-dev', 'markethunt');
+                    window.location.href = window.location.href.replace('dev.', '');
                 }
             </script>
 
@@ -61,7 +61,7 @@
                 <a href="/top.php?period=qtr">qtr</a>
                 <a href="/top.php?period=year">year</a>
                 {% if constant('APPENV') == 'dev' %}
-                    <span id="dev-warning" style="background-color: rgb(218, 0, 0); padding: 0px 3px">
+                    <span id="dev-warning" style="background-color: rgb(218, 0, 0); padding: 0 3px">
                         You are browsing the test site. Data loss can occur.
                         <a href="#" onclick="redirectProd()">[Go to Production site]</a>
                         <a href="#" onclick="document.getElementById('dev-warning').style.display = 'none'">[x]</a>
@@ -70,7 +70,7 @@
             </div>
             <div class="toolbar-right">
                 <div style="height: 5px">
-                    <a href="https://github.com/vsong/markethunt"><img src="/assets/img/GitHub-Mark-Light-32px.png" alt="GitHub"></a>
+                    <a href="https://github.com/vsong/markethunt-app"><img src="/assets/img/GitHub-Mark-Light-32px.png" alt="GitHub"></a>
                 </div>
             </div>
         </div>
