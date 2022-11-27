@@ -145,6 +145,7 @@ export default {
         setTabIndex(pidx) {
             this.selectedPortfolioIdx = pidx;
             $('#portfolio-select').val(pidx);
+            window.location.hash = this.portfolios[pidx].uid;
         },
         sortIconClass(sortKey) {
             if (this.sortKey !== sortKey) {
@@ -198,6 +199,12 @@ export default {
                 }
             }
         });
+
+        const portfolio_uid = decodeURI(window.location.hash.substring(1));
+        if (portfolio_uid) {
+            const index = this.portfolios.findIndex(portfolio => portfolio.uid === portfolio_uid);
+            this.selectedPortfolioIdx = index >= 0 ? index : 0;
+        }
     },
     unmounted() {
         document.removeEventListener('portfolioSavedNonEsm');
