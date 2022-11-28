@@ -45,7 +45,7 @@
         }
 
         function openExportTab() {
-            if (localStorage.importedFromOldHost !== undefined
+            if (localStorage.lastImportFromOldHost !== undefined
                 && !confirm('You already imported data from the old domain. Do you want to import again and overwrite existing data?')) {
                 return;
             }
