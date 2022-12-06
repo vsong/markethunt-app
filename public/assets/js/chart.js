@@ -129,7 +129,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     animation: false,
                     dataGrouping: {
                         enabled: itemId === 114,
-                        units: [['day', [1]], ['week', [1]]],
+                        units: [['hour', [1]], ['day', [1]], ['week', [1]]],
                         groupPixelWidth: 3,
                     },
                     showInLegend: true,
@@ -178,6 +178,11 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             rangeSelector: {
                 buttons: [
                     {
+                        type: 'day',
+                        count: 7,
+                        text: '7D'
+                    },
+                    {
                         type: 'month',
                         count: 1,
                         text: '1M'
@@ -202,7 +207,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         text: 'All'
                     },
                 ],
-                selected: 4,
+                selected: 5,
                 inputEnabled: false,
                 labelStyle: {
                     color: axisLabelColor,
@@ -330,6 +335,42 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         },
                     },
                 },
+                {
+                    visible: false,
+                    name: 'Bi-hourly',
+                    id: 'bihourly',
+                    type: 'arearange',
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    yAxis: 0,
+                    color: primaryLineColor,
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    },
+                    tooltip: {
+                        pointFormatter: function() {
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + ` ${this.series.name}:`
+                                + ` <b>${this.low.toLocaleString()}g - ${this.high.toLocaleString()}g</b><br/>`;
+                        },
+                    },
+                    events: {
+                        legendItemClick: function() {
+                            $.getJSON(`https://${env.apiHost}/items/${itemId}/stock`, (response) => {
+                                this.setData(response.stock_data.map(row => [row.timestamp, row.bid, row.ask]));
+                            });
+                        }
+                    }
+                }
             ],
             yAxis: [
                 {
