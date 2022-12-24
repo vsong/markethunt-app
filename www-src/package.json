@@ -8,6 +8,8 @@
         "watch": "webpack --watch"
     },
     "dependencies": {
+        "@mdi/font": "^7.1.96",
+        "@oruga-ui/oruga-next": "^0.5.10",
         "css-loader": "^6.7.1",
         "html-webpack-plugin": "^5.5.0",
         "vue": "^3.2.40",

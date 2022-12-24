@@ -129,7 +129,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     animation: false,
                     dataGrouping: {
                         enabled: itemId === 114,
-                        units: [['day', [1]], ['week', [1]]],
+                        units: [['hour', [1]], ['day', [1]], ['week', [1]]],
                         groupPixelWidth: 3,
                     },
                     showInLegend: true,
@@ -178,6 +178,11 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             rangeSelector: {
                 buttons: [
                     {
+                        type: 'day',
+                        count: 7,
+                        text: '7D'
+                    },
+                    {
                         type: 'month',
                         count: 1,
                         text: '1M'
@@ -202,7 +207,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                         text: 'All'
                     },
                 ],
-                selected: 4,
+                selected: 5,
                 inputEnabled: false,
                 labelStyle: {
                     color: axisLabelColor,
@@ -229,7 +234,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 shared: true,
                 split: false,
                 headerFormat: '<span style="font-size: 13px">{point.key}</span><br/>',
-                xDateFormat: '%b %e, %Y',
+                xDateFormat: '%b %e, %Y %H:%M UTC',
                 backgroundColor: 'rgba(255, 255, 255, 1)',
                 hideDelay: 0, // makes tooltip feel more responsive when crossing gap between plots
                 style: {
@@ -329,6 +334,70 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                                 + ` <b>${sbiText} SB</b><br/>`;
                         },
                     },
+                },
+                {
+                    visible: false,
+                    name: 'Bi-hourly',
+                    id: 'bihourly',
+                    type: 'arearange',
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    yAxis: 0,
+                    color: primaryLineColor,
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    },
+                    tooltip: {
+                        pointFormatter: function() {
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + ` ${this.series.name}:`
+                                + ` <b>${this.low.toLocaleString()}g - ${this.high.toLocaleString()}g</b><br/>`;
+                        },
+                    },
+                    events: {
+                        legendItemClick: function() {
+                            $.getJSON(`https://${env.apiHost}/items/${itemId}/stock?token=${localStorage.apiToken}`, (response) => {
+                                this.setData(response.stock_data.map(row => [row.timestamp, row.bid, row.ask]));
+                            });
+                        }
+                    }
+                },
+                {
+                    visible: false,
+                    name: 'Supply',
+                    type: 'line',
+                    yAxis: 2,
+                    color: volumeColor,
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    },
+                    events: {
+                        legendItemClick: function() {
+                            $.getJSON(`https://${env.apiHost}/items/${itemId}/stock?token=${localStorage.apiToken}`, (response) => {
+                                this.setData(response.stock_data.map(row => [row.timestamp, row.supply]));
+                            });
+                        }
+                    }
                 },
             ],
             yAxis: [

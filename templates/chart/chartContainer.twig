@@ -1,4 +1,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/highstock.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/highcharts-more.min.js"></script>
 <script>
 var itemData = {{ item_metadata | json_encode | raw }};
 var eventDates = {% include 'chart/event_dates.json' %};
@@ -66,6 +67,7 @@ var eventDates = {% include 'chart/event_dates.json' %};
             {% endfor %}
         </select>
     </form>
+    <div id="item-selector-app" style="margin: 5px 10px"></div>
     {% if include_credits %}
         <div class="credits">
             <p>Get the <a href="https://greasyfork.org/en/scripts/441382-markethunt-plugin-for-mousehunt">Markethunt userscript</a>!</p>
@@ -77,3 +79,5 @@ var eventDates = {% include 'chart/event_dates.json' %};
 
 {% include 'chart/watchlist_dialog.twig' %}
 {% include 'chart/portfolio_dialog.twig' %}
+
+<script type="text/javascript" src="assets/js/build/chart_autocomplete_app.js"></script>
