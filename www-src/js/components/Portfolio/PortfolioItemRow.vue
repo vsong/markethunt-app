@@ -103,15 +103,17 @@ export default {
             return isDebugModeEnabled();
         },
         setChart(itemId, headerText) {
-            document.getElementById('chartSelector').value = itemId;
-            renderChartWithItemId(itemId, headerText);
+            const event = new CustomEvent('setChart', {detail: itemId});
+            document.dispatchEvent(event);
+
             window.history.replaceState({}, headerText, "/portfolio.php?item_id=" + itemId);
         },
         editPosition() {
             let pidx = appData.portfolios.findIndex(portfolio => portfolio.uid === this.portfolio.uid);
             let positionIdx = this.portfolio.positions.findIndex(position => position.uid === this.item.positions[0].uid);
+            let position = appData.portfolios[pidx].positions[positionIdx];
 
-            addToPortfolioModal(appData.portfolios[pidx].positions[positionIdx], pidx, positionIdx);
+            addToPortfolioModal(position.item_id, position, pidx, positionIdx);
         },
         deleteItem() {
             if (this.item.positions.length > 1) {
@@ -159,5 +161,6 @@ export default {
     text-align: center;
     box-shadow: 1px 1px 1px #aaaaaa;
     margin-right: 2px;
+    box-sizing: content-box; /* override quasar css */
 }
 </style>

@@ -77,14 +77,14 @@ function togglePositionMarkInputBoxes() {
 // register mark type selector listener
 $("input[name=position-mark-type]").change(togglePositionMarkInputBoxes);
 
-function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = null) {
-    var selector = document.getElementById('chartSelector');
+function addToPortfolioModal(itemId = null, editPositionObj = null, editPidx = null, editIdx = null) {
+    itemId = itemId == null ? Number(document.getElementById('selected-item').dataset.itemId) : Number(itemId);
+
     var savedPortfolios = getPortfolioObj();
-    var itemId = editPositionObj ? editPositionObj.item_id : Number(selector.value);
 
     var dialog = $("#add-portfolio-dialog").dialog({
         dialogClass: 'themed-titlebar',
-        title: editPositionObj ? 'Edit portfolio entry' : `Add ${selector.options[selector.selectedIndex].text} to portfolio`,
+        title: editPositionObj ? 'Edit portfolio entry' : `Add ${itemData[itemId].name} to portfolio`,
         autoOpen: false,
         modal: true,
         buttons: [
@@ -112,7 +112,7 @@ function addToPortfolioModal(editPositionObj = null, editPidx = null, editIdx = 
                         if (editPositionObj) {
                             processPositionEdit(inputQty, inputPrice, inputPriceType, editPidx, editIdx, newPidx);
                         } else {
-                            processNewPositionFormData(inputQty, inputPrice, inputPriceType, newPidx);
+                            processNewPositionFormData(itemId, inputQty, inputPrice, inputPriceType, newPidx);
                         }
 
                         dialog.dialog("close");
@@ -219,19 +219,17 @@ function processNewPortfolioFormData(portfolioName) {
     setPortfolioObj(portfolios);
 }
 
-function processNewPositionFormData(qty, mark, markType, pidx) {
-    var selector = document.getElementById('chartSelector');
-    var itemId = Number(selector.value);
-    var itemName = selector.options[selector.selectedIndex].text;
+function processNewPositionFormData(itemId, qty, mark, markType, pidx) {
+    var selector = document.getElementById('selected-item');
+
     var portfolios = getPortfolioObj();
     portfolios[pidx].positions.push(newPortfolioPosition(itemId, qty, mark, markType));
     setPortfolioObj(portfolios);
-    renderChartWithItemId(itemId, itemName);
 }
 
 // process 'action' query param, if any
 var searchParams = new URLSearchParams(window.location.search);
 if (searchParams.get('action') === 'add_position') {
-    addToPortfolioModal();
+    addToPortfolioModal(searchParams.get('item_id'));
 }
 </script>

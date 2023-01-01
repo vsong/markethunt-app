@@ -13,6 +13,9 @@
 
 {% block body %}
 <div class="pure-g">
+    <script>
+        var initialItemId = {{ current_item_id }};
+    </script>
     <div class="pure-u-1 pure-u-xl-11-24">
         {% include 'chart/chartContainer.twig' %}
     </div>
@@ -174,10 +177,7 @@ function newWatchlistModal(editWidx = null) {
 // chart handling
 renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
-function handleChartSubmit(addToHistory = true) {
-    var selector = document.getElementById('chartSelector');
-    var itemId = selector.value;
-    var itemName = selector.options[selector.selectedIndex].text;
+function handleChartSubmit(itemId, itemName, addToHistory = true) {
     renderChartWithItemId(itemId, itemName);
     if (addToHistory === true) {
         window.history.replaceState({}, itemName, "/watchlist.php?item_id=" + itemId);
@@ -195,11 +195,12 @@ function processNewWatchlistFormData(watchlistName, editWidx = null) {
     setWatchlistObj(appData.watchlists);
 }
 
-function processWatchlistFormData(mark, markType, comment, widx) {
-    addToWatchlist(widx, document.getElementById('chartSelector').value, mark, markType, comment)
+function processWatchlistFormData(itemId, mark, markType, comment, widx) {
+    addToWatchlist(widx, itemId, mark, markType, comment);
 }
 
-function processWatchlistEdit(itemId, mark, markType, comment, widx, idx, newWidx = null) {
+function processWatchlistEdit(mark, markType, comment, widx, idx, newWidx = null) {
+    const itemId = appData.watchlists[widx].watches[idx].item_id;
     appData.watchlists[widx].watches.splice(idx, 1);
     setWatchlistObj(appData.watchlists);
     addToWatchlist(newWidx === null ? widx : newWidx, itemId, mark, markType, comment);
@@ -370,9 +371,9 @@ const app = Vue.createApp({
         editWatchItem(widx, idx) {
             var thisItemId =  appData.watchlists[widx].watches[idx].item_id;
             addToWatchlistModal(
-                appData.watchlists[widx].watches[idx].mark, 
+                appData.watchlists[widx].watches[idx].mark,
+                appData.watchlists[widx].watches[idx].item_id,
                 true, 
-                appData.watchlists[widx].watches[idx].item_id, 
                 appData.watchlists[widx].watches[idx].mark_type,
                 appData.watchlists[widx].watches[idx].comment,
                 widx,
@@ -393,8 +394,9 @@ const app = Vue.createApp({
             newWatchlistModal(widx);
         },
         setChart(itemId, headerText) {
-            document.getElementById('chartSelector').value = itemId;
-            renderChartWithItemId(itemId, headerText);
+            const event = new CustomEvent('setChart', {detail: itemId});
+            document.dispatchEvent(event);
+
             window.history.replaceState({}, headerText, "/watchlist.php?item_id=" + itemId);
         },
         setTabIndex(widx) {

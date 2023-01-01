@@ -8,7 +8,7 @@
 
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.6/pure-min.css" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pure/2.0.6/grids-responsive.min.css" />
-            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" /> {# Also used for Quasar UMD #}
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
             <link rel="stylesheet" href="/assets/css/main.css" />
 
@@ -44,7 +44,7 @@
             <title>{% block title %}{% endblock %} - Markethunt</title>
         {% endblock %}
     </head>
-    <body>
+    <body class="markethunt-body">
         {% if constant('APPENV') == 'prod' %}
             <script>var debugMode = false;</script>
         {% else %}

@@ -75,13 +75,12 @@ function toggleWatchMarkInputBoxes() {
 // register mark type selector listener
 $("input[name=watch-mark-type]").change(toggleWatchMarkInputBoxes);
 
-function addToWatchlistModal(price, editMode = false, editItemId = null, editMarkType = null, editComment = null, editWidx = null, editIdx = null) {
-    var selector = document.getElementById('chartSelector');
-    var itemId = editMode ? editItemId : Number(selector.value);
+function addToWatchlistModal(price, itemId = null, editMode = false, editMarkType = null, editComment = null, editWidx = null, editIdx = null) {
+    itemId = itemId == null ? Number(document.getElementById('selected-item').dataset.itemId) : Number(itemId);
 
     var dialog = $("#add-watchlist-dialog").dialog({
         dialogClass: 'themed-titlebar',
-        title: editMode ? 'Edit watchlist entry' : `Add ${selector.options[selector.selectedIndex].text} to watchlist`,
+        title: editMode ? 'Edit watchlist entry' : `Add ${itemData[itemId].name} to watchlist`,
         autoOpen: false,
         modal: true,
         buttons: [
@@ -115,9 +114,9 @@ function addToWatchlistModal(price, editMode = false, editItemId = null, editMar
                         }
 
                         if (editMode) {
-                            processWatchlistEdit(editItemId, inputPrice, inputPriceType, $('#comment').val(), editWidx, editIdx, newWidx);
+                            processWatchlistEdit(inputPrice, inputPriceType, $('#comment').val(), editWidx, editIdx, newWidx);
                         } else {
-                            processWatchlistFormData(inputPrice, inputPriceType, $('#comment').val(), newWidx);
+                            processWatchlistFormData(itemId, inputPrice, inputPriceType, $('#comment').val(), newWidx);
                         }
 
                         dialog.dialog("close");
@@ -205,10 +204,7 @@ function processNewWatchlistFormData(watchlistName) {
     setWatchlistObj(watchlists);
 }
 
-function processWatchlistFormData(mark, markType, comment, widx) {
-    var selector = document.getElementById('chartSelector');
-    var itemId = Number(selector.value);
-    var itemName = selector.options[selector.selectedIndex].text;
+function processWatchlistFormData(itemId, mark, markType, comment, widx) {
     var watchlist = getWatchlistObj();
     watchlist[widx].watches.push(newWatchlistItem(itemId, comment, markType, mark));
     setWatchlistObj(watchlist);
@@ -217,6 +213,6 @@ function processWatchlistFormData(mark, markType, comment, widx) {
 // process 'action' query param, if any
 var searchParams = new URLSearchParams(window.location.search);
 if (searchParams.get('action') === 'add_watch_item') {
-    addToWatchlistModal(null);
+    addToWatchlistModal(null, searchParams.get('item_id'));
 }
 </script>
