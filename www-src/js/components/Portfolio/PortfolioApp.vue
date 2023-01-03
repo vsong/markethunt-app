@@ -1,10 +1,6 @@
 <template>
     <div style="text-align: center">
         <h1>Portfolio</h1>
-        <div style="margin-bottom: 2em" class="status-banner status-banner-info">
-            Markethunt has recently moved domains to <i>markethunt.win</i>.
-            If you had previously saved portfolios or watchlists, please use the <a href="import_userdata.php">import tool</a> to migrate your data from the old domain.
-        </div>
     </div>
     <div v-cloak id="vue-container" class="watchlist-tabs-container">
         <ul>
