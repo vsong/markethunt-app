@@ -91,7 +91,8 @@ export default {
             }
 
             const positionIndex = appData.portfolios[pidx].positions.map(p => p.uid).indexOf(positionUid);
-            addToPortfolioModal(appData.portfolios[pidx].positions[positionIndex], pidx, positionIndex);
+            const position = appData.portfolios[pidx].positions[positionIndex];
+            addToPortfolioModal(position.item_id, position, pidx, positionIndex);
         },
         formatDate(date) {
             return date.toLocaleString();

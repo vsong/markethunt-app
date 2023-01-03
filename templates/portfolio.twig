@@ -15,6 +15,9 @@
 
 {% block body %}
     <div class="pure-g">
+        <script>
+            var initialItemId = {{ current_item_id }};
+        </script>
         <div class="pure-u-1 pure-u-xl-11-24">
             {% include 'chart/chartContainer.twig' %}
         </div>
@@ -98,18 +101,15 @@
         // chart handling
         renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
-        function handleChartSubmit(addToHistory = true) {
-            var selector = document.getElementById('chartSelector');
-            var itemId = selector.value;
-            var itemName = selector.options[selector.selectedIndex].text;
+        function handleChartSubmit(itemId, itemName, addToHistory = true) {
             renderChartWithItemId(itemId, itemName);
             if (addToHistory === true) {
                 window.history.replaceState({}, itemName, "/portfolio.php?item_id=" + itemId);
             }
         }
 
-        function processNewPositionFormData(qty, mark, markType, pidx) {
-            addToPortfolio(pidx, document.getElementById('chartSelector').value, mark, markType, qty)
+        function processNewPositionFormData(itemId, qty, mark, markType, pidx) {
+            addToPortfolio(pidx, itemId, mark, markType, qty)
         }
 
         function processPositionEdit(qty, mark, markType, pidx, idx, newPidx = null) {
@@ -125,10 +125,6 @@
         // Generic add to portfolio
         function addToPortfolio(pidx, itemId, mark, markType, qty) {
             appData.portfolios[pidx].positions.push(newPortfolioPosition(itemId, qty, mark, markType));
-
-            if (Number(itemId) === Number(document.getElementById('chartSelector').value)) {
-                renderChartWithItemId(itemId, appData.itemData[itemId].name);
-            }
         }
 
         // reload when other tab edits portfolio
@@ -148,5 +144,4 @@
         });
     </script>
     <script type="text/javascript" src="assets/js/build/portfolio_app.js"></script>
-    <script type="text/javascript" src="assets/js/build/vendor.js"></script>
 {% endblock %}

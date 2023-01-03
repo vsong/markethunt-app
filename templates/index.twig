@@ -9,24 +9,24 @@
 {% block chart_header %}{{ current_item_name }}{% endblock %}
 
 {% block body %}
-<div>
-    {% include 'chart/chartContainer.twig' with {'include_credits': true} %}
-</div>
-<script>
-    renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
+    <script>
+        var initialItemId = {{ current_item_id }};
+    </script>
+    <div>
+        {% include 'chart/chartContainer.twig' with {'include_credits': true} %}
+    </div>
+    <script>
+        renderChartWithItemId({{ current_item_id }}, "{{ current_item_name }}");
 
-    function handleChartSubmit(addToHistory = true) {
-        var selector = document.getElementById('chartSelector');
-        var itemId = Number(selector.value);
-        var itemName = selector.options[selector.selectedIndex].text;
-        if (addToHistory === true) {
-            window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
-            document.title = itemName + ' - Markethunt'; // change title after replaceState to preserve title of previous history entry 
+        function handleChartSubmit(itemId, itemName, addToHistory = true) {
+            if (addToHistory === true) {
+                window.history.replaceState({}, itemName, "/index.php?item_id=" + itemId);
+                document.title = itemName + ' - Markethunt'; // change title after replaceState to preserve title of previous history entry
+            }
+            renderChartWithItemId(itemId, itemName);
+            if (window.goatcounter !== undefined) {
+                window.goatcounter.count();
+            }
         }
-        renderChartWithItemId(itemId, itemName);
-        if (window.goatcounter !== undefined) {
-            window.goatcounter.count();
-        }
-    }
-</script>
+    </script>
 {% endblock %}

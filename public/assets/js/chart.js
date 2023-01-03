@@ -3,6 +3,7 @@ var UtcTimezone = "T00:00:00+00:00"
 
 // style
 var primaryLineColor = "#4f52aa";
+var secondaryLineColor = "#b91a05";
 var sbiLineColor = "#00c000"
 var volumeColor = "#51cda0";
 
@@ -15,7 +16,7 @@ var yGridLineColorLighter = "#dddddd";
 var axisLabelColor = "#444444";
 var crosshairColor = "#222222";
 
-var chartFont = "arial";
+var chartFont = "arial, sans-serif";
 
 function UtcIsoDateToMillis(dateStr) {
     return (new Date(dateStr + UtcTimezone)).getTime();
@@ -161,11 +162,6 @@ function renderChartWithItemId(itemId, chartHeaderText) {
         var chart = new Highcharts.stockChart('chartContainer', {
             chart: {
                 animation: false, // disable range selector zooming animation
-                events: {
-                    click: function() {
-                        addToWatchlistModal(parseInt(this.hoverPoints[0].y));
-                    },
-                },
             },
             // must keep scrollbar enabled for dynamic scrolling, so hide the scrollbar instead
             scrollbar: {
@@ -229,7 +225,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                 shared: true,
                 split: false,
                 headerFormat: '<span style="font-size: 13px">{point.key}</span><br/>',
-                xDateFormat: '%b %e, %Y',
+                xDateFormat: '%b %e, %Y %H:%M UTC',
                 backgroundColor: 'rgba(255, 255, 255, 1)',
                 hideDelay: 0, // makes tooltip feel more responsive when crossing gap between plots
                 style: {
@@ -256,13 +252,6 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                             hover: {
                                 lineWidth: 0,
                             }
-                        },
-                    },
-                    point: {
-                        events: {
-                            click: function() {
-                                addToWatchlistModal(parseInt(this.y));
-                            },
                         },
                     },
                     tooltip: {
@@ -472,9 +461,302 @@ function renderChartWithItemId(itemId, chartHeaderText) {
     }
 
     $.getJSON(`https://${env.apiHost}/items/${itemId}`, function (response) {
-        var selector = document.getElementById('chartSelector');
-        var selectorItemId = Number(selector.value);
-        if (selectorItemId == itemId) {
+        var selector = document.getElementById('selected-item');
+        var selectedItemId = selector.dataset.itemId;
+
+        if (selectedItemId == null || selectedItemId == itemId) {
+            renderChart(response);
+        }
+    });
+}
+
+function renderBiHourlyStockChart(itemId) {
+    itemId = Number(itemId);
+
+    const loadingElem = document.getElementsByClassName('chart-loading')[0];
+    loadingElem.style.display = "flex";
+
+    function renderChart(response) {
+        const bid_data = [];
+        const ask_data = [];
+        const supply_data = [];
+
+        response.stock_data.forEach(x => {
+            bid_data.push([x.timestamp, x.bid]);
+            ask_data.push([x.timestamp, x.ask]);
+            supply_data.push([x.timestamp, x.supply]);
+        })
+
+        Highcharts.setOptions({
+            chart: {
+                style: {
+                    fontFamily: chartFont,
+                },
+            },
+            lang: {
+                rangeSelectorZoom :""
+            },
+            plotOptions: {
+                series: {
+                    animation: false,
+                    dataGrouping: {
+                        enabled: true,
+                        units: [['hour', [1]], ['day', [1]], ['week', [1]]],
+                        groupPixelWidth: 3,
+                    },
+                    showInLegend: true,
+                },
+            },
+            xAxis: {
+                tickColor: xTickColor,
+                labels: {
+                    style: {
+                        color: axisLabelColor,
+                        fontSize: '12px',
+                    }
+                }
+            },
+            yAxis: {
+                gridLineColor: yGridLineColor,
+                labels: {
+                    style: {
+                        color: axisLabelColor,
+                        fontSize: '12px',
+                    },
+                    y: 3,
+                }
+            }
+        });
+
+        // Create the chart
+        var chart = new Highcharts.stockChart('chartContainer', {
+            chart: {
+                animation: false, // disable range selector zooming animation
+            },
+            // must keep scrollbar enabled for dynamic scrolling, so hide the scrollbar instead
+            scrollbar: {
+                height: 0,
+                buttonArrowColor: "#ffffff00",
+            },
+            title: {
+                enabled: false,
+            },
+            rangeSelector: {
+                buttons: [
+                    {
+                        type: 'day',
+                        count: 7,
+                        text: '7D'
+                    },
+                    {
+                        type: 'month',
+                        count: 1,
+                        text: '1M'
+                    }, {
+                        type: 'month',
+                        count: 3,
+                        text: '3M'
+                    }, {
+                        type: 'month',
+                        count: 6,
+                        text: '6M'
+                    }, {
+                        type: 'year',
+                        count: 1,
+                        text: '1Y'
+                    }, {
+                        type: 'all',
+                        text: 'All'
+                    },
+                ],
+                selected: 1,
+                inputEnabled: false,
+                labelStyle: {
+                    color: axisLabelColor,
+                },
+                buttonPosition: {
+                    y: 5,
+                },
+                x: -5.5,
+            },
+            legend: {
+                enabled: true,
+                align: 'right',
+                verticalAlign: 'top',
+                width: '35%',
+                y: -23,
+                padding: 0,
+                itemStyle: {
+                    color: '#000000',
+                    fontSize: "13px",
+                },
+            },
+            tooltip: {
+                animation: false,
+                shared: true,
+                split: false,
+                headerFormat: '<span style="font-size: 13px">{point.key}</span><br/>',
+                xDateFormat: '%b %e, %Y %H:%M UTC',
+                backgroundColor: 'rgba(255, 255, 255, 1)',
+                hideDelay: 0, // makes tooltip feel more responsive when crossing gap between plots
+                style: {
+                    color: '#000000',
+                    fontSize: '13px',
+                }
+            },
+            series: [
+                {
+                    name: 'Ask',
+                    id: 'ask',
+                    type: 'line',
+                    data: ask_data,
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    yAxis: 0,
+                    color: primaryLineColor,
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    },
+                    tooltip: {
+                        pointFormatter: function() {
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + ` ${this.series.name}:`
+                                + ` <b>${this.y.toLocaleString()}g</b><br/>`;
+                        },
+                    }
+                },
+                {
+                    name: 'Bid',
+                    id: 'bid',
+                    type: 'line',
+                    data: bid_data,
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    yAxis: 0,
+                    color: secondaryLineColor,
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    },
+                    tooltip: {
+                        pointFormatter: function() {
+                            return `<span style="color:${this.color}">\u25CF</span>`
+                                + ` ${this.series.name}:`
+                                + ` <b>${this.y.toLocaleString()}g</b><br/>`;
+                        },
+                    }
+                },
+                {
+                    name: 'Supply',
+                    id: 'supply',
+                    type: 'line',
+                    data: supply_data,
+                    yAxis: 2,
+                    color: volumeColor,
+                    lineWidth: 1.5,
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0,
+                            halo: false, // disable translucent halo on marker hover
+                        }
+                    },
+                    marker: {
+                        states: {
+                            hover: {
+                                lineWidth: 0,
+                            }
+                        },
+                    }
+                },
+            ],
+            yAxis: [
+                {
+                    height: '80%',
+                    // lineWidth: 1,
+                    labels: {
+                        formatter: function() {
+                            return this.value.toLocaleString() + 'g';
+                        },
+                        x: -8,
+                    },
+                    showLastLabel: true, // show label at top of chart
+                    crosshair: {
+                        dashStyle: 'Dot',
+                        color: crosshairColor,
+                    },
+                    opposite: false,
+                    alignTicks: false, // disabled, otherwise autoranger will create too large a Y-window
+                }, {
+                    height: '80%',
+                    gridLineWidth: 0,
+                    labels: {
+                        formatter: function() {
+                            return this.value.toLocaleString() + ' SB';
+                        }
+                    },
+                    showLastLabel: true, // show label at top of chart
+                    opposite: true,
+                    alignTicks: false,
+                }, {
+                    top: '82%',
+                    height: '18%',
+                    offset: 0,
+                    labels: {
+                        x: -8,
+                    },
+                    opposite: false,
+                    tickPixelInterval: 35,
+                    allowDecimals: false
+                }],
+            xAxis: {
+                type: 'datetime',
+                ordinal: false, // show continuous x axis if dates are missing
+                plotBands: eventBands,
+                plotLines: yearLines,
+                crosshair: {
+                    dashStyle: 'Dot',
+                    color: crosshairColor,
+                },
+                dateTimeLabelFormats:{
+                    day: '%b %e',
+                    week: '%b %e, \'%y',
+                    month: '%b %Y',
+                    year: '%Y'
+                },
+                tickPixelInterval: 120,
+            },
+            navigator: {
+                height: 40,
+                margin: 5,
+                maskInside: false,
+            }
+        });
+
+        loadingElem.style.display = "none";
+    }
+
+    $.getJSON(`https://${env.apiHost}/items/${itemId}/stock?token=${localStorage.apiToken}`, (response) => {
+        var selector = document.getElementById('selected-item');
+        var selectedItemId = selector.dataset.itemId;
+
+        if (selectedItemId == null || selectedItemId == itemId) {
             renderChart(response);
         }
     });
