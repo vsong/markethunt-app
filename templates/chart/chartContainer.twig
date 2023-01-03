@@ -1,5 +1,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/highstock.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/highcharts-more.min.js"></script>
 <script>
 var itemData = {{ item_metadata | json_encode | raw }};
 var eventDates = {% include 'chart/event_dates.json' %};

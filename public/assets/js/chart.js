@@ -130,7 +130,7 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     animation: false,
                     dataGrouping: {
                         enabled: itemId === 114,
-                        units: [['hour', [1]], ['day', [1]], ['week', [1]]],
+                        units: [['day', [1]], ['week', [1]]],
                         groupPixelWidth: 3,
                     },
                     showInLegend: true,
@@ -500,8 +500,9 @@ function renderBiHourlyStockChart(itemId) {
                 series: {
                     animation: false,
                     dataGrouping: {
+                        enabled: true,
                         units: [['hour', [1]], ['day', [1]], ['week', [1]]],
-                        groupPixelWidth: 2,
+                        groupPixelWidth: 3,
                     },
                     showInLegend: true,
                 },
