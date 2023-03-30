@@ -50,7 +50,7 @@ var eventDates = {% include 'chart/event_dates.json' %};
             </div>
         </div>
         <div style="flex-grow: 1"></div>
-        <div id="stock-data-checkbox-container" style="vertical-align: bottom; display: none;">
+        <div id="stock-data-checkbox-container" style="vertical-align: bottom;">
             <br>
             <label for="stock-data-checkbox">
             <input
@@ -64,11 +64,6 @@ var eventDates = {% include 'chart/event_dates.json' %};
         </div>
 
         <script>
-            let stockDataCheckboxContainer = document.getElementById('stock-data-checkbox-container');
-            if (localStorage.apiToken) {
-                stockDataCheckboxContainer.style.display = 'block';
-            }
-
             function BiHourlyChartCheckboxClicked(checked) {
                 console.log('called1');
                 const selectedItem = document.getElementById('selected-item');
@@ -92,11 +87,9 @@ var eventDates = {% include 'chart/event_dates.json' %};
         </div>
     </div>
     <div id="item-selector-app" style="margin: 5px 10px"></div>
-    {% if include_credits %}
-        <div class="credits">
-            <p>Get the <a href="https://greasyfork.org/en/scripts/441382-markethunt-plugin-for-mousehunt">Markethunt userscript</a>!</p>
-        </div>
-    {% endif %}
+    <div class="credits">
+        <p>Get the <a href="https://greasyfork.org/en/scripts/441382-markethunt-plugin-for-mousehunt">Markethunt userscript</a>!</p>
+    </div>
 </div>
 
 <script src="/assets/js/chart.js"></script>
