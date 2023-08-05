@@ -19,4 +19,5 @@ echo $twig->render('watchlist.twig', [
     'current_item_id' => $current_item_id,
     'current_item_name' => $current_item_name,
     'item_metadata' => getAllItemNamesAndLatestPrice(),
+    'event_data' => getEvents(),
 ]);
