@@ -97,11 +97,11 @@ function getItemChartData($item_id): array
         DATE ASC");
 
     foreach ($statement as $row) {
-        array_push($results, array(
-            "date" => $row['date'], 
-            "volume" => $row['raw_volume_day'], 
+        $results[] = array(
+            "date" => $row['date'],
+            "volume" => $row['raw_volume_day'],
             "price" => $row['price'],
-            "sb_index" => $row['sbi']));
+            "sb_index" => $row['sbi']);
     }
 
     return $results;
@@ -123,10 +123,10 @@ function getLatestItemPrice($item_id): array
     LIMIT 1");
 
     foreach ($statement as $row) {
-        array_push($results, array(
-            "date" => $row['date'], 
+        $results[] = array(
+            "date" => $row['date'],
             "price" => $row['price']
-        ));
+        );
     }
 
     return $results;
@@ -281,11 +281,28 @@ function getTopMovers(string $from, int $volume_limit, bool $get_winners = true)
     return ($results === false) ? [] : $results;
 }
 
-function isValidItemId($item_id)
+function isValidItemId($item_id): bool
 {
     $result = Db::getConnection()
         ->query("SELECT item_id FROM item_meta WHERE item_id = $item_id")
         ->fetch();
 
-    return ($result === false) ? false : true;
+    return !(($result === false));
+}
+
+function getEvents(): array
+{
+    $results = [];
+
+    $statement = Db::getConnection()->query("SELECT short_name, start_date, end_date FROM events ORDER BY start_date ASC");
+
+    foreach ($statement as $row) {
+        $results[] = array(
+            'short_name' => $row['short_name'],
+            'start_date' => $row['start_date'],
+            'end_date' => $row['end_date']
+        );
+    }
+
+    return $results;
 }

@@ -32,7 +32,7 @@ function formatSISuffix(num, decimalPlaces) {
     return significand.toFixed(decimalPlaces) + suffixes[order];
 }
 
-function eventBand(IsoStrFrom, IsoStrTo, labelText) {
+function eventBand(labelText, IsoStrFrom, IsoStrTo) {
     return {
         from: UtcIsoDateToMillis(IsoStrFrom),
         to: UtcIsoDateToMillis(IsoStrTo),
@@ -63,7 +63,7 @@ function yearLine(year) {
 }
 
 var eventBands = [];
-eventDates.forEach(event => eventBands.push(eventBand(event[0], event[1], event[2])));
+eventDates.forEach(event => eventBands.push(eventBand(event.short_name, event.start_date, event.end_date)));
 
 var yearLines = [];
 for (let year = 2008; year < 2099; year++) {
