@@ -6,6 +6,7 @@ var primaryLineColor = "#4f52aa";
 var secondaryLineColor = "#b91a05";
 var sbiLineColor = "#00c000"
 var volumeColor = "#51cda0";
+var volumeLabelColor = "#3ab28a";
 
 var eventBandColor = "#f2f2f2";
 var eventBandFontColor = "#999999"; // recommend to have same or close color as yGridLineColor for visual clarity
@@ -322,7 +323,6 @@ function renderChartWithItemId(itemId, chartHeaderText) {
             ],
             yAxis: [
                 {
-                    height: '80%',
                     // lineWidth: 1,
                     labels: {
                         formatter: function() {
@@ -338,7 +338,6 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     opposite: false,
                     alignTicks: false, // disabled, otherwise autoranger will create too large a Y-window
                 }, {
-                    height: '80%',
                     gridLineWidth: 0,
                     labels: {
                         formatter: function() {
@@ -353,10 +352,16 @@ function renderChartWithItemId(itemId, chartHeaderText) {
                     height: '18%',
                     offset: 0,
                     labels: {
-                        x: -8,
+                        align: 'left',
+                        x: 4,
+                        style: {
+                            color: volumeLabelColor
+                        }
                     },
+                    gridLineWidth: 0,
                     opposite: false,
-                    tickPixelInterval: 35,
+                    tickPixelInterval: 25,
+                    showFirstLabel: false,
                     allowDecimals: false
             }],
             xAxis: {
@@ -632,7 +637,8 @@ function renderBiHourlyStockChart(itemId) {
                                 + ` ${this.series.name}:`
                                 + ` <b>${this.y.toLocaleString()}g</b><br/>`;
                         },
-                    }
+                    },
+                    zIndex: 1,
                 },
                 {
                     name: 'Bid',
@@ -661,14 +667,15 @@ function renderBiHourlyStockChart(itemId) {
                                 + ` ${this.series.name}:`
                                 + ` <b>${this.y.toLocaleString()}g</b><br/>`;
                         },
-                    }
+                    },
+                    zIndex: 2,
                 },
                 {
                     name: 'Supply',
                     id: 'supply',
-                    type: 'line',
+                    type: 'area',
                     data: supply_data,
-                    yAxis: 2,
+                    yAxis: 1,
                     color: volumeColor,
                     lineWidth: 1.5,
                     states: {
@@ -683,13 +690,12 @@ function renderBiHourlyStockChart(itemId) {
                                 lineWidth: 0,
                             }
                         },
-                    }
+                    },
+                    zIndex: 0,
                 },
             ],
             yAxis: [
                 {
-                    height: '80%',
-                    // lineWidth: 1,
                     labels: {
                         formatter: function() {
                             return this.value.toLocaleString() + 'g';
@@ -703,28 +709,26 @@ function renderBiHourlyStockChart(itemId) {
                     },
                     opposite: false,
                     alignTicks: false, // disabled, otherwise autoranger will create too large a Y-window
-                }, {
-                    height: '80%',
-                    gridLineWidth: 0,
-                    labels: {
-                        formatter: function() {
-                            return this.value.toLocaleString() + ' SB';
-                        }
-                    },
-                    showLastLabel: true, // show label at top of chart
-                    opposite: true,
-                    alignTicks: false,
-                }, {
+                },
+                {
                     top: '82%',
                     height: '18%',
                     offset: 0,
+                    min: 0,
                     labels: {
-                        x: -8,
+                        align: 'left',
+                        x: 4,
+                        style: {
+                            color: volumeLabelColor
+                        }
                     },
+                    gridLineWidth: 0,
                     opposite: false,
-                    tickPixelInterval: 35,
+                    tickPixelInterval: 25,
+                    showFirstLabel: false,
                     allowDecimals: false
-                }],
+                }
+            ],
             xAxis: {
                 type: 'datetime',
                 ordinal: false, // show continuous x axis if dates are missing

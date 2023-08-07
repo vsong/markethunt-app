@@ -43,10 +43,11 @@ pre {
     height: 1em;
 }
 .credits {
+    padding-top: 25px;
     text-align: left;
-    margin-top: 50px;
     font-size: 14px;
-    color: grey;
+    max-width: 780px;
+    margin: auto;
 }
 .credits p {
     margin: 2px;
