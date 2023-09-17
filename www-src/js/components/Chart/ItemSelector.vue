@@ -62,10 +62,10 @@ export default {
         }
     },
     computed: {
-        sortedItemData() {
+        filteredItemData() {
             let values = Object.values(itemData);
             values.sort((a, b) => a.name > b.name ? 1 : -1);
-            return values;
+            return values.filter(i => i.currently_tradeable);
         },
     },
     methods: {
@@ -73,7 +73,7 @@ export default {
             this.lastUserInputText = val;
 
             update(() => {
-                this.options = this.sortedItemData.filter(x => {
+                this.options = this.filteredItemData.filter(x => {
                     const itemNameNormalized = x.name.toLowerCase();
                     const searchTermNormalized = val.toLowerCase();
 
