@@ -55,12 +55,14 @@ function getAllItemNamesAndLatestPrice(): array
     SELECT
         m.item_id,
         m.name,
+        m.currently_tradeable,
         p.price,
         CAST(p.price / sbp.price AS DOUBLE) AS sb_price
     FROM
         item_meta m
     LEFT JOIN latest_prices p USING(item_id)
     LEFT JOIN sb_prices sbp USING(DATE)
+    WHERE m.historically_tradeable = 1
     ORDER BY
         m.name ASC;");
 
@@ -70,6 +72,7 @@ function getAllItemNamesAndLatestPrice(): array
             "name" => $row['name'], 
             "latest_price" => $row['price'] ?? 0,
             "latest_sb_price" => $row['sb_price'] ?? 0,
+            "currently_tradeable" => (bool)$row['currently_tradeable']
         );
     }
 
