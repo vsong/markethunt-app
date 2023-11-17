@@ -1,0 +1,12 @@
+{% extends "base.twig" %}
+{% block meta_description %}Discord OTC prices{% endblock %}
+{% block title %}Discord OTC prices{% endblock %}
+
+{% block head %}
+{{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div id="otc-app" style="width: 800px; margin: auto"></div>
+    <script type="text/javascript" src="assets/js/build/otc_app.js"></script>
+{% endblock %}
