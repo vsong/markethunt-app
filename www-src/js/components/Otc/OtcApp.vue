@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import ItemSelectorGeneric from "../Chart/ItemSelectorGeneric.vue";
+import ItemSelectorGeneric from "../ItemSelectorGeneric.vue";
 import {Chart} from 'highcharts-vue';
 
 export default {
@@ -25,8 +25,8 @@ export default {
 
             return this.state.listingCombinations.map(x => ({
                 key: x,
-                name: `${this.getListingTypeName(x.listing_type)} - ${this.getItemName(x.item_id)}`,
-                thumbnailUrl: `https://cdn.markethunt.win/thumbnail/item/${x.item_id}.gif`,
+                name: `${this.getListingTypeName(x.listing_type)} - ${x.item.name}`,
+                thumbnailUrl: `https://cdn.markethunt.win/thumbnail/item/${x.item.item_id}.gif`,
             }));
         },
         eventBands() {
@@ -265,20 +265,16 @@ export default {
     },
     methods: {
         async fetchData() {
-            const listingCombinationsFetch = fetch('https://api-dev.markethunt.win/otc/listings')
+            const listingCombinationsFetch = fetch(`https://${env.apiHost}/otc/listings`)
                 .then(res => res.json());
 
-            const itemInfoFetch = fetch('https://api-dev.markethunt.win/otc/items')
+            const eventsFetch = fetch(`https://${env.apiHost}/events`)
                 .then(res => res.json());
 
-            const eventsFetch = fetch('https://api-dev.markethunt.win/events')
-                .then(res => res.json());
-
-            Promise.all([listingCombinationsFetch, itemInfoFetch, eventsFetch]).then(values => {
+            Promise.all([listingCombinationsFetch, eventsFetch]).then(values => {
                 this.state = {
                     listingCombinations: values[0],
-                    itemInfo: values[1],
-                    events: values[2],
+                    events: values[1],
                 }
             })
         },
@@ -298,11 +294,8 @@ export default {
                     return 'Report this to Github';
             }
         },
-        getItemName(itemId) {
-            return this.state.itemInfo.find(x => x.item_id === itemId).name;
-        },
         async handleSelection(listingCombination) {
-            const res = await fetch(`https://api-dev.markethunt.win/otc/listings/${listingCombination.listing_type}/${listingCombination.item_id}`);
+            const res = await fetch(`https://${env.apiHost}/otc/listings/${listingCombination.listing_type}/${listingCombination.item.item_id}`);
             this.chartData = await res.json();
         }
     },
