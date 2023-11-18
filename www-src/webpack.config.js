@@ -6,7 +6,8 @@ module.exports = {
     mode: 'development',
     entry: {
         portfolio_app: './js/portfolio_app.js',
-        chart_autocomplete_app: './js/chart_autocomplete_app.js'
+        chart_autocomplete_app: './js/chart_autocomplete_app.js',
+        otc_app: './js/otc_app.js'
     },
     devtool: 'source-map',
     module: {
